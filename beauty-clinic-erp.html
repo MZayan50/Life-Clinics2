@@ -686,6 +686,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
       <div style="display:flex;gap:9px;margin-top:14px;">
         <button class="btn btn-primary" onclick="saveFB()">💾 حفظ وتفعيل</button>
         <button class="btn btn-teal btn-sm" onclick="uploadSeedToFirestore()" title="يرفع البيانات المحلية إلى Firestore لأول مرة">☁️ رفع بيانات محلية</button>
+        <button class="btn btn-ghost btn-sm" onclick="flushOfflineQueue()">🔄 مزامنة المعلقة</button>
         <button class="btn btn-ghost btn-sm" onclick="testFBConnection()">🧪 اختبار الاتصال</button>
         <button class="btn btn-ghost btn-sm" onclick="disconnectFirebase()" style="color:var(--rose);">🔌 قطع</button>
       </div>
@@ -1345,21 +1346,116 @@ function attachFirestoreSync(col){
     });
 }
 
-// ── Write a single record to Firestore ──
-async function fbSet(col, id, data){
-  if(!window._fbReady || !window._firestore) return;
-  try {
-    await window._firestore.collection(col).doc(String(id)).set(data, {merge: true});
-  } catch(e){ console.warn('Firestore write error:', e); }
+// ══════════════════════════════════════════
+// 📦 OFFLINE QUEUE SYSTEM
+// ══════════════════════════════════════════
+const OQ = {
+  _key: 'ha_offline_queue',
+  get(){ try{ return JSON.parse(localStorage.getItem(this._key))||[]; }catch{ return []; } },
+  push(op){ const q=this.get(); q.push(op); localStorage.setItem(this._key,JSON.stringify(q)); },
+  clear(){ localStorage.removeItem(this._key); },
+  set(q){ localStorage.setItem(this._key,JSON.stringify(q)); },
+  size(){ return this.get().length; }
+};
+
+// Update queue badge in connection bar
+function updateQueueBadge(){
+  const n = OQ.size();
+  const el = document.getElementById('conn-txt');
+  if(!el) return;
+  if(n > 0 && !window._fbReady){
+    el.textContent = `وضع محلي 💾 · ${n} عملية معلقة`;
+  } else if(n > 0 && window._fbReady){
+    el.textContent = `متصل بـ Firebase ☁️ · جارٍ المزامنة...`;
+  } else if(window._fbReady){
+    el.textContent = `متصل بـ Firebase ☁️`;
+  } else {
+    el.textContent = `وضع محلي 💾`;
+  }
 }
 
-// ── Delete a single record from Firestore ──
+// ── Write a single record to Firestore (with queue fallback) ──
+async function fbSet(col, id, data){
+  if(!window._fbReady || !window._firestore){
+    // Offline: save to queue
+    OQ.push({type:'set', col, id:String(id), data, ts: Date.now()});
+    updateQueueBadge();
+    return;
+  }
+  try {
+    await window._firestore.collection(col).doc(String(id)).set(data, {merge: true});
+  } catch(e){
+    // Network error mid-session: queue it
+    console.warn('Firestore write error, queuing:', e.message);
+    OQ.push({type:'set', col, id:String(id), data, ts: Date.now()});
+    updateQueueBadge();
+  }
+}
+
+// ── Delete a single record from Firestore (with queue fallback) ──
 async function fbDel(col, id){
-  if(!window._fbReady || !window._firestore) return;
+  if(!window._fbReady || !window._firestore){
+    OQ.push({type:'del', col, id:String(id), ts: Date.now()});
+    updateQueueBadge();
+    return;
+  }
   try {
     await window._firestore.collection(col).doc(String(id)).delete();
-  } catch(e){ console.warn('Firestore delete error:', e); }
+  } catch(e){
+    console.warn('Firestore delete error, queuing:', e.message);
+    OQ.push({type:'del', col, id:String(id), ts: Date.now()});
+    updateQueueBadge();
+  }
 }
+
+// ── Flush offline queue to Firestore ──
+async function flushOfflineQueue(){
+  const queue = OQ.get();
+  if(queue.length === 0) return;
+  if(!window._fbReady || !window._firestore) return;
+
+  const failed = [];
+  for(const op of queue){
+    try {
+      if(op.type === 'set'){
+        await window._firestore.collection(op.col).doc(op.id).set(op.data, {merge: true});
+      } else if(op.type === 'del'){
+        await window._firestore.collection(op.col).doc(op.id).delete();
+      }
+    } catch(e){
+      failed.push(op); // keep failed ops for next retry
+    }
+  }
+
+  if(failed.length === 0){
+    OQ.clear();
+    const synced = queue.length;
+    showToast('success', `☁️ تمت المزامنة`, `${synced} عملية معلقة تمت مزامنتها`);
+  } else {
+    OQ.set(failed);
+    showToast('warning', `⚠️ مزامنة جزئية`, `${queue.length - failed.length} نجحت، ${failed.length} فشلت`);
+  }
+  updateQueueBadge();
+}
+
+// ── Listen to online/offline events ──
+window.addEventListener('online', async () => {
+  txt('conn-txt', 'جارٍ إعادة الاتصال...');
+  const saved = localStorage.getItem('ha_fb_config');
+  if(saved && !window._fbReady){
+    try{ await initFirebase(JSON.parse(saved)); } catch(e){}
+  }
+  if(window._fbReady && OQ.size() > 0){
+    await flushOfflineQueue();
+  }
+  updateQueueBadge();
+});
+
+window.addEventListener('offline', () => {
+  txt('conn-txt', 'غير متصل بالنت 📴');
+  const dot = document.getElementById('conn-dot');
+  if(dot) dot.style.background = 'var(--rose)';
+});
 
 // ── Upload full localStorage collection to Firestore (first-time seed) ──
 async function uploadSeedToFirestore(){
@@ -1390,13 +1486,22 @@ DB.push = function(k, o){
 };
 DB.upd = function(k, id, d){
   _origUpd(k, id, d);
-  // Re-read merged object and send to Firestore
   const item = DB.get(k).find(x => x.id == id);
   if(item) fbSet(k, id, item);
 };
 DB.del = function(k, id){
   _origDel(k, id);
   fbDel(k, id);
+};
+
+// Flush any pending queue after Firebase connects
+const _origInitFirebase = initFirebase;
+initFirebase = async function(cfg){
+  await _origInitFirebase(cfg);
+  if(window._fbReady && OQ.size() > 0){
+    setTimeout(flushOfflineQueue, 1000);
+  }
+  updateQueueBadge();
 };
 
 // ── Test connection ──

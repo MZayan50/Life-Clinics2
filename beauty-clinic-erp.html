@@ -788,11 +788,94 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 <div class="screen" id="screen-waitlist"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">⏳</div><h3>قائمة الانتظار</h3></div></div>
 <div class="screen" id="screen-sessions"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">✨</div><h3>الجلسات العلاجية</h3></div></div>
 <div class="screen" id="screen-packages"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🎁</div><h3>الباقات العلاجية</h3></div></div>
-<div class="screen" id="screen-doctors"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">👨‍⚕️</div><h3>الأطباء</h3></div></div>
-<div class="screen" id="screen-staff"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">👩‍💼</div><h3>الموظفون</h3></div></div>
+<div class="screen" id="screen-doctors">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="doc-search" placeholder="بحث عن طبيب..." oninput="renderDocs()"></div>
+    <select class="selbox" id="doc-branch-filter" onchange="renderDocs()"><option value="">كل الفروع</option><option value="مدينة نصر">مدينة نصر</option><option value="المهندسين">المهندسين</option></select>
+    <button class="btn btn-primary" onclick="openDocModal()">+ طبيب جديد</button>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card kc-gold"><div class="kpi-icon">👨‍⚕️</div><div class="kpi-value" id="doc-kpi-total">0</div><div class="kpi-label">إجمالي الأطباء</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">📅</div><div class="kpi-value" id="doc-kpi-today">0</div><div class="kpi-label">مواعيد اليوم</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">💰</div><div class="kpi-value" id="doc-kpi-revenue">0</div><div class="kpi-label">إيرادات الأطباء (ج)</div></div>
+    <div class="kpi-card kc-amber"><div class="kpi-icon">🧾</div><div class="kpi-value" id="doc-kpi-comm">0</div><div class="kpi-label">عمولات مستحقة (ج)</div></div>
+  </div>
+  <div class="bgrid" id="doc-grid"></div>
+</div>
+
+<div class="modal-overlay" id="doctor-modal">
+  <div class="modal" style="max-width:500px"><div class="mhdr"><div class="mtitle" id="doc-modal-title">👨‍⚕️ طبيب جديد</div><button class="mclose" onclick="closeModal('doctor-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="doc-id">
+    <div class="fgrp full"><label class="flbl">الاسم *</label><input class="fctl" id="doc-name" placeholder="د. الاسم الكامل"></div>
+    <div class="fgrp"><label class="flbl">التخصص</label><input class="fctl" id="doc-specialty" placeholder="مثال: بشرة وجلدية"></div>
+    <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="doc-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+    <div class="fgrp"><label class="flbl">الهاتف</label><input class="fctl" id="doc-phone" placeholder="01X-XXX-XXXX"></div>
+    <div class="fgrp"><label class="flbl">البريد الإلكتروني</label><input class="fctl" id="doc-email" placeholder="email@example.com"></div>
+    <div class="fgrp"><label class="flbl">نسبة العمولة (%)</label><input class="fctl" type="number" id="doc-commission" placeholder="15"></div>
+    <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="doc-status"><option>نشط</option><option>غير نشط</option></select></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('doctor-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveDoc()">💾 حفظ</button></div></div>
+</div>
+<div class="screen" id="screen-staff">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="st-search" placeholder="بحث عن موظف..." oninput="renderStaff()"></div>
+    <select class="selbox" id="st-role-filter" onchange="renderStaff()"><option value="">كل الأدوار</option><option value="استقبال">استقبال</option><option value="محاسب">محاسب</option><option value="مدير فرع">مدير فرع</option><option value="أخرى">أخرى</option></select>
+    <button class="btn btn-primary" onclick="openStaffModal()">+ موظف جديد</button>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card kc-gold"><div class="kpi-icon">👩‍💼</div><div class="kpi-value" id="st-kpi-total">0</div><div class="kpi-label">إجمالي الموظفين</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">✅</div><div class="kpi-value" id="st-kpi-active">0</div><div class="kpi-label">نشطون</div></div>
+    <div class="kpi-card kc-amber"><div class="kpi-icon">💰</div><div class="kpi-value" id="st-kpi-salaries">0</div><div class="kpi-label">إجمالي الرواتب (ج)</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">🏢</div><div class="kpi-value" id="st-kpi-branches">0</div><div class="kpi-label">عدد الفروع المغطاة</div></div>
+  </div>
+  <div class="bgrid" id="st-grid"></div>
+</div>
+
+<div class="modal-overlay" id="staff-modal">
+  <div class="modal" style="max-width:500px"><div class="mhdr"><div class="mtitle" id="st-modal-title">👩‍💼 موظف جديد</div><button class="mclose" onclick="closeModal('staff-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="st-id">
+    <div class="fgrp full"><label class="flbl">الاسم *</label><input class="fctl" id="st-name" placeholder="الاسم الكامل"></div>
+    <div class="fgrp"><label class="flbl">الدور الوظيفي</label><select class="fctl" id="st-role"><option>استقبال</option><option>محاسب</option><option>مدير فرع</option><option>أخرى</option></select></div>
+    <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="st-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+    <div class="fgrp"><label class="flbl">الهاتف</label><input class="fctl" id="st-phone" placeholder="01X-XXX-XXXX"></div>
+    <div class="fgrp"><label class="flbl">البريد الإلكتروني</label><input class="fctl" id="st-email" placeholder="email@example.com"></div>
+    <div class="fgrp"><label class="flbl">الراتب الشهري (ج)</label><input class="fctl" type="number" id="st-salary" placeholder="5000"></div>
+    <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="st-status"><option>نشط</option><option>غير نشط</option></select></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('staff-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveStaff()">💾 حفظ</button></div></div>
+</div>
 <div class="screen" id="screen-payments"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">💳</div><h3>المدفوعات</h3></div></div>
 <div class="screen" id="screen-installments"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">📆</div><h3>الأقساط</h3></div></div>
-<div class="screen" id="screen-expenses"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">💸</div><h3>المصروفات</h3></div></div>
+<div class="screen" id="screen-expenses">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="exp-search" placeholder="بحث عن مصروف..." oninput="renderExpenses()"></div>
+    <select class="selbox" id="exp-type-filter" onchange="renderExpenses()"><option value="">كل الأنواع</option><option value="إيجار">إيجار</option><option value="مرافق">مرافق</option><option value="رواتب">رواتب</option><option value="مخزون">مخزون</option><option value="تسويق">تسويق</option><option value="أخرى">أخرى</option></select>
+    <button class="btn btn-primary" onclick="openExpModal()">+ مصروف جديد</button>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card kc-rose"><div class="kpi-icon">💸</div><div class="kpi-value" id="exp-kpi-total">0</div><div class="kpi-label">إجمالي المصروفات (ج)</div></div>
+    <div class="kpi-card kc-amber"><div class="kpi-icon">📅</div><div class="kpi-value" id="exp-kpi-month">0</div><div class="kpi-label">مصروفات هذا الشهر (ج)</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">🏆</div><div class="kpi-value" id="exp-kpi-top">—</div><div class="kpi-label">أعلى نوع مصروف</div></div>
+    <div class="kpi-card kc-gold"><div class="kpi-icon">🧾</div><div class="kpi-value" id="exp-kpi-count">0</div><div class="kpi-label">عدد المصروفات</div></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>البيان</th><th>النوع</th><th>الفرع</th><th>المبلغ</th><th>التاريخ</th><th></th></tr></thead><tbody id="exp-tbody"></tbody></table></div></div>
+</div>
+
+<div class="modal-overlay" id="expense-modal">
+  <div class="modal" style="max-width:480px"><div class="mhdr"><div class="mtitle" id="exp-modal-title">💸 مصروف جديد</div><button class="mclose" onclick="closeModal('expense-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="exp-id">
+    <div class="fgrp full"><label class="flbl">البيان *</label><input class="fctl" id="exp-name" placeholder="مثال: إيجار الفرع"></div>
+    <div class="fgrp"><label class="flbl">النوع</label><select class="fctl" id="exp-type"><option>إيجار</option><option>مرافق</option><option>رواتب</option><option>مخزون</option><option>تسويق</option><option>أخرى</option></select></div>
+    <div class="fgrp"><label class="flbl">المبلغ (ج) *</label><input class="fctl" type="number" id="exp-amount" placeholder="0"></div>
+    <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="exp-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+    <div class="fgrp"><label class="flbl">التاريخ</label><input class="fctl" type="date" id="exp-date"></div>
+    <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="exp-notes" placeholder="أي تفاصيل إضافية..."></textarea></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('expense-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveExp()">💾 حفظ</button></div></div>
+</div>
 <div class="screen" id="screen-treasury"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🏦</div><h3>الخزينة</h3></div></div>
 <div class="screen" id="screen-accounts"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">📊</div><h3>الحسابات الكاملة</h3></div></div>
 <div class="screen" id="screen-suppliers"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🚚</div><h3>الموردون</h3></div></div>
@@ -961,6 +1044,23 @@ if(!localStorage.getItem('ha_seeded')){
     {id:'l5',name:'لمياء سعد',phone:'01055555555',service:'هيدرافيشل',source:'صديق',status:'تم التحويل',notes:''}
   ]);
   DB.set('settings',{clinicName:'عيادات الحياة للتجميل',phone:'0100-000-0000',managerName:'د. سارة محمد',managerRole:'مدير النظام'});
+  DB.set('doctors',[
+    {id:'d1',name:'د. منى سامي',specialty:'بشرة وجلدية',phone:'01112223331',email:'mona@lifeclinics.com',branch:'مدينة نصر',commission:15,status:'نشط'},
+    {id:'d2',name:'د. أحمد رضا',specialty:'ليزر وإزالة شعر',phone:'01112223332',email:'ahmed@lifeclinics.com',branch:'مدينة نصر',commission:12,status:'نشط'},
+    {id:'d3',name:'د. لمياء حسن',specialty:'حقن وبلازما',phone:'01112223333',email:'lamia@lifeclinics.com',branch:'المهندسين',commission:18,status:'نشط'}
+  ]);
+  DB.set('expenses',[
+    {id:'e1',name:'إيجار الفرع',amount:8000,type:'إيجار',branch:'مدينة نصر',date:today,notes:''},
+    {id:'e2',name:'كهرباء وماء',amount:1200,type:'مرافق',branch:'مدينة نصر',date:today,notes:''},
+    {id:'e3',name:'رواتب',amount:45000,type:'رواتب',branch:'مدينة نصر',date:today,notes:''},
+    {id:'e4',name:'مستلزمات طبية',amount:3500,type:'مخزون',branch:'المهندسين',date:today,notes:''}
+  ]);
+  DB.set('staff',[
+    {id:'st1',name:'مريم سعيد',role:'استقبال',phone:'01098765431',email:'mariam@lifeclinics.com',branch:'مدينة نصر',salary:5000,status:'نشط'},
+    {id:'st2',name:'هدى فاروق',role:'محاسب',phone:'01098765432',email:'hoda@lifeclinics.com',branch:'مدينة نصر',salary:6500,status:'نشط'},
+    {id:'st3',name:'كريم ماهر',role:'مدير فرع',phone:'01098765433',email:'karim@lifeclinics.com',branch:'المهندسين',salary:9000,status:'نشط'},
+    {id:'st4',name:'سارة عادل',role:'استقبال',phone:'01098765434',email:'sara@lifeclinics.com',branch:'المهندسين',salary:5000,status:'نشط'}
+  ]);
   localStorage.setItem('ha_seeded','1');
 }
 
@@ -993,6 +1093,9 @@ function showScreen(id){
   if(id==='inventory')renderInv();
   if(id==='invoices')renderInvs();
   if(id==='services')renderSvcs();
+  if(id==='doctors')renderDocs();
+  if(id==='expenses')renderExpenses();
+  if(id==='staff')renderStaff();
   if(id==='leads')renderLeads();
   if(id==='calendar')buildCal();
   if(id==='whatsapp')renderWA();
@@ -1006,7 +1109,7 @@ document.addEventListener('touchstart',e=>_tx=e.touches[0].clientX,{passive:true
 document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_tx;if(dx<-55)closeSidebar();if(dx>55&&_tx<30)toggleSidebar();},{passive:true});
 
 // MODAL
-function openModal(id){document.getElementById(id)?.classList.add('open');fillPatDropdowns();}
+function openModal(id){document.getElementById(id)?.classList.add('open');fillPatDropdowns();fillDocDropdowns();}
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 function fillPatDropdowns(){
@@ -1195,6 +1298,218 @@ function saveInv(){
   DB.push('invoices',{patient:pat?.name||'—',service:gv('im-svc').split(' - ')[0],total:net,paid:net,remaining:0,status:'مدفوع',method,date:gv('im-date')||new Date().toISOString().split('T')[0]});
   if(pat)DB.upd('patients',pat.id,{spent:(pat.spent||0)+net});
   closeModal('invoice-modal');showToast('success','✅ تم إصدار الفاتورة',`${net.toLocaleString()} ج - ${method}`);renderInvs();
+}
+
+// DOCTORS
+function docApptsToday(name){
+  const today=new Date().toISOString().split('T')[0];
+  return DB.get('appointments').filter(a=>a.doctor===name && a.date===today).length;
+}
+function docApptsTotal(name){
+  return DB.get('appointments').filter(a=>a.doctor===name).length;
+}
+function docRevenue(name){
+  const svcNames=DB.get('services').filter(s=>s.doctor===name).map(s=>s.name);
+  return DB.get('invoices').filter(i=>svcNames.includes(i.service)).reduce((s,i)=>s+(i.paid||0),0);
+}
+function renderDocs(){
+  const grid=document.getElementById('doc-grid');if(!grid)return;
+  const q=(document.getElementById('doc-search')?.value||'').trim().toLowerCase();
+  const branch=document.getElementById('doc-branch-filter')?.value||'';
+  let docs=DB.get('doctors');
+  if(q)docs=docs.filter(d=>d.name.toLowerCase().includes(q)||(d.specialty||'').toLowerCase().includes(q));
+  if(branch)docs=docs.filter(d=>d.branch===branch);
+
+  let totalToday=0,totalRevenue=0,totalComm=0;
+  DB.get('doctors').forEach(d=>{
+    totalToday+=docApptsToday(d.name);
+    const rev=docRevenue(d.name);
+    totalRevenue+=rev;
+    totalComm+=rev*(d.commission||0)/100;
+  });
+  txt('doc-kpi-total',DB.get('doctors').length);
+  txt('doc-kpi-today',totalToday);
+  txt('doc-kpi-revenue',totalRevenue.toLocaleString());
+  txt('doc-kpi-comm',Math.round(totalComm).toLocaleString());
+
+  grid.innerHTML=docs.map((d,i)=>{
+    const rev=docRevenue(d.name),comm=Math.round(rev*(d.commission||0)/100),today=docApptsToday(d.name),total=docApptsTotal(d.name);
+    return `<div class="bcard">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="tdava" style="background:${AVA[i%AVA.length]}">👨‍⚕️</div>
+          <div><div style="font-size:15px;font-weight:800;">${d.name}</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">${d.specialty||'—'}</div></div>
+        </div>
+        <span class="ast ${d.status==='نشط'?'sc':'sd'}">${d.status}</span>
+      </div>
+      <div class="g2c" style="gap:8px;margin-bottom:11px;">
+        <div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--teal)">${today}</div><div style="font-size:11px;color:var(--text-muted)">مواعيد اليوم</div></div>
+        <div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--gold-light)">${rev.toLocaleString()}</div><div style="font-size:11px;color:var(--text-muted)">إيرادات (ج)</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 ${d.branch||'—'} · ${total} جلسة إجمالي · عمولة ${d.commission||0}% (${comm.toLocaleString()} ج)</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📞 ${d.phone||'—'}</div>
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openDocModal('${d.id}')">✏️ تعديل</button>
+        <button class="btn btn-danger btn-sm" style="flex:1" onclick="delDoc('${d.id}')">🗑 حذف</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);">لا يوجد أطباء مطابقين</div>';
+
+  fillDocDropdowns();
+}
+function openDocModal(id){
+  const d=id?DB.get('doctors').find(x=>x.id===id):null;
+  document.getElementById('doc-modal-title').textContent=d?'✏️ تعديل بيانات الطبيب':'👨‍⚕️ طبيب جديد';
+  document.getElementById('doc-id').value=d?d.id:'';
+  document.getElementById('doc-name').value=d?d.name:'';
+  document.getElementById('doc-specialty').value=d?d.specialty||'':'';
+  document.getElementById('doc-branch').value=d?d.branch:'مدينة نصر';
+  document.getElementById('doc-phone').value=d?d.phone||'':'';
+  document.getElementById('doc-email').value=d?d.email||'':'';
+  document.getElementById('doc-commission').value=d?d.commission||15:15;
+  document.getElementById('doc-status').value=d?d.status:'نشط';
+  openModal('doctor-modal');
+}
+function saveDoc(){
+  const name=gv('doc-name').trim();if(!name){showToast('warning','⚠️ اسم الطبيب مطلوب');return;}
+  const id=gv('doc-id');
+  const data={name,specialty:gv('doc-specialty'),branch:gv('doc-branch'),phone:gv('doc-phone'),email:gv('doc-email'),commission:parseFloat(gv('doc-commission'))||0,status:gv('doc-status')};
+  if(id){DB.upd('doctors',id,data);showToast('success',`✅ تم تحديث بيانات ${name}`);}
+  else{DB.push('doctors',data);showToast('success',`✅ تم إضافة ${name}`);}
+  closeModal('doctor-modal');renderDocs();
+}
+function delDoc(id){
+  const d=DB.get('doctors').find(x=>x.id===id);
+  if(confirm(`حذف ${d?.name||'الطبيب'}؟`)){DB.del('doctors',id);showToast('info','🗑 تم الحذف');renderDocs();}
+}
+function fillDocDropdowns(){
+  const docs=DB.get('doctors');
+  ['am-doc','sv-doc'].forEach(did=>{
+    const sel=document.getElementById(did);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML=docs.map(d=>`<option value="${d.name}">${d.name}</option>`).join('')||'<option value="">-- لا يوجد أطباء --</option>';
+    if(cur && docs.some(d=>d.name===cur))sel.value=cur;
+  });
+}
+
+// EXPENSES
+function renderExpenses(){
+  const tb=document.getElementById('exp-tbody');if(!tb)return;
+  const q=(document.getElementById('exp-search')?.value||'').trim().toLowerCase();
+  const type=document.getElementById('exp-type-filter')?.value||'';
+  let exps=DB.get('expenses');
+  if(q)exps=exps.filter(e=>e.name.toLowerCase().includes(q));
+  if(type)exps=exps.filter(e=>e.type===type);
+  exps=[...exps].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  const all=DB.get('expenses');
+  const total=all.reduce((s,e)=>s+(e.amount||0),0);
+  const thisMonth=new Date().toISOString().slice(0,7);
+  const monthTotal=all.filter(e=>(e.date||'').startsWith(thisMonth)).reduce((s,e)=>s+(e.amount||0),0);
+  const byType={};
+  all.forEach(e=>{byType[e.type]=(byType[e.type]||0)+(e.amount||0);});
+  const topType=Object.keys(byType).sort((a,b)=>byType[b]-byType[a])[0]||'—';
+
+  txt('exp-kpi-total',total.toLocaleString());
+  txt('exp-kpi-month',monthTotal.toLocaleString());
+  txt('exp-kpi-top',topType);
+  txt('exp-kpi-count',all.length);
+
+  tb.innerHTML=exps.map(e=>`<tr><td style="font-weight:600">${e.name}</td><td><span class="tag tg-purple">${e.type}</span></td><td style="font-size:12px">${e.branch||'—'}</td><td style="color:var(--rose);font-weight:700">${(e.amount||0).toLocaleString()} ج</td><td style="font-size:12px">${e.date||'—'}</td><td style="display:flex;gap:5px;"><button class="btn btn-ghost btn-xs" onclick="openExpModal('${e.id}')">✏️</button><button class="btn btn-danger btn-xs" onclick="delExp('${e.id}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px">لا توجد مصروفات مطابقة</td></tr>';
+}
+function openExpModal(id){
+  const e=id?DB.get('expenses').find(x=>x.id===id):null;
+  document.getElementById('exp-modal-title').textContent=e?'✏️ تعديل المصروف':'💸 مصروف جديد';
+  document.getElementById('exp-id').value=e?e.id:'';
+  document.getElementById('exp-name').value=e?e.name:'';
+  document.getElementById('exp-type').value=e?e.type:'إيجار';
+  document.getElementById('exp-amount').value=e?e.amount:'';
+  document.getElementById('exp-branch').value=e?e.branch:'مدينة نصر';
+  document.getElementById('exp-date').value=e?e.date:new Date().toISOString().split('T')[0];
+  document.getElementById('exp-notes').value=e?e.notes||'':'';
+  openModal('expense-modal');
+}
+function saveExp(){
+  const name=gv('exp-name').trim();if(!name){showToast('warning','⚠️ بيان المصروف مطلوب');return;}
+  const amount=parseFloat(gv('exp-amount'))||0;if(amount<=0){showToast('warning','⚠️ أدخل مبلغًا صحيحًا');return;}
+  const id=gv('exp-id');
+  const data={name,type:gv('exp-type'),amount,branch:gv('exp-branch'),date:gv('exp-date')||new Date().toISOString().split('T')[0],notes:gv('exp-notes')};
+  if(id){DB.upd('expenses',id,data);showToast('success',`✅ تم تحديث ${name}`);}
+  else{DB.push('expenses',data);showToast('success',`✅ تم إضافة مصروف: ${name}`,`${amount.toLocaleString()} ج`);}
+  closeModal('expense-modal');renderExpenses();
+  if(document.getElementById('screen-treasury')?.classList.contains('active'))renderTreasury();
+}
+function delExp(id){
+  const e=DB.get('expenses').find(x=>x.id===id);
+  if(confirm(`حذف مصروف "${e?.name||''}"؟`)){DB.del('expenses',id);showToast('info','🗑 تم الحذف');renderExpenses();if(document.getElementById('screen-treasury')?.classList.contains('active'))renderTreasury();}
+}
+
+// STAFF
+function renderStaff(){
+  const grid=document.getElementById('st-grid');if(!grid)return;
+  const q=(document.getElementById('st-search')?.value||'').trim().toLowerCase();
+  const role=document.getElementById('st-role-filter')?.value||'';
+  let staff=DB.get('staff');
+  if(q)staff=staff.filter(s=>s.name.toLowerCase().includes(q));
+  if(role)staff=staff.filter(s=>s.role===role);
+
+  const all=DB.get('staff');
+  const totalSalaries=all.reduce((s,x)=>s+(x.salary||0),0);
+  const branches=new Set(all.map(x=>x.branch).filter(Boolean));
+  txt('st-kpi-total',all.length);
+  txt('st-kpi-active',all.filter(x=>x.status==='نشط').length);
+  txt('st-kpi-salaries',totalSalaries.toLocaleString());
+  txt('st-kpi-branches',branches.size);
+
+  const roleColors={'استقبال':'tg-teal','محاسب':'tg-gold','مدير فرع':'tg-purple','أخرى':'tg-green'};
+  grid.innerHTML=staff.map((s,i)=>`<div class="bcard">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="tdava" style="background:${AVA[i%AVA.length]}">👩‍💼</div>
+          <div><div style="font-size:15px;font-weight:800;">${s.name}</div><span class="tag ${roleColors[s.role]||'tg-teal'}" style="font-size:11px;margin-top:3px;display:inline-block;">${s.role}</span></div>
+        </div>
+        <span class="ast ${s.status==='نشط'?'sc':'sd'}">${s.status}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">📍 ${s.branch||'—'}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">📞 ${s.phone||'—'}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--gold-light);margin-bottom:11px;">💰 ${(s.salary||0).toLocaleString()} ج / شهريًا</div>
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-teal btn-sm" style="flex:1" onclick="payStaffSalary('${s.id}')">💸 صرف الراتب</button>
+        <button class="btn btn-ghost btn-sm" onclick="openStaffModal('${s.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="delStaff('${s.id}')">🗑</button>
+      </div>
+    </div>`).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);">لا يوجد موظفون مطابقون</div>';
+}
+function openStaffModal(id){
+  const s=id?DB.get('staff').find(x=>x.id===id):null;
+  document.getElementById('st-modal-title').textContent=s?'✏️ تعديل بيانات الموظف':'👩‍💼 موظف جديد';
+  document.getElementById('st-id').value=s?s.id:'';
+  document.getElementById('st-name').value=s?s.name:'';
+  document.getElementById('st-role').value=s?s.role:'استقبال';
+  document.getElementById('st-branch').value=s?s.branch:'مدينة نصر';
+  document.getElementById('st-phone').value=s?s.phone||'':'';
+  document.getElementById('st-email').value=s?s.email||'':'';
+  document.getElementById('st-salary').value=s?s.salary||5000:5000;
+  document.getElementById('st-status').value=s?s.status:'نشط';
+  openModal('staff-modal');
+}
+function saveStaff(){
+  const name=gv('st-name').trim();if(!name){showToast('warning','⚠️ اسم الموظف مطلوب');return;}
+  const id=gv('st-id');
+  const data={name,role:gv('st-role'),branch:gv('st-branch'),phone:gv('st-phone'),email:gv('st-email'),salary:parseFloat(gv('st-salary'))||0,status:gv('st-status')};
+  if(id){DB.upd('staff',id,data);showToast('success',`✅ تم تحديث بيانات ${name}`);}
+  else{DB.push('staff',data);showToast('success',`✅ تم إضافة ${name}`);}
+  closeModal('staff-modal');renderStaff();
+}
+function delStaff(id){
+  const s=DB.get('staff').find(x=>x.id===id);
+  if(confirm(`حذف ${s?.name||'الموظف'}؟`)){DB.del('staff',id);showToast('info','🗑 تم الحذف');renderStaff();}
+}
+function payStaffSalary(id){
+  const s=DB.get('staff').find(x=>x.id===id);if(!s)return;
+  if(!confirm(`صرف راتب ${s.name} (${(s.salary||0).toLocaleString()} ج)؟`))return;
+  DB.push('expenses',{name:`راتب: ${s.name}`,type:'رواتب',amount:s.salary||0,branch:s.branch,date:new Date().toISOString().split('T')[0],notes:''});
+  showToast('success',`✅ تم صرف راتب ${s.name}`,`${(s.salary||0).toLocaleString()} ج - تم تسجيله في المصروفات`);
 }
 
 // SERVICES
@@ -2358,19 +2673,14 @@ function renderTreasury(){
   if(!screen) return;
   const invoices = DB.get('invoices');
   const totalIn = invoices.reduce((s,i)=>s+(i.paid||0), 0);
-  const expenses = [
-    {name:'إيجار الفرع', amount:8000, date:'2025-06-01', type:'إيجار'},
-    {name:'كهرباء وماء', amount:1200, date:'2025-06-05', type:'مرافق'},
-    {name:'رواتب', amount:45000, date:'2025-06-15', type:'رواتب'},
-    {name:'مستلزمات طبية', amount:3500, date:'2025-06-18', type:'مخزون'}
-  ];
-  const totalOut = expenses.reduce((s,e)=>s+e.amount, 0);
+  const expenses = DB.get('expenses');
+  const totalOut = expenses.reduce((s,e)=>s+(e.amount||0), 0);
   const balance = totalIn - totalOut;
 
   screen.innerHTML = `
   <div style="margin-bottom:18px;">
     <h2 style="font-size:17px;font-weight:800;">الخزينة</h2>
-    <p style="font-size:12.5px;color:var(--text-muted)">يونيو 2025</p>
+    <p style="font-size:12.5px;color:var(--text-muted)">${new Date().toLocaleDateString('ar-EG',{month:'long',year:'numeric'})}</p>
   </div>
   <div class="kpi-grid" style="margin-bottom:18px;">
     <div class="kpi-card kc-emerald"><div class="kpi-icon">📥</div><div class="kpi-value">${totalIn.toLocaleString()} ج</div><div class="kpi-label">إجمالي الوارد</div></div>
@@ -2384,34 +2694,25 @@ function renderTreasury(){
         <thead><tr><th>العميل</th><th>الخدمة</th><th>المبلغ</th><th>التاريخ</th></tr></thead>
         <tbody>${invoices.filter(i=>i.paid>0).map(i=>`
           <tr><td style="font-size:13px;font-weight:600">${i.patient}</td><td style="font-size:12px">${i.service}</td>
-          <td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="font-size:12px">${i.date}</td></tr>`).join('')}
+          <td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="font-size:12px">${i.date}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:16px">لا توجد مدفوعات</td></tr>'}
         </tbody>
       </table></div>
     </div>
     <div class="card">
       <div class="card-hdr"><div class="card-title">📤 الصادر (مصروفات)</div>
-        <button class="btn btn-primary btn-sm" onclick="addExpense()">+ مصروف</button>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('expenses')">+ مصروف</button>
       </div>
       <div class="table-wrap"><table>
         <thead><tr><th>البيان</th><th>النوع</th><th>المبلغ</th><th>التاريخ</th></tr></thead>
         <tbody>${expenses.map(e=>`
           <tr><td style="font-size:13px;font-weight:600">${e.name}</td>
           <td><span class="tag tg-purple" style="font-size:11px">${e.type}</span></td>
-          <td style="color:var(--rose);font-weight:700">${e.amount.toLocaleString()} ج</td>
-          <td style="font-size:12px">${e.date}</td></tr>`).join('')}
+          <td style="color:var(--rose);font-weight:700">${(e.amount||0).toLocaleString()} ج</td>
+          <td style="font-size:12px">${e.date||'—'}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:16px">لا توجد مصروفات</td></tr>'}
         </tbody>
       </table></div>
     </div>
   </div>`;
-}
-
-function addExpense(){
-  const name = prompt('اسم المصروف:');
-  if(!name) return;
-  const amount = prompt('المبلغ (ج):');
-  if(!amount || isNaN(amount)) return;
-  showToast('success',`✅ تم إضافة مصروف: ${name}`,`${parseFloat(amount).toLocaleString()} ج`);
-  renderTreasury();
 }
 
 // Patch showScreen for treasury

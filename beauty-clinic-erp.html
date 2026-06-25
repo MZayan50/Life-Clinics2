@@ -374,7 +374,11 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="topbar-actions">
     <div class="sync-btn" onclick="syncData()"><span id="sync-icon">☁️</span><span>مزامنة</span></div>
     <div class="icon-btn" onclick="showScreen('whatsapp')">💬<div class="ndot"></div></div>
-    <div class="icon-btn">🔔<div class="ndot"></div></div>
+    <div class="icon-btn" onclick="toggleNotifDropdown(this)">🔔<div class="ndot" id="notif-dot"></div></div>
+    <div id="notif-dropdown" style="display:none;position:fixed;top:66px;left:70px;background:var(--modal-bg);border:1px solid var(--glass-border);border-radius:14px;padding:14px;z-index:400;min-width:280px;max-width:320px;max-height:400px;overflow-y:auto;box-shadow:var(--shadow);">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-secondary);">🔔 الإشعارات</div>
+      <div id="notif-list"></div>
+    </div>
     <div class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</div>
     <div class="icon-btn" onclick="showScreen('settings')">⚙️</div>
     <button class="btn btn-primary hm" onclick="openModal('appt-modal')">+ موعد جديد</button>
@@ -397,7 +401,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="kpi-card kc-gold"><div class="kpi-icon">👥</div><div class="kpi-value" id="kpi-pat">0</div><div class="kpi-label">إجمالي العملاء</div><div class="kpi-chg kpi-up">↑ 12% هذا الشهر</div></div>
     <div class="kpi-card kc-teal"><div class="kpi-icon">📅</div><div class="kpi-value" id="kpi-appt">0</div><div class="kpi-label">مواعيد اليوم</div><div class="kpi-chg kpi-up">↑ 8% عن أمس</div></div>
     <div class="kpi-card kc-emerald"><div class="kpi-icon">💰</div><div class="kpi-value" id="kpi-rev">0</div><div class="kpi-label">إيرادات اليوم (ج)</div><div class="kpi-chg kpi-up">↑ 23% عن أمس</div></div>
-    <div class="kpi-card kc-purple"><div class="kpi-icon">📊</div><div class="kpi-value" id="kpi-mrev">312,800</div><div class="kpi-label">إيرادات الشهر (ج)</div><div class="kpi-chg kpi-up">↑ 15% الشهر الماضي</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">📊</div><div class="kpi-value" id="kpi-mrev">0</div><div class="kpi-label">إيرادات الشهر (ج)</div><div class="kpi-chg kpi-up" id="kpi-mrev-chg">↑ محسوبة من الفواتير</div></div>
     <div class="kpi-card kc-rose"><div class="kpi-icon">⚠️</div><div class="kpi-value" id="kpi-stk">0</div><div class="kpi-label">منتجات ناقصة</div><div class="kpi-chg kpi-dn">تحتاج إعادة طلب</div></div>
     <div class="kpi-card kc-amber"><div class="kpi-icon">💸</div><div class="kpi-value" id="kpi-pend">0</div><div class="kpi-label">مدفوعات معلقة (ج)</div><div class="kpi-chg kpi-dn">أقساط متأخرة</div></div>
   </div>
@@ -421,10 +425,10 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
       <div class="drow"><div class="drank">4️⃣</div><div class="dava" style="background:linear-gradient(135deg,#C4A882,#8B5CF6)">👨‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">د. كريم طارق</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">29,300 ج</div></div>
     </div>
     <div class="card">
-      <div class="card-hdr"><div class="card-title">🔔 تنبيهات</div></div>
-      <div class="ali ali-w"><div class="ai-ico">📦</div><div class="ai-txt"><p>سيروم C: مخزون منخفض</p><span>متبقي 3 وحدات</span></div></div>
-      <div class="ali ali-d"><div class="ai-ico">💳</div><div class="ai-txt"><p>قسط متأخر: نادية عمر</p><span>1,500 ج منذ 5 أيام</span></div></div>
-      <div class="ali ali-i"><div class="ai-ico">📅</div><div class="ai-txt"><p>8 مواعيد غداً بلا تذكير</p><span>اضغط لإرسال</span></div></div>
+      <div class="card-hdr"><div class="card-title">🔔 تنبيهات</div><span class="card-sub" id="alerts-count"></span></div>
+      <div id="dash-alerts">
+        <div style="text-align:center;color:var(--text-muted);padding:16px;font-size:13px">جارٍ تحميل التنبيهات...</div>
+      </div>
     </div>
     <div class="card">
       <div class="card-hdr"><div class="card-title">📊 توزيع الخدمات</div></div>
@@ -460,7 +464,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <button class="btn btn-ghost btn-sm" onclick="showScreen('patients')">← رجوع</button>
     <button class="btn btn-primary btn-sm" onclick="openModal('appt-modal')">+ موعد</button>
     <button class="btn btn-ghost btn-sm">📸 صور</button>
-    <button class="btn btn-ghost btn-sm">💬 واتساب</button>
+    <button class="btn btn-ghost btn-sm" onclick="openPatWA()">💬 واتساب</button>
     <button class="btn btn-ghost btn-sm" onclick="printProfile()">🖨️ طباعة</button>
     <button class="btn btn-danger btn-sm" onclick="deleteCurrentPat()">🗑️ حذف</button>
   </div>
@@ -492,17 +496,12 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
       <div class="card"><div class="card-hdr"><div class="card-title">💇 الشعر</div></div><div id="med-hair" style="display:flex;flex-direction:column;gap:8px;font-size:13px;"></div></div>
     </div>
   </div>
-  <div id="t-ses" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">✨ خطط العلاج</div><button class="btn btn-ghost btn-sm">+ خطة</button></div>
-    <div style="background:rgba(45,212,191,.07);border:1px solid rgba(45,212,191,.2);border-radius:var(--radius-sm);padding:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;"><span style="font-weight:700">باقة ليزر 8 جلسات</span><span style="color:var(--teal);font-weight:700">5/8</span></div><div class="prog"><div class="prog-f" style="width:62.5%;background:var(--teal)"></div></div><div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;">
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.13);color:var(--emerald)">✅ جلسة 1</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.13);color:var(--emerald)">✅ جلسة 2</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.13);color:var(--emerald)">✅ جلسة 3</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.13);color:var(--emerald)">✅ جلسة 4</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.13);color:var(--emerald)">✅ جلسة 5</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(245,158,11,.13);color:var(--amber)">⏳ جلسة 6</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(148,163,184,.1);color:var(--text-muted)">○ جلسة 7</span>
-      <span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(148,163,184,.1);color:var(--text-muted)">○ جلسة 8</span>
-    </div></div></div></div>
+  <div id="t-ses" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">✨ خطط العلاج</div><button class="btn btn-ghost btn-sm" onclick="openSessionModal()">+ خطة</button></div>
+    <div id="pp-sessions-content"><div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">جارٍ التحميل...</div></div>
+  </div>
+  <div class="card" style="margin-top:14px;"><div class="card-hdr"><div class="card-title">🎁 الباقات العلاجية</div><button class="btn btn-ghost btn-sm" onclick="openPackageModal()">+ باقة</button></div>
+    <div id="pp-packages-content"><div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">جارٍ التحميل...</div></div>
+  </div></div>
   <div id="t-inv" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">🧾 الفواتير</div></div><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الخدمة</th><th>المبلغ</th><th>طريقة الدفع</th><th>الحالة</th></tr></thead><tbody id="p-inv-tbody"></tbody></table></div></div></div>
   <div id="t-ph" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">📸 الصور</div><button class="btn btn-teal btn-sm">+ رفع</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;"><div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--glass-border);"><div style="background:linear-gradient(135deg,#1a1a2e,#16213e);height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;">📷</div><div style="padding:7px;font-size:12px;"><div style="font-weight:600">قبل - يناير 2025</div><div style="color:var(--text-muted)">ليزر جلسة 1</div></div></div><div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid rgba(45,212,191,.3);"><div style="background:linear-gradient(135deg,#0d2137,#0d3340);height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;">📸</div><div style="padding:7px;font-size:12px;"><div style="font-weight:600;color:var(--teal)">بعد - مارس 2025</div><div style="color:var(--text-muted)">ليزر جلسة 5</div></div></div></div></div></div>
   <div id="t-hist" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">📋 السجل</div></div><div style="display:flex;flex-direction:column;gap:10px;" id="hist-list"></div></div></div>
@@ -570,7 +569,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث..." oninput="filterInvs(this.value)"></div>
     <select class="selbox" onchange="filterInvsSt(this.value)"><option value="">كل الحالات</option><option value="مدفوع">مدفوع</option><option value="معلق">معلق</option><option value="جزئي">جزئي</option></select>
     <button class="btn btn-primary" onclick="openModal('invoice-modal')">+ فاتورة جديدة</button>
-    <button class="btn btn-ghost btn-sm" onclick="showToast('info','📊 جارٍ التصدير...')">📊 تصدير</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportInvoices()">📊 تصدير Excel</button>
   </div>
   <div class="kpi-grid" style="margin-bottom:14px;">
     <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="inv-paid">0</div><div class="kpi-label">مدفوع (ج)</div></div>
@@ -759,6 +758,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div id="se-data" style="display:none;">
     <div class="card"><div class="card-hdr"><div class="card-title">💾 إدارة البيانات</div></div>
       <div style="display:flex;flex-direction:column;gap:11px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:13px;background:var(--glass);border-radius:var(--radius-sm);"><div><div style="font-weight:600;font-size:13.5px;">استيراد بيانات (JSON)</div><div style="font-size:12px;color:var(--text-muted)">استعادة من نسخة احتياطية</div></div><button class="btn btn-ghost btn-sm" onclick="importData()">📤 استيراد</button></div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:13px;background:var(--glass);border-radius:var(--radius-sm);"><div><div style="font-weight:600;font-size:13.5px;">تصدير كل البيانات</div><div style="font-size:12px;color:var(--text-muted)">نسخة احتياطية JSON</div></div><button class="btn btn-ghost btn-sm" onclick="exportAll()">📥 تصدير</button></div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:13px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--radius-sm);"><div><div style="font-weight:600;font-size:13.5px;color:var(--rose);">حذف كل البيانات</div><div style="font-size:12px;color:var(--text-muted)">لا يمكن التراجع!</div></div><button class="btn btn-danger btn-sm" onclick="clearAll()">🗑️ مسح</button></div>
       </div>
@@ -768,26 +768,141 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 
 <!-- WHATSAPP -->
 <div class="screen" id="screen-whatsapp">
-  <div style="display:grid;grid-template-columns:280px 1fr;gap:14px;height:calc(100vh - 100px);">
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:14px;height:calc(100vh - 100px);">
     <div class="card" style="overflow:hidden;display:flex;flex-direction:column;padding:0;">
-      <div style="padding:14px;border-bottom:1px solid var(--glass-border);"><div style="font-size:14px;font-weight:700;margin-bottom:9px;">💬 المحادثات</div><div class="sbox"><span>🔍</span><input type="text" placeholder="بحث..."></div></div>
+      <div style="padding:14px;border-bottom:1px solid var(--glass-border);">
+        <div style="font-size:14px;font-weight:700;margin-bottom:9px;">📱 إرسال واتساب</div>
+        <div class="sbox"><span>🔍</span><input type="text" id="wa-search" placeholder="بحث عن عميل..." oninput="renderWAContacts(this.value)"></div>
+      </div>
       <div style="flex:1;overflow-y:auto;" id="wa-contacts"></div>
     </div>
     <div class="card" style="overflow:hidden;display:flex;flex-direction:column;padding:0;">
-      <div style="padding:14px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:11px;"><div class="appt-ava" style="background:linear-gradient(135deg,#8B5CF6,#3B82F6)">👩</div><div><div style="font-weight:700;font-size:13.5px;">نورا أحمد</div><div style="font-size:11.5px;color:var(--emerald)">متصل الآن</div></div><div style="margin-right:auto;display:flex;gap:7px;"><button class="btn btn-ghost btn-sm">📤 قالب</button><button class="btn btn-ghost btn-sm">📅 تذكير</button></div></div>
-      <div style="flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;">
-        <div style="display:flex;justify-content:flex-start;"><div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px 12px 12px 2px;padding:10px 13px;max-width:78%;font-size:13px;line-height:1.6;">مرحباً، موعدك غداً الساعة 10 صباحاً للجلسة السادسة من ليزر الشعر مؤكد 💎</div></div>
-        <div style="display:flex;justify-content:flex-end;"><div style="background:linear-gradient(135deg,rgba(196,168,130,.18),rgba(45,212,191,.12));border-radius:12px 12px 2px 12px;padding:10px 13px;max-width:78%;font-size:13px;line-height:1.6;">تمام جداً، شكراً ❤️</div></div>
+      <div style="padding:14px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:11px;">
+        <div class="appt-ava" style="background:linear-gradient(135deg,#25D366,#128C7E)">💬</div>
+        <div><div style="font-weight:700;font-size:13.5px;" id="wa-selected-name">اختر عميلاً</div><div style="font-size:11.5px;color:var(--text-muted)" id="wa-selected-phone">—</div></div>
+        <div style="margin-right:auto;display:flex;gap:7px;">
+          <button class="btn btn-ghost btn-sm" onclick="sendWAReminder()">📅 تذكير موعد</button>
+          <button class="btn btn-ghost btn-sm" onclick="sendWABalance()">💳 تذكير دفعة</button>
+        </div>
       </div>
-      <div style="padding:14px;border-top:1px solid var(--glass-border);display:flex;gap:9px;"><div class="sbox" style="flex:1"><input type="text" id="wa-inp" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter'){showToast('success','✅ تم إرسال الرسالة');this.value='';}"></div><button class="btn btn-teal" onclick="showToast('success','✅ تم إرسال الرسالة');document.getElementById('wa-inp').value=''">إرسال</button></div>
+      <div style="flex:1;padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;" id="wa-templates">
+        <div style="text-align:center;padding:30px;color:var(--text-muted);">
+          <div style="font-size:42px;margin-bottom:12px;">💬</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:6px;">إرسال واتساب للعملاء</div>
+          <div style="font-size:13px;line-height:1.8;">اختر عميلاً من القائمة، ثم اختر القالب المناسب<br>سيفتح واتساب مباشرةً بالرسالة الجاهزة</div>
+        </div>
+        <div id="wa-quick-templates" style="display:none;flex-direction:column;gap:10px;"></div>
+      </div>
+      <div style="padding:14px;border-top:1px solid var(--glass-border);">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:9px;">رسالة مخصصة:</div>
+        <div style="display:flex;gap:9px;"><textarea id="wa-custom-msg" class="fctl ta" style="min-height:60px;flex:1" placeholder="اكتب رسالة مخصصة للعميل المحدد..."></textarea>
+        <button class="btn btn-teal" style="align-self:flex-end" onclick="sendWACustom()">📤 إرسال</button></div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- PLACEHOLDERS -->
-<div class="screen" id="screen-waitlist"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">⏳</div><h3>قائمة الانتظار</h3></div></div>
-<div class="screen" id="screen-sessions"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">✨</div><h3>الجلسات العلاجية</h3></div></div>
-<div class="screen" id="screen-packages"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🎁</div><h3>الباقات العلاجية</h3></div></div>
+<!-- WAITLIST -->
+<div class="screen" id="screen-waitlist">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="wl-search" placeholder="بحث عن عميل..." oninput="renderWaitlist()"></div>
+    <select class="selbox" id="wl-branch-filter" onchange="renderWaitlist()"><option value="">كل الفروع</option><option>مدينة نصر</option><option>المهندسين</option></select>
+    <button class="btn btn-primary" onclick="openWaitlistModal()">+ إضافة للقائمة</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-amber"><div class="kpi-icon">⏳</div><div class="kpi-value" id="wl-kpi-total">0</div><div class="kpi-label">إجمالي قائمة الانتظار</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">🔥</div><div class="kpi-value" id="wl-kpi-urgent">0</div><div class="kpi-label">عاجل (48 ساعة)</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">📅</div><div class="kpi-value" id="wl-kpi-today">0</div><div class="kpi-label">أضيفوا اليوم</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="wl-kpi-converted">0</div><div class="kpi-label">تحولوا لمواعيد</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">⏳ العملاء في قائمة الانتظار</div><span class="card-sub" id="wl-count-lbl">0 عميل</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>العميل</th><th>الخدمة المطلوبة</th><th>الفرع</th><th>الأولوية</th><th>تاريخ الإضافة</th><th>ملاحظات</th><th></th></tr></thead>
+        <tbody id="wl-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="waitlist-modal">
+  <div class="modal" style="max-width:480px"><div class="mhdr"><div class="mtitle">⏳ إضافة لقائمة الانتظار</div><button class="mclose" onclick="closeModal('waitlist-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="wl-id">
+    <div class="fgrp full"><label class="flbl">العميل *</label><select class="fctl" id="wl-pat"><option value="">-- اختر عميل --</option></select></div>
+    <div class="fgrp"><label class="flbl">الخدمة المطلوبة</label><select class="fctl" id="wl-service"><option>هيدرافيشل</option><option>ليزر إزالة شعر</option><option>بوتكس</option><option>بلازما</option><option>تنظيف بشرة</option></select></div>
+    <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="wl-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+    <div class="fgrp"><label class="flbl">الأولوية</label><select class="fctl" id="wl-priority"><option value="عادي">عادي</option><option value="عاجل">عاجل</option><option value="VIP">VIP</option></select></div>
+    <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="wl-notes" placeholder="أسباب الانتظار أو طلبات خاصة..."></textarea></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('waitlist-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveWaitlist()">💾 إضافة</button></div></div>
+</div>
+
+<!-- SESSIONS -->
+<div class="screen" id="screen-sessions">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="sess-search" placeholder="بحث عن جلسة أو عميل..." oninput="renderSessions()"></div>
+    <select class="selbox" id="sess-status-filter" onchange="renderSessions()"><option value="">كل الحالات</option><option value="جارية">جارية</option><option value="مكتملة">مكتملة</option><option value="متوقفة">متوقفة</option></select>
+    <button class="btn btn-primary" onclick="openSessionModal()">+ خطة جلسات</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-teal"><div class="kpi-icon">✨</div><div class="kpi-value" id="sess-kpi-active">0</div><div class="kpi-label">خطط جارية</div></div>
+    <div class="kpi-card kc-gold"><div class="kpi-icon">📋</div><div class="kpi-value" id="sess-kpi-total">0</div><div class="kpi-label">إجمالي الخطط</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="sess-kpi-done">0</div><div class="kpi-label">جلسات مكتملة</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">⏳</div><div class="kpi-value" id="sess-kpi-remaining">0</div><div class="kpi-label">جلسات متبقية</div></div>
+  </div>
+  <div class="bgrid" id="sess-grid"></div>
+</div>
+<div class="modal-overlay" id="session-modal">
+  <div class="modal" style="max-width:520px"><div class="mhdr"><div class="mtitle" id="sess-modal-title">✨ خطة جلسات جديدة</div><button class="mclose" onclick="closeModal('session-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="sess-id">
+    <div class="fgrp full"><label class="flbl">العميل *</label><select class="fctl" id="sess-pat"><option value="">-- اختر عميل --</option></select></div>
+    <div class="fgrp"><label class="flbl">نوع العلاج</label><select class="fctl" id="sess-type"><option>ليزر إزالة شعر</option><option>تجديد بشرة</option><option>شعر</option><option>بوتكس دوري</option><option>هيدرافيشل</option></select></div>
+    <div class="fgrp"><label class="flbl">الطبيب المعالج</label><select class="fctl" id="sess-doc"></select></div>
+    <div class="fgrp"><label class="flbl">عدد الجلسات الكلي</label><input class="fctl" type="number" id="sess-total-count" placeholder="6" min="1"></div>
+    <div class="fgrp"><label class="flbl">الجلسات المنجزة</label><input class="fctl" type="number" id="sess-done-count" placeholder="0" min="0"></div>
+    <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="sess-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+    <div class="fgrp"><label class="flbl">تاريخ البداية</label><input class="fctl" type="date" id="sess-start"></div>
+    <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="sess-status"><option>جارية</option><option>مكتملة</option><option>متوقفة</option></select></div>
+    <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="sess-notes" placeholder="تفاصيل الخطة العلاجية..."></textarea></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('session-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveSession()">💾 حفظ</button></div></div>
+</div>
+
+<!-- PACKAGES -->
+<div class="screen" id="screen-packages">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="pkg-search" placeholder="بحث عن باقة..." oninput="renderPackages()"></div>
+    <select class="selbox" id="pkg-status-filter" onchange="renderPackages()"><option value="">كل الحالات</option><option value="نشطة">نشطة</option><option value="منتهية">منتهية</option><option value="معلقة">معلقة</option></select>
+    <button class="btn btn-primary" onclick="openPackageModal()">+ باقة جديدة</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-gold"><div class="kpi-icon">🎁</div><div class="kpi-value" id="pkg-kpi-total">0</div><div class="kpi-label">إجمالي الباقات</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="pkg-kpi-active">0</div><div class="kpi-label">باقات نشطة</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">💰</div><div class="kpi-value" id="pkg-kpi-revenue">0</div><div class="kpi-label">إيرادات الباقات (ج)</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">👥</div><div class="kpi-value" id="pkg-kpi-clients">0</div><div class="kpi-label">عملاء مشتركون</div></div>
+  </div>
+  <div class="bgrid" id="pkg-grid"></div>
+</div>
+<div class="modal-overlay" id="package-modal">
+  <div class="modal" style="max-width:520px"><div class="mhdr"><div class="mtitle" id="pkg-modal-title">🎁 باقة علاجية جديدة</div><button class="mclose" onclick="closeModal('package-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="pkg-id">
+    <div class="fgrp full"><label class="flbl">العميل *</label><select class="fctl" id="pkg-pat"><option value="">-- اختر عميل --</option></select></div>
+    <div class="fgrp full"><label class="flbl">اسم الباقة *</label><input class="fctl" id="pkg-name" placeholder="مثال: باقة ليزر 6 جلسات"></div>
+    <div class="fgrp"><label class="flbl">الخدمات المضمنة</label><input class="fctl" id="pkg-services" placeholder="ليزر، هيدرافيشل..."></div>
+    <div class="fgrp"><label class="flbl">عدد الجلسات</label><input class="fctl" type="number" id="pkg-sessions-count" placeholder="6"></div>
+    <div class="fgrp"><label class="flbl">السعر الإجمالي (ج)</label><input class="fctl" type="number" id="pkg-price" placeholder="0"></div>
+    <div class="fgrp"><label class="flbl">المدفوع (ج)</label><input class="fctl" type="number" id="pkg-paid" placeholder="0"></div>
+    <div class="fgrp"><label class="flbl">تاريخ البداية</label><input class="fctl" type="date" id="pkg-start"></div>
+    <div class="fgrp"><label class="flbl">تاريخ الانتهاء</label><input class="fctl" type="date" id="pkg-end"></div>
+    <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="pkg-status"><option>نشطة</option><option>معلقة</option><option>منتهية</option></select></div>
+    <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="pkg-notes" placeholder="تفاصيل الباقة..."></textarea></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('package-modal')">إلغاء</button><button class="btn btn-primary" onclick="savePackage()">💾 حفظ الباقة</button></div></div>
+</div>
 <div class="screen" id="screen-doctors">
   <div class="filter-bar">
     <div class="sbox"><span>🔍</span><input type="text" id="doc-search" placeholder="بحث عن طبيب..." oninput="renderDocs()"></div>
@@ -1409,6 +1524,7 @@ function showScreen(id){
   closeSidebar();
   document.getElementById('main-area')?.scrollTo(0,0);
   if(id==='patients')renderPat();
+  if(id==='dashboard'){buildChart();buildDashAlerts();renderTodayAppts();}
   if(id==='appointments')renderAppts();
   if(id==='inventory')renderInv();
   if(id==='invoices')renderInvs();
@@ -1427,6 +1543,9 @@ function showScreen(id){
   if(id==='campaigns')renderCampaigns();
   if(id==='photos')renderPhotos();
   if(id==='accounts')renderAccounts();
+  if(id==='waitlist')renderWaitlist();
+  if(id==='sessions')renderSessions();
+  if(id==='packages')renderPackages();
 }
 
 // MOBILE SIDEBAR
@@ -1477,14 +1596,62 @@ function renderPat(){
   tb.innerHTML=pats.map((p,i)=>`<tr onclick="viewPat('${p.id}')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:9px;"><div class="tdava" style="background:${AVA[i%AVA.length]}">👩</div><div><div style="font-weight:600">${p.name}</div><div style="font-size:11px;color:var(--text-muted)">#C${String(i+1).padStart(3,'0')}</div></div></div></td><td>${p.phone}</td><td><span class="tag tg-gold">${p.skin}</span></td><td style="color:var(--text-muted);font-size:12px">اليوم</td><td><span style="font-weight:700;color:var(--teal)">${p.sessions||0}</span></td><td style="color:${(p.balance||0)>0?'var(--rose)':'var(--emerald)'};font-weight:700">${(p.balance||0).toLocaleString()} ج</td><td><span class="ast ${p.status==='نشط'?'sc':p.status==='قسط'?'sp':'sd'}">${p.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();viewPat('${p.id}')">عرض</button> <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();delPat('${p.id}')">🗑</button></td></tr>`).join('');
   txt('badge-patients',DB.get('patients').length);txt('kpi-pat',DB.get('patients').length);
 }
-function viewPat(id){
+function openPatWA(){
+  const p=DB.get('patients').find(x=>x.id==window._curPat);
+  if(!p){showToast('error','❌ لا يوجد عميل محدد');return;}
+  _waSelectedPat=p;
+  showScreen('whatsapp');
+  renderWAContacts('');
+  selectWAPat(p.id);
+}
+
   const p=DB.get('patients').find(x=>x.id==id);if(!p)return;
   window._curPat=id;
   txt('pp-name',p.name);txt('pp-contact',`📞 ${p.phone}${p.email?' · 📧 '+p.email:''}`);
   txt('pp-meta',`مصدر: ${p.source||'—'} · فرع: ${p.branch||'—'}${p.dob?' · '+age(p.dob)+' سنة':''}`);
   txt('pp-sessions',p.sessions||0);txt('pp-spent',(p.spent||0).toLocaleString()+' ج');
   const balEl=document.getElementById('pp-balance');if(balEl){balEl.textContent=(p.balance||0).toLocaleString()+' ج';balEl.style.color=(p.balance||0)>0?'var(--rose)':'var(--emerald)';}
-  txt('pp-plans','1');
+  const patSessions=DB.get('sessions').filter(s=>s.patId===id);
+  const patPackages=DB.get('packages').filter(pk=>pk.patId===id);
+  txt('pp-plans',patSessions.length+patPackages.length);
+  txt('pp-sessions', p.sessions||patSessions.reduce((s,x)=>s+(x.done||0),0));
+  // Pre-render sessions tab content
+  const sessCont=document.getElementById('pp-sessions-content');
+  if(sessCont){
+    if(!patSessions.length&&!patPackages.length){
+      sessCont.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">لا توجد خطط جلسات بعد</div>';
+    } else {
+      sessCont.innerHTML=patSessions.map(s=>{
+        const done=s.done||0,total=s.total||1,pct=Math.round(done/total*100);
+        const sessArr=Array.from({length:total},(_,i)=>i<done
+          ?`<span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.13);color:var(--emerald)">✅ جلسة ${i+1}</span>`
+          :`<span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(148,163,184,.1);color:var(--text-muted)">○ جلسة ${i+1}</span>`);
+        return`<div style="background:rgba(45,212,191,.07);border:1px solid rgba(45,212,191,.2);border-radius:var(--radius-sm);padding:14px;margin-bottom:11px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+            <span style="font-weight:700">${s.type||'جلسات'} ${s.doc?'· د. '+s.doc:''}</span>
+            <span style="color:var(--teal);font-weight:700">${done}/${total}</span>
+          </div>
+          <div class="prog"><div class="prog-f" style="width:${pct}%;background:var(--teal)"></div></div>
+          <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;">${sessArr.join('')}</div>
+          <div style="display:flex;gap:7px;margin-top:10px;">
+            <button class="btn btn-teal btn-xs" onclick="addSessionProgress('${s.id}')">✅ تسجيل جلسة</button>
+            <span class="ast ${s.status==='مكتملة'?'sc':s.status==='متوقفة'?'sx':'sp'}" style="margin-right:auto">${s.status}</span>
+          </div>
+        </div>`;
+      }).join('')||'';
+    }
+  }
+  // Pre-render packages
+  const pkgCont=document.getElementById('pp-packages-content');
+  if(pkgCont){
+    pkgCont.innerHTML=patPackages.length?patPackages.map(pk=>{
+      const remaining=Math.max(0,(pk.price||0)-(pk.paid||0));
+      return`<div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:13px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-weight:700">${pk.name}</div><div style="font-size:12px;color:var(--text-muted)">${pk.services||''} · ${pk.sessionsCount||0} جلسات</div></div>
+        <div style="text-align:left"><div style="color:var(--gold-light);font-weight:700">${(pk.price||0).toLocaleString()} ج</div>${remaining>0?`<div style="color:var(--rose);font-size:12px">متبقي: ${remaining.toLocaleString()} ج</div>`:''}<span class="ast ${pk.status==='نشطة'?'sc':'sd'}" style="font-size:10px">${pk.status}</span></div>
+      </div>`;
+    }).join(''):'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">لا توجد باقات</div>';
+  }
   const tg=document.getElementById('pp-tags');
   if(tg)tg.innerHTML=`<span class="tag tg-gold">${p.skin}</span><span class="tag tg-teal">${p.hair}</span>${p.allergies&&p.allergies!=='لا حساسية'?'<span class="tag tg-purple">⚠️ حساسية</span>':'<span class="tag tg-green">✅ لا حساسية</span>'}`;
   const sk=document.getElementById('med-skin');
@@ -1499,8 +1666,123 @@ function viewPat(id){
 function age(d){return d?Math.floor((Date.now()-new Date(d))/(365.25*24*3600*1000)):0;}
 function delPat(id){if(confirm('حذف العميل؟')){DB.del('patients',id);renderPat();showToast('info','🗑️ تم حذف العميل');}}
 function deleteCurrentPat(){if(window._curPat){delPat(window._curPat);showScreen('patients');}}
-function exportPat(){showToast('info','📊 جارٍ تصدير قائمة العملاء...');}
-function printProfile(){showToast('info','🖨️ جارٍ إعداد الملف للطباعة...');}
+function exportPat(){
+  const patients = DB.get('patients');
+  if(!patients.length){showToast('warning','⚠️ لا توجد بيانات للتصدير');return;}
+  // Build CSV content
+  const headers = ['الاسم','الهاتف','البريد','نوع البشرة','نوع الشعر','المشاكل الجلدية','الحساسية','المصدر','الفرع','الحالة','الجلسات','الإنفاق (ج)','المديونية (ج)'];
+  const rows = patients.map(p=>[
+    p.name||'',p.phone||'',p.email||'',p.skin||'',p.hair||'',
+    p.skinProbs||'',p.allergies||'',p.source||'',p.branch||'',
+    p.status||'',p.sessions||0,p.spent||0,p.balance||0
+  ]);
+  const csvContent = [headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const bom = '\uFEFF'; // UTF-8 BOM for Arabic in Excel
+  const blob = new Blob([bom+csvContent],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `عملاء-${new Date().toLocaleDateString('en-GB').replace(/\//g,'-')}.csv`;
+  a.click();
+  showToast('success',`✅ تم تصدير ${patients.length} عميل`,`افتح الملف بـ Excel`);
+}
+
+function exportInvoices(){
+  const invoices = DB.get('invoices');
+  if(!invoices.length){showToast('warning','⚠️ لا توجد فواتير للتصدير');return;}
+  const headers = ['#','العميل','التاريخ','الخدمة','الإجمالي (ج)','المدفوع (ج)','المتبقي (ج)','طريقة الدفع','الحالة'];
+  const rows = invoices.map((inv,i)=>[
+    `INV-${String(i+1).padStart(3,'0')}`,inv.patient||'',inv.date||'',
+    inv.service||'',inv.total||0,inv.paid||0,inv.remaining||0,
+    inv.method||'',inv.status||''
+  ]);
+  const bom = '\uFEFF';
+  const csvContent = [headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([bom+csvContent],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `فواتير-${new Date().toLocaleDateString('en-GB').replace(/\//g,'-')}.csv`;
+  a.click();
+  showToast('success',`✅ تم تصدير ${invoices.length} فاتورة`);
+}
+
+function printProfile(){
+  const id = window._curPat;
+  if(!id){showToast('error','❌ لا يوجد عميل محدد');return;}
+  const p = DB.get('patients').find(x=>x.id==id);
+  if(!p){showToast('error','❌ لم يُعثر على العميل');return;}
+  const invs = DB.get('invoices').filter(i=>i.patient===p.name);
+  const sessions = DB.get('sessions').filter(s=>s.patId===id);
+  const packages = DB.get('packages').filter(pk=>pk.patId===id);
+  const clinicName = DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const clinicPhone = DB.obj('settings').phone||'';
+  const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><title>ملف العميل - ${p.name}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Tajawal',sans-serif;background:#fff;color:#1a1a1a;padding:28px;font-size:13px;}
+  .header{display:flex;justify-content:space-between;align-items:start;border-bottom:3px solid #C4A882;padding-bottom:16px;margin-bottom:18px;}
+  .logo{font-size:20px;font-weight:900;color:#C4A882;}
+  h2{font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;}
+  .section{background:#f9f6f2;border-radius:10px;padding:14px;}
+  .row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;font-size:13px;}
+  .row:last-child{border:none;}
+  .row span{color:#666;}
+  table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+  th{background:#f0ece6;padding:8px 10px;text-align:right;font-size:11.5px;font-weight:700;color:#666;border-bottom:2px solid #C4A882;}
+  td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:13px;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+  .badge-green{background:#dcfce7;color:#166534;}
+  .badge-yellow{background:#fef9c3;color:#713f12;}
+  .footer{text-align:center;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:14px;margin-top:20px;}
+  @media print{body{padding:12px;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><div class="logo">💎 ${clinicName}</div><div style="color:#666;font-size:12px;margin-top:3px;">📞 ${clinicPhone}</div></div>
+  <div style="text-align:left;font-size:12px;color:#666;">ملف العميل<br><strong>#C${String(DB.get('patients').findIndex(x=>x.id==id)+1).padStart(3,'0')}</strong><br>${new Date().toLocaleDateString('ar-EG')}</div>
+</div>
+<h2>👤 البيانات الشخصية</h2>
+<div class="grid2">
+  <div class="section">
+    <div class="row"><span>الاسم:</span><strong>${p.name}</strong></div>
+    <div class="row"><span>الهاتف:</span><span>${p.phone}</span></div>
+    <div class="row"><span>البريد:</span><span>${p.email||'—'}</span></div>
+    <div class="row"><span>الفرع:</span><span>${p.branch||'—'}</span></div>
+    <div class="row"><span>المصدر:</span><span>${p.source||'—'}</span></div>
+    <div class="row"><span>الحالة:</span><span>${p.status||'—'}</span></div>
+  </div>
+  <div class="section">
+    <div class="row"><span>نوع البشرة:</span><span>${p.skin||'—'}</span></div>
+    <div class="row"><span>مشاكل البشرة:</span><span>${p.skinProbs||'لا يوجد'}</span></div>
+    <div class="row"><span>نوع الشعر:</span><span>${p.hair||'—'}</span></div>
+    <div class="row"><span>الحساسية:</span><span>${p.allergies||'لا حساسية'}</span></div>
+    <div class="row"><span>أدوية:</span><span>${p.meds||'لا يوجد'}</span></div>
+    <div class="row"><span>الحمل:</span><span>${p.pregnancy||'—'}</span></div>
+  </div>
+</div>
+<div class="grid2" style="margin-bottom:18px;">
+  <div class="section" style="text-align:center;"><div style="font-size:24px;font-weight:900;color:#C4A882">${(p.spent||0).toLocaleString()} ج</div><div style="color:#666;font-size:12px">إجمالي الإنفاق</div></div>
+  <div class="section" style="text-align:center;"><div style="font-size:24px;font-weight:900;color:${(p.balance||0)>0?'#dc2626':'#166534'}">${(p.balance||0).toLocaleString()} ج</div><div style="color:#666;font-size:12px">المديونية</div></div>
+</div>
+${invs.length?`<h2>🧾 الفواتير (${invs.length})</h2>
+<table><thead><tr><th>التاريخ</th><th>الخدمة</th><th>الإجمالي</th><th>المدفوع</th><th>الحالة</th></tr></thead>
+<tbody>${invs.map(i=>`<tr><td>${i.date}</td><td>${i.service}</td><td>${i.total} ج</td><td>${i.paid} ج</td><td><span class="badge ${i.status==='مدفوع'?'badge-green':'badge-yellow'}">${i.status}</span></td></tr>`).join('')}</tbody>
+</table>`:''}
+${sessions.length?`<h2>✨ خطط الجلسات (${sessions.length})</h2>
+<table><thead><tr><th>نوع العلاج</th><th>الطبيب</th><th>المنجز</th><th>الكلي</th><th>الحالة</th></tr></thead>
+<tbody>${sessions.map(s=>`<tr><td>${s.type}</td><td>${s.doc||'—'}</td><td>${s.done||0}</td><td>${s.total}</td><td>${s.status}</td></tr>`).join('')}</tbody>
+</table>`:''}
+<div class="footer">طُبع في: ${new Date().toLocaleString('ar-EG')} | ${clinicName}</div>
+</body></html>`;
+  const w = window.open('','_blank','width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(), 600);
+}
 
 // SAVE PATIENT
 function gv(id){return document.getElementById(id)?.value||'';}
@@ -1878,20 +2160,179 @@ function saveLead(){
 }
 
 // WHATSAPP DEMO
+// ── WhatsApp real patient-linked implementation ──
+let _waSelectedPat = null;
+
 function renderWA(){
-  const c=document.getElementById('wa-contacts');
-  if(c)c.innerHTML=DB.get('patients').slice(0,6).map((p,i)=>`<div class="appt-item" style="padding:11px 14px;cursor:pointer;"><div class="appt-ava" style="background:${AVA[i%AVA.length]};font-size:14px">👩</div><div class="appt-info" style="flex:1"><p style="font-size:13px">${p.name}</p><span style="font-size:11px">موعد قادم...</span></div><div style="font-size:10px;color:var(--text-muted)">${i===0?'الآن':'أمس'}</div></div>`).join('');
+  renderWAContacts('');
 }
 
-// CHART
+function renderWAContacts(q){
+  const c=document.getElementById('wa-contacts');if(!c)return;
+  const pats=DB.get('patients').filter(p=>!q||(p.name.includes(q)||( p.phone&&p.phone.includes(q))));
+  if(!pats.length){c.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">لا يوجد عملاء</div>';return;}
+  c.innerHTML=pats.map((p,i)=>{
+    const nextAppt=DB.get('appointments').filter(a=>a.patient===p.name&&a.date>=new Date().toISOString().split('T')[0]).sort((a,b)=>a.date.localeCompare(b.date))[0];
+    const hasPhone=p.whatsapp||p.phone;
+    return`<div class="appt-item" style="padding:11px 14px;cursor:pointer;border-right:3px solid ${_waSelectedPat?.id===p.id?'var(--teal)':'transparent'};transition:all .15s" onclick="selectWAPat('${p.id}')">
+      <div class="appt-ava" style="background:${AVA[i%AVA.length]};font-size:14px">👩</div>
+      <div class="appt-info" style="flex:1">
+        <p style="font-size:13px">${p.name}</p>
+        <span style="font-size:11px">${hasPhone?'📱 '+hasPhone:'❌ لا يوجد رقم'}</span>
+      </div>
+      ${nextAppt?`<div style="font-size:10px;color:var(--teal);text-align:left">${nextAppt.date}<br>${nextAppt.time}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function selectWAPat(id){
+  _waSelectedPat=DB.get('patients').find(p=>p.id==id);
+  if(!_waSelectedPat)return;
+  const nameEl=document.getElementById('wa-selected-name');
+  const phoneEl=document.getElementById('wa-selected-phone');
+  if(nameEl)nameEl.textContent=_waSelectedPat.name;
+  if(phoneEl)phoneEl.textContent='📱 '+(  _waSelectedPat.whatsapp||_waSelectedPat.phone||'لا يوجد رقم');
+  renderWAContacts(document.getElementById('wa-search')?.value||'');
+  renderWATemplates();
+}
+
+function renderWATemplates(){
+  const tpl=document.getElementById('wa-quick-templates');
+  if(!tpl||!_waSelectedPat)return;
+  const p=_waSelectedPat;
+  const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const nextAppt=DB.get('appointments').filter(a=>a.patient===p.name&&a.date>=new Date().toISOString().split('T')[0]).sort((a,b)=>a.date.localeCompare(b.date))[0];
+  const balance=p.balance||0;
+
+  const templates=[
+    {icon:'📅',title:'تذكير موعد',msg:nextAppt?`مرحباً ${p.name} 😊\nنذكرك بموعدك في ${clinicName}\n📅 التاريخ: ${nextAppt.date}\n⏰ الوقت: ${nextAppt.time}\n💆 الخدمة: ${nextAppt.service||'—'}\n\nنتطلع لرؤيتك 💎`:'لا يوجد موعد قادم'},
+    {icon:'💳',title:'تذكير دفعة',msg:balance>0?`مرحباً ${p.name}\nنود تذكيرك بأن لديك رصيد مستحق قدره ${balance.toLocaleString()} ج\nنرجو التواصل معنا لترتيب السداد 📞\n${clinicName}`:'لا يوجد رصيد مستحق'},
+    {icon:'🎉',title:'عرض خاص',msg:`مرحباً ${p.name} 🌟\nعندنا عرض حصري لعملائنا المميزين!\nتواصلي معنا لمعرفة التفاصيل 💎\n${clinicName}`},
+    {icon:'⭐',title:'طلب تقييم',msg:`مرحباً ${p.name}\nشكراً لزيارتك ${clinicName} 💎\nنتمنى أن تكوني راضية عن خدماتنا\nيسعدنا تقييمك لمساعدتنا على التطور 🙏`},
+    {icon:'🎂',title:'تهنئة',msg:`مرحباً ${p.name} 🎂\nفريق ${clinicName} يهنئك بمناسبة عيد ميلادك\nنتمنى لك عاماً مليئاً بالصحة والسعادة 💝`},
+  ];
+
+  tpl.style.display='flex';
+  tpl.innerHTML=templates.map((t,i)=>`
+    <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:${i===0?'14px':'var(--radius-sm)'};padding:14px;cursor:pointer;transition:all .18s;"
+     onmouseover="this.style.borderColor='rgba(45,212,191,.4)'" onmouseout="this.style.borderColor='var(--glass-border)'"
+     onclick="sendWAMsg('${encodeURIComponent(t.msg)}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-weight:700;font-size:13px;">${t.icon} ${t.title}</div>
+        <button class="btn btn-teal btn-xs">فتح واتساب ↗</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.6;white-space:pre-line;">${t.msg}</div>
+    </div>`).join('');
+
+  const introEl=document.querySelector('#wa-templates > div');
+  if(introEl)introEl.style.display='none';
+}
+
+function getWAPhone(p){
+  if(!p)return null;
+  let ph=(p.whatsapp||p.phone||'').replace(/[\s\-\(\)]/g,'');
+  if(!ph)return null;
+  if(ph.startsWith('0'))ph='2'+ph; // Egypt: 01xx → 201xx
+  if(!ph.startsWith('+'))ph='+'+ph;
+  return ph;
+}
+
+function sendWAMsg(encodedMsg){
+  if(!_waSelectedPat){showToast('warning','⚠️ اختر عميلاً أولاً');return;}
+  const phone=getWAPhone(_waSelectedPat);
+  if(!phone){showToast('error','❌ لا يوجد رقم واتساب لهذا العميل');return;}
+  const msg=decodeURIComponent(encodedMsg);
+  const url=`https://wa.me/${phone.replace('+','')}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+  showToast('success',`✅ فُتح واتساب لـ ${_waSelectedPat.name}`);
+}
+
+function sendWACustom(){
+  const msg=document.getElementById('wa-custom-msg')?.value?.trim();
+  if(!msg){showToast('warning','⚠️ اكتب رسالة أولاً');return;}
+  if(!_waSelectedPat){showToast('warning','⚠️ اختر عميلاً أولاً');return;}
+  sendWAMsg(encodeURIComponent(msg));
+}
+
+function sendWAReminder(){
+  if(!_waSelectedPat){showToast('warning','⚠️ اختر عميلاً أولاً');return;}
+  const p=_waSelectedPat;
+  const nextAppt=DB.get('appointments').filter(a=>a.patient===p.name&&a.date>=new Date().toISOString().split('T')[0]).sort((a,b)=>a.date.localeCompare(b.date))[0];
+  if(!nextAppt){showToast('warning','⚠️ لا يوجد موعد قادم لهذا العميل');return;}
+  const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const msg=`مرحباً ${p.name} 😊\nنذكرك بموعدك في ${clinicName}\n📅 التاريخ: ${nextAppt.date}\n⏰ الوقت: ${nextAppt.time}\n💆 الخدمة: ${nextAppt.service||'—'}\n\nنتطلع لرؤيتك 💎`;
+  sendWAMsg(encodeURIComponent(msg));
+}
+
+function sendWABalance(){
+  if(!_waSelectedPat){showToast('warning','⚠️ اختر عميلاً أولاً');return;}
+  const p=_waSelectedPat;
+  if(!(p.balance>0)){showToast('info','ℹ️ لا يوجد رصيد مستحق لهذا العميل');return;}
+  const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const msg=`مرحباً ${p.name}\nنود تذكيرك بأن لديك رصيد مستحق قدره ${p.balance.toLocaleString()} ج\nنرجو التواصل معنا لترتيب السداد 📞\n${clinicName}`;
+  sendWAMsg(encodeURIComponent(msg));
+}
+
+function sendBulkWAReminders(){
+  const tomorrow=new Date(Date.now()+86400000).toISOString().split('T')[0];
+  const appts=DB.get('appointments').filter(a=>a.date===tomorrow&&a.status==='مؤكد');
+  if(!appts.length){showToast('info','ℹ️ لا توجد مواعيد غداً');return;}
+  const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  let sent=0;
+  appts.forEach(appt=>{
+    const pat=DB.get('patients').find(p=>p.name===appt.patient);
+    const phone=getWAPhone(pat);
+    if(!phone)return;
+    const msg=`مرحباً ${appt.patient} 😊\nنذكرك بموعدك غداً في ${clinicName}\n⏰ الوقت: ${appt.time}\n💆 الخدمة: ${appt.service||'—'}\n💎 في انتظارك`;
+    window.open(`https://wa.me/${phone.replace('+','')}?text=${encodeURIComponent(msg)}`,'_blank');
+    sent++;
+  });
+  showToast('success',`✅ تم فتح ${sent} نافذة واتساب`,'تأكد من السماح بفتح النوافذ المنبثقة');
+}
+
+// CHART — real data from DB
 function buildChart(){
   const chart=document.getElementById('revenue-chart'),labels=document.getElementById('revenue-labels');if(!chart)return;
-  const data=[185000,220000,198000,265000,241000,312800,280000];
-  const months=['ديس','يناير','فبراير','مارس','أبريل','مايو','يونيو'];
-  const max=Math.max(...data);
-  chart.innerHTML=data.map((v,i)=>`<div class="bar" style="background:${i===5?'var(--teal)':'var(--glass-border)'};height:${(v/max*100)}%;min-height:6px;" title="${months[i]}: ${v.toLocaleString()} ج"></div>`).join('');
-  if(labels)labels.innerHTML=months.map((m,i)=>`<div class="blbl" style="flex:1;color:${i===5?'var(--teal)':'var(--text-muted)'}">${m}</div>`).join('');
+  const invoices=DB.get('invoices');
+  // Build last 7 months
+  const now=new Date();
+  const monthsData=[];
+  const monthNames=[];
+  const MN2=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  for(let i=6;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const rev=invoices.filter(inv=>inv.date&&inv.date.startsWith(key)).reduce((s,inv)=>s+(inv.paid||0),0);
+    monthsData.push(rev);
+    monthNames.push(MN2[d.getMonth()].slice(0,3));
+  }
+  const max=Math.max(...monthsData,1);
+  // Update monthly revenue KPI
+  const thisMonthRev=monthsData[6];
+  txt('kpi-mrev',thisMonthRev.toLocaleString());
+  chart.innerHTML=monthsData.map((v,i)=>`<div class="bar" style="background:${i===6?'var(--teal)':'var(--glass-border)'};height:${Math.max(v/max*100,4)}%;min-height:6px;transition:height .5s ease;" title="${monthNames[i]}: ${v.toLocaleString()} ج" onclick="showToast('info','📅 ${monthNames[i]}: '+${v}.toLocaleString()+' ج')"></div>`).join('');
+  if(labels)labels.innerHTML=monthNames.map((m,i)=>`<div class="blbl" style="flex:1;color:${i===6?'var(--teal)':'var(--text-muted)'}">${m}</div>`).join('');
+
+  // Update dashboard service distribution from real invoices
+  updateServiceDistribution();
 }
+
+function updateServiceDistribution(){
+  const invoices=DB.get('invoices');
+  if(!invoices.length)return;
+  const svcCount={};
+  invoices.forEach(inv=>{if(inv.service)svcCount[inv.service]=(svcCount[inv.service]||0)+(inv.paid||0);});
+  const total=Object.values(svcCount).reduce((s,v)=>s+v,0);if(!total)return;
+  const sorted=Object.entries(svcCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const colors=['var(--teal)','var(--purple)','var(--gold)','var(--rose)','var(--amber)'];
+  const container=document.querySelector('#screen-dashboard .g3 .card:last-child > div');
+  if(!container)return;
+  container.innerHTML=sorted.map(([svc,val],i)=>{
+    const pct=Math.round(val/total*100);
+    return`<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>${svc}</span><span style="color:${colors[i]};font-weight:700">${pct}%</span></div><div class="prog"><div class="prog-f" style="width:${pct}%;background:${colors[i]}"></div></div></div>`;
+  }).join('')||container.innerHTML;
+}
+
 
 // ══════════════════════════════════════════
 // 🤖 AI ASSISTANT — FULL IMPLEMENTATION
@@ -2441,8 +2882,120 @@ function exportAll(){
 }
 function clearAll(){if(confirm('⚠️ هذا سيحذف كل البيانات! متأكد؟')){['patients','appointments','inventory','invoices','services','leads'].forEach(k=>DB.set(k,[]));localStorage.removeItem('ha_seeded');showToast('warning','🗑️ تم مسح كل البيانات');init();}}
 
-// SYNC
-function syncData(){
+// ══════════════════════════════════════════
+// 🔔 REAL-TIME DASHBOARD ALERTS
+// ══════════════════════════════════════════
+function buildDashAlerts(){
+  const alerts=[];
+  const today=new Date().toISOString().split('T')[0];
+  const tomorrow=new Date(Date.now()+86400000).toISOString().split('T')[0];
+
+  // Low/out stock
+  const lowStock=DB.get('inventory').filter(i=>i.status==='منخفض'||i.status==='نفذ');
+  lowStock.slice(0,3).forEach(i=>{
+    alerts.push({cls:'ali-w',icon:'📦',title:`${i.name}: ${i.status==='نفذ'?'نفذ من المخزون':'مخزون منخفض'}`,sub:`متبقي ${i.qty} وحدة`,action:()=>showScreen('inventory')});
+  });
+
+  // Overdue installments
+  const overdue=DB.get('invoices').filter(i=>i.remaining>0);
+  if(overdue.length){
+    alerts.push({cls:'ali-d',icon:'💳',title:`${overdue.length} مدفوعات معلقة`,sub:`إجمالي ${overdue.reduce((s,i)=>s+(i.remaining||0),0).toLocaleString()} ج`,action:()=>showScreen('installments')});
+  }
+
+  // Tomorrow appointments reminder
+  const tomorrowAppts=DB.get('appointments').filter(a=>a.date===tomorrow&&a.status==='مؤكد');
+  if(tomorrowAppts.length){
+    alerts.push({cls:'ali-i',icon:'📅',title:`${tomorrowAppts.length} مواعيد غداً بلا تذكير`,sub:'اضغط لإرسال تذكيرات واتساب',action:()=>{showScreen('whatsapp');sendBulkWAReminders();}});
+  }
+
+  // Expiring inventory
+  const expiring=DB.get('inventory').filter(i=>{
+    if(!i.expiry)return false;
+    const diff=(new Date(i.expiry)-new Date())/(1000*60*60*24);
+    return diff>0&&diff<30;
+  });
+  if(expiring.length){
+    alerts.push({cls:'ali-w',icon:'⏰',title:`${expiring.length} منتجات قاربت على الانتهاء`,sub:`خلال 30 يوماً`,action:()=>showScreen('inventory')});
+  }
+
+  // Overdue sessions
+  const incompleteSess=DB.get('sessions').filter(s=>s.status==='جارية');
+  if(incompleteSess.length){
+    alerts.push({cls:'ali-i',icon:'✨',title:`${incompleteSess.length} خطط جلسات جارية`,sub:`${incompleteSess.reduce((s,x)=>s+(x.total-x.done||0),0)} جلسة متبقية`,action:()=>showScreen('sessions')});
+  }
+
+  const el=document.getElementById('dash-alerts');
+  const countEl=document.getElementById('alerts-count');
+  if(countEl)countEl.textContent=alerts.length?`${alerts.length} تنبيهات`:'';
+  if(el){
+    el.innerHTML=alerts.length?alerts.map(a=>`
+      <div class="ali ${a.cls}" style="cursor:${a.action?'pointer':'default'}" onclick="${a.action?'('+a.action.toString()+')()':''}">
+        <div class="ai-ico">${a.icon}</div>
+        <div class="ai-txt"><p>${a.title}</p><span>${a.sub}</span></div>
+      </div>`).join('')
+      :'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">✅ لا توجد تنبيهات الآن</div>';
+  }
+
+  // Update notification dot
+  const dot=document.getElementById('notif-dot');
+  if(dot)dot.style.display=alerts.length?'block':'none';
+
+  // Fill notification dropdown
+  buildNotifList(alerts);
+}
+
+function buildNotifList(alerts){
+  const list=document.getElementById('notif-list');if(!list)return;
+  list.innerHTML=alerts.length?alerts.map(a=>`
+    <div class="ali ${a.cls}" style="margin-bottom:8px;cursor:pointer;" onclick="closeNotifDropdown()">
+      <div class="ai-ico">${a.icon}</div>
+      <div class="ai-txt"><p>${a.title}</p><span>${a.sub}</span></div>
+    </div>`).join('')
+    :'<div style="text-align:center;color:var(--text-muted);padding:16px;font-size:13px">✅ لا توجد إشعارات</div>';
+}
+
+function toggleNotifDropdown(btn){
+  const dd=document.getElementById('notif-dropdown');if(!dd)return;
+  if(dd.style.display==='none'||!dd.style.display){
+    dd.style.display='block';
+    buildDashAlerts();
+    setTimeout(()=>document.addEventListener('click',function rmNd(e){if(!dd.contains(e.target)&&e.target!==btn){dd.style.display='none';document.removeEventListener('click',rmNd);}},100));
+  } else {
+    dd.style.display='none';
+  }
+}
+
+function closeNotifDropdown(){
+  const dd=document.getElementById('notif-dropdown');if(dd)dd.style.display='none';
+}
+
+// ══════════════════════════════════════════
+// 📥 IMPORT DATA (JSON backup)
+// ══════════════════════════════════════════
+function importData(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        const KEYS=['patients','appointments','inventory','invoices','services','leads','expenses','doctors','staff','sessions','packages','installments','suppliers','purchases','transfers','campaigns'];
+        let imported=0;
+        KEYS.forEach(k=>{if(data[k]&&Array.isArray(data[k])){DB.set(k,data[k]);imported++;}});
+        showToast('success',`✅ تم استيراد ${imported} مجموعة بيانات`,'أُعيد تحميل البيانات');
+        init();
+        const as=document.querySelector('.screen.active')?.id?.replace('screen-','');
+        if(as)showScreen(as);
+      }catch(err){
+        showToast('error','❌ فشل استيراد الملف','تأكد أن الملف بصيغة JSON صحيحة');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
   const ic=document.getElementById('sync-icon');if(ic)ic.classList.add('spin');
   setTimeout(()=>{if(ic)ic.classList.remove('spin');showToast('info','💾 البيانات محفوظة محلياً','أعد الإعداد عبر Firebase للمزامنة السحابية');},1200);
 }
@@ -2462,7 +3015,7 @@ function setDate(){const el=document.getElementById('topbar-date');if(el)el.text
 
 // INIT
 function init(){
-  buildChart();renderTodayAppts();loadSettings();setDate();
+  buildChart();renderTodayAppts();loadSettings();setDate();buildDashAlerts();
   const sub=document.getElementById('dash-sub');if(sub)sub.textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · فرع مدينة نصر';
   const low=DB.get('inventory').filter(i=>i.status==='منخفض'||i.status==='نفذ').length;
   txt('badge-stock',low);txt('kpi-stk',low);
@@ -3665,7 +4218,7 @@ window.showScreen = function(id){
 const _origDBGet = DB.get.bind(DB);
 DB.get = function(key){
   const result = _origDBGet(key);
-  if(!result && ['installments','suppliers','purchases','transfers','campaigns','photos'].includes(key)){
+  if(!result && ['installments','suppliers','purchases','transfers','campaigns','photos','waitlist','sessions','packages'].includes(key)){
     return [];
   }
   return result;
@@ -3677,15 +4230,243 @@ DB.push = function(key, item){
   DB.set(key, arr);
 };
 
-// Add session timer to topbar
-const syncBtn = document.querySelector('.sync-btn');
-if(syncBtn){
-  const timer = document.createElement('div');
-  timer.style.cssText='display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:9px;background:var(--glass);border:1px solid var(--glass-border);font-size:11.5px;font-weight:600;color:var(--text-muted);';
-  timer.innerHTML='⏱️ <span id="session-timer">8:00</span>';
-  timer.title='وقت انتهاء الجلسة';
-  timer.onclick = renewSession;
-  timer.style.cursor='pointer';
-  syncBtn.parentElement.insertBefore(timer, syncBtn);
+// ══════════════════════════════════════════
+// ⏳ WAITLIST
+// ══════════════════════════════════════════
+function renderWaitlist(){
+  const tb=document.getElementById('wl-tbody');if(!tb)return;
+  const q=(document.getElementById('wl-search')?.value||'').toLowerCase();
+  const branch=document.getElementById('wl-branch-filter')?.value||'';
+  const today=new Date().toISOString().split('T')[0];
+  let items=DB.get('waitlist');
+  if(q)items=items.filter(w=>w.patName?.toLowerCase().includes(q)||(w.service||'').toLowerCase().includes(q));
+  if(branch)items=items.filter(w=>w.branch===branch);
+  const urgent=items.filter(w=>w.priority==='عاجل'||w.priority==='VIP');
+  const todayAdded=DB.get('waitlist').filter(w=>w.date===today);
+  const converted=DB.get('waitlist').filter(w=>w.converted);
+  txt('wl-kpi-total',DB.get('waitlist').length);
+  txt('wl-kpi-urgent',urgent.length);
+  txt('wl-kpi-today',todayAdded.length);
+  txt('wl-kpi-converted',converted.length);
+  txt('wl-count-lbl',items.length+' عميل');
+  const PCOL={عاجل:'nb-rose',VIP:'nb-amber',عادي:'nb-teal'};
+  tb.innerHTML=items.map(w=>`<tr>
+    <td><div style="font-weight:600;font-size:13px;">${w.patName||'—'}</div><div style="font-size:11px;color:var(--text-muted)">${w.phone||''}</div></td>
+    <td><span class="tag tg-teal" style="font-size:11px;">${w.service||'—'}</span></td>
+    <td style="font-size:12.5px;">${w.branch||'—'}</td>
+    <td><span class="nb ${PCOL[w.priority]||'nb-teal'}" style="font-size:11px;">${w.priority||'عادي'}</span></td>
+    <td style="font-size:12px;color:var(--text-muted)">${w.date||'—'}</td>
+    <td style="font-size:12px;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${w.notes||'—'}</td>
+    <td><div style="display:flex;gap:5px;">
+      <button class="btn btn-teal btn-xs" onclick="convertToAppt('${w.id}')">📅 موعد</button>
+      <button class="btn btn-danger btn-xs" onclick="delWaitlist('${w.id}')">🗑</button>
+    </div></td>
+  </tr>`).join('')||`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">قائمة الانتظار فارغة ✨</td></tr>`;
+}
+function openWaitlistModal(){
+  document.getElementById('wl-id').value='';
+  const sel=document.getElementById('wl-pat');
+  sel.innerHTML=DB.get('patients').map(p=>`<option value="${p.id}" data-name="${p.name}" data-phone="${p.phone||''}">${p.name}</option>`).join('')||'<option>لا يوجد عملاء</option>';
+  document.getElementById('wl-notes').value='';
+  openModal('waitlist-modal');
+}
+function saveWaitlist(){
+  const sel=document.getElementById('wl-pat');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt?.value){showToast('warning','⚠️ اختر عميلاً');return;}
+  const data={patId:opt.value,patName:opt.dataset.name||opt.text,phone:opt.dataset.phone||'',service:gv('wl-service'),branch:gv('wl-branch'),priority:gv('wl-priority'),notes:gv('wl-notes'),date:new Date().toISOString().split('T')[0],converted:false};
+  DB.push('waitlist',data);
+  showToast('success',`✅ تم إضافة ${data.patName} لقائمة الانتظار`);
+  closeModal('waitlist-modal');renderWaitlist();
+}
+function convertToAppt(id){
+  const w=DB.get('waitlist').find(x=>x.id===id);if(!w)return;
+  DB.upd('waitlist',id,{converted:true});
+  showToast('success',`📅 تم تحويل ${w.patName} — أضف الموعد الآن`,'افتح شاشة المواعيد');
+  renderWaitlist();
+}
+function delWaitlist(id){
+  const w=DB.get('waitlist').find(x=>x.id===id);
+  if(confirm(`حذف ${w?.patName||'العميل'} من قائمة الانتظار؟`)){DB.del('waitlist',id);showToast('info','🗑 تم الحذف');renderWaitlist();}
+}
+
+// ══════════════════════════════════════════
+// ✨ SESSIONS (TREATMENT PLANS)
+// ══════════════════════════════════════════
+function renderSessions(){
+  const grid=document.getElementById('sess-grid');if(!grid)return;
+  const q=(document.getElementById('sess-search')?.value||'').toLowerCase();
+  const status=document.getElementById('sess-status-filter')?.value||'';
+  let items=DB.get('sessions');
+  if(q)items=items.filter(s=>s.patName?.toLowerCase().includes(q)||(s.type||'').toLowerCase().includes(q));
+  if(status)items=items.filter(s=>s.status===status);
+  const active=DB.get('sessions').filter(s=>s.status==='جارية');
+  const totalDone=DB.get('sessions').reduce((sum,s)=>sum+(s.done||0),0);
+  const totalRemaining=DB.get('sessions').reduce((sum,s)=>sum+Math.max(0,(s.total||0)-(s.done||0)),0);
+  txt('sess-kpi-active',active.length);
+  txt('sess-kpi-total',DB.get('sessions').length);
+  txt('sess-kpi-done',totalDone);
+  txt('sess-kpi-remaining',totalRemaining);
+  const STATUS_COLOR={جارية:'sc',مكتملة:'nb-teal',متوقفة:'sp'};
+  grid.innerHTML=items.map(s=>{
+    const pct=s.total>0?Math.round((s.done||0)/s.total*100):0;
+    return `<div class="bcard">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+        <div>
+          <div style="font-size:15px;font-weight:800;">${s.patName||'—'}</div>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">✨ ${s.type||'—'} · 👨‍⚕️ ${s.doctor||'—'}</div>
+        </div>
+        <span class="ast ${STATUS_COLOR[s.status]||'sd'}">${s.status}</span>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;">
+          <span style="color:var(--text-muted)">التقدم</span>
+          <span style="font-weight:700;color:var(--teal)">${s.done||0} / ${s.total||0} جلسة</span>
+        </div>
+        <div class="prog"><div class="prog-f" style="background:linear-gradient(90deg,var(--teal),var(--gold));width:${pct}%;"></div></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;text-align:left">${pct}%</div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 ${s.branch||'—'} · 📅 ${s.startDate||'—'}</div>
+      ${s.notes?`<div style="font-size:12px;color:var(--text-secondary);background:var(--glass);border-radius:8px;padding:7px 10px;margin-bottom:10px;">${s.notes}</div>`:''}
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-teal btn-sm" style="flex:1" onclick="addSessionProgress('${s.id}')">✅ +جلسة</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openSessionModal('${s.id}')">✏️ تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="delSession('${s.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">لا توجد خطط جلسات مطابقة</div>';
+}
+function openSessionModal(id){
+  const s=id?DB.get('sessions').find(x=>x.id===id):null;
+  document.getElementById('sess-modal-title').textContent=s?'✏️ تعديل خطة الجلسات':'✨ خطة جلسات جديدة';
+  document.getElementById('sess-id').value=s?s.id:'';
+  const sel=document.getElementById('sess-pat');
+  sel.innerHTML=DB.get('patients').map(p=>`<option value="${p.id}" data-name="${p.name}"${s&&s.patId===p.id?' selected':''}>${p.name}</option>`).join('');
+  const docSel=document.getElementById('sess-doc');
+  docSel.innerHTML=DB.get('doctors').map(d=>`<option${s&&s.doctor===d.name?' selected':''}>${d.name}</option>`).join('')||'<option>د. منى سامي</option>';
+  if(s){
+    document.getElementById('sess-type').value=s.type||'ليزر إزالة شعر';
+    document.getElementById('sess-total-count').value=s.total||6;
+    document.getElementById('sess-done-count').value=s.done||0;
+    document.getElementById('sess-branch').value=s.branch||'مدينة نصر';
+    document.getElementById('sess-start').value=s.startDate||'';
+    document.getElementById('sess-status').value=s.status||'جارية';
+    document.getElementById('sess-notes').value=s.notes||'';
+  } else {
+    document.getElementById('sess-total-count').value=6;
+    document.getElementById('sess-done-count').value=0;
+    document.getElementById('sess-start').value=new Date().toISOString().split('T')[0];
+    document.getElementById('sess-status').value='جارية';
+    document.getElementById('sess-notes').value='';
+  }
+  openModal('session-modal');
+}
+function saveSession(){
+  const sel=document.getElementById('sess-pat');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt?.value){showToast('warning','⚠️ اختر عميلاً');return;}
+  const id=gv('sess-id');
+  const data={patId:opt.value,patName:opt.dataset?.name||opt.text,type:gv('sess-type'),doctor:gv('sess-doc'),total:parseInt(gv('sess-total-count'))||6,done:parseInt(gv('sess-done-count'))||0,branch:gv('sess-branch'),startDate:gv('sess-start'),status:gv('sess-status'),notes:gv('sess-notes')};
+  if(id){DB.upd('sessions',id,data);showToast('success','✅ تم تحديث خطة الجلسات');}
+  else{DB.push('sessions',data);showToast('success',`✅ تم إنشاء خطة جلسات لـ ${data.patName}`);}
+  closeModal('session-modal');renderSessions();
+}
+function addSessionProgress(id){
+  const s=DB.get('sessions').find(x=>x.id===id);if(!s)return;
+  if((s.done||0)>=(s.total||0)){showToast('warning','⚠️ اكتملت كل الجلسات المقررة');return;}
+  const newDone=(s.done||0)+1;
+  const newStatus=newDone>=s.total?'مكتملة':s.status;
+  DB.upd('sessions',id,{done:newDone,status:newStatus});
+  showToast('success',`✅ تم تسجيل الجلسة ${newDone} من ${s.total}`,newStatus==='مكتملة'?'🎉 اكتملت خطة الجلسات!':'');
+  renderSessions();
+}
+function delSession(id){
+  const s=DB.get('sessions').find(x=>x.id===id);
+  if(confirm(`حذف خطة جلسات ${s?.patName||''}؟`)){DB.del('sessions',id);showToast('info','🗑 تم الحذف');renderSessions();}
+}
+
+// ══════════════════════════════════════════
+// 🎁 PACKAGES (TREATMENT BUNDLES)
+// ══════════════════════════════════════════
+function renderPackages(){
+  const grid=document.getElementById('pkg-grid');if(!grid)return;
+  const q=(document.getElementById('pkg-search')?.value||'').toLowerCase();
+  const status=document.getElementById('pkg-status-filter')?.value||'';
+  let items=DB.get('packages');
+  if(q)items=items.filter(p=>p.name?.toLowerCase().includes(q)||p.patName?.toLowerCase().includes(q));
+  if(status)items=items.filter(p=>p.status===status);
+  const active=DB.get('packages').filter(p=>p.status==='نشطة');
+  const revenue=DB.get('packages').reduce((s,p)=>s+(p.paid||0),0);
+  const clients=new Set(DB.get('packages').map(p=>p.patId)).size;
+  txt('pkg-kpi-total',DB.get('packages').length);
+  txt('pkg-kpi-active',active.length);
+  txt('pkg-kpi-revenue',revenue.toLocaleString());
+  txt('pkg-kpi-clients',clients);
+  const SCOL={نشطة:'sc',منتهية:'sd',معلقة:'sp'};
+  grid.innerHTML=items.map(p=>{
+    const remaining=Math.max(0,(p.price||0)-(p.paid||0));
+    return `<div class="bcard">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+        <div>
+          <div style="font-size:15px;font-weight:800;">${p.name||'—'}</div>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">👤 ${p.patName||'—'}</div>
+        </div>
+        <span class="ast ${SCOL[p.status]||'sd'}">${p.status}</span>
+      </div>
+      <div class="g2c" style="gap:8px;margin-bottom:11px;">
+        <div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--gold-light)">${(p.price||0).toLocaleString()}</div><div style="font-size:11px;color:var(--text-muted)">السعر (ج)</div></div>
+        <div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:${remaining>0?'var(--rose)':'var(--emerald)'}">${remaining.toLocaleString()}</div><div style="font-size:11px;color:var(--text-muted)">المتبقي (ج)</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">🎯 ${p.sessionsCount||0} جلسة · 📅 ${p.startDate||'—'} ← ${p.endDate||'—'}</div>
+      ${p.services?`<div style="margin-bottom:8px;"><span class="tag tg-gold" style="font-size:11px;">${p.services}</span></div>`:''}
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openPackageModal('${p.id}')">✏️ تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="delPackage('${p.id}')">🗑 حذف</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">لا توجد باقات مطابقة</div>';
+}
+function openPackageModal(id){
+  const p=id?DB.get('packages').find(x=>x.id===id):null;
+  document.getElementById('pkg-modal-title').textContent=p?'✏️ تعديل الباقة':'🎁 باقة علاجية جديدة';
+  document.getElementById('pkg-id').value=p?p.id:'';
+  const sel=document.getElementById('pkg-pat');
+  sel.innerHTML=DB.get('patients').map(pt=>`<option value="${pt.id}" data-name="${pt.name}"${p&&p.patId===pt.id?' selected':''}>${pt.name}</option>`).join('');
+  if(p){
+    document.getElementById('pkg-name').value=p.name||'';
+    document.getElementById('pkg-services').value=p.services||'';
+    document.getElementById('pkg-sessions-count').value=p.sessionsCount||6;
+    document.getElementById('pkg-price').value=p.price||0;
+    document.getElementById('pkg-paid').value=p.paid||0;
+    document.getElementById('pkg-start').value=p.startDate||'';
+    document.getElementById('pkg-end').value=p.endDate||'';
+    document.getElementById('pkg-status').value=p.status||'نشطة';
+    document.getElementById('pkg-notes').value=p.notes||'';
+  } else {
+    ['pkg-name','pkg-services','pkg-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pkg-sessions-count').value=6;
+    document.getElementById('pkg-price').value='';
+    document.getElementById('pkg-paid').value=0;
+    document.getElementById('pkg-start').value=new Date().toISOString().split('T')[0];
+    document.getElementById('pkg-end').value='';
+    document.getElementById('pkg-status').value='نشطة';
+  }
+  openModal('package-modal');
+}
+function savePackage(){
+  const sel=document.getElementById('pkg-pat');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt?.value){showToast('warning','⚠️ اختر عميلاً');return;}
+  const name=gv('pkg-name').trim();
+  if(!name){showToast('warning','⚠️ اسم الباقة مطلوب');return;}
+  const id=gv('pkg-id');
+  const data={patId:opt.value,patName:opt.dataset?.name||opt.text,name,services:gv('pkg-services'),sessionsCount:parseInt(gv('pkg-sessions-count'))||6,price:parseFloat(gv('pkg-price'))||0,paid:parseFloat(gv('pkg-paid'))||0,startDate:gv('pkg-start'),endDate:gv('pkg-end'),status:gv('pkg-status'),notes:gv('pkg-notes')};
+  if(id){DB.upd('packages',id,data);showToast('success','✅ تم تحديث الباقة');}
+  else{DB.push('packages',data);showToast('success',`✅ تم إنشاء باقة "${name}" لـ ${data.patName}`);}
+  closeModal('package-modal');renderPackages();
+}
+function delPackage(id){
+  const p=DB.get('packages').find(x=>x.id===id);
+  if(confirm(`حذف باقة "${p?.name||''}"؟`)){DB.del('packages',id);showToast('info','🗑 تم الحذف');renderPackages();}
 }
 </script>

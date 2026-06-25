@@ -79,6 +79,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg-primary);color:var(--t
 .sync-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:9px;background:var(--glass);border:1px solid var(--glass-border);font-size:11.5px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all .2s;white-space:nowrap;}
 .sync-btn:hover{background:rgba(45,212,191,.12);color:var(--teal);border-color:rgba(45,212,191,.3);}
 @keyframes spin{to{transform:rotate(360deg);}}
+@keyframes aiPulse{0%,100%{opacity:.3;transform:scale(.85);}50%{opacity:1;transform:scale(1);}}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;animation:aiPulse 1.2s ease-in-out infinite;}
 .spin{animation:spin 1s linear infinite;}
 .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:9px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;white-space:nowrap;}
 .btn-primary{background:linear-gradient(135deg,var(--gold),#9A7050);color:#fff;box-shadow:0 3px 14px rgba(196,168,130,.3);}
@@ -589,22 +591,65 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 
 <!-- AI -->
 <div class="screen" id="screen-ai">
-  <div style="max-width:750px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:24px;"><div style="font-size:44px;margin-bottom:10px;">🤖</div>
-      <h2 style="font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--gold-light),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">المساعد الذكي</h2>
-      <p style="color:var(--text-muted);margin-top:5px;font-size:13px;">تحليل البيانات، اقتراح العلاج، توقع المخزون</p></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
-      <div class="card" style="cursor:pointer;" onclick="askAI('حلل إيرادات هذا الشهر وقدم توصيات')"><div style="font-size:18px;margin-bottom:5px;">📊</div><div style="font-size:13px;font-weight:600;">تحليل الإيرادات</div><div style="font-size:11.5px;color:var(--text-muted);">أداء المبيعات</div></div>
-      <div class="card" style="cursor:pointer;" onclick="askAI('اقترح خطة علاج لعميلة بشرة دهنية وحب شباب')"><div style="font-size:18px;margin-bottom:5px;">💆</div><div style="font-size:13px;font-weight:600;">خطة علاج</div><div style="font-size:11.5px;color:var(--text-muted);">بناءً على الملف الطبي</div></div>
-      <div class="card" style="cursor:pointer;" onclick="askAI('توقع احتياجات المخزون للشهر القادم')"><div style="font-size:18px;margin-bottom:5px;">📦</div><div style="font-size:13px;font-weight:600;">توقع المخزون</div><div style="font-size:11.5px;color:var(--text-muted);">الاحتياجات القادمة</div></div>
-      <div class="card" style="cursor:pointer;" onclick="askAI('ما أفضل أوقات المواعيد وكيف نزيد الحجوزات؟')"><div style="font-size:18px;margin-bottom:5px;">⏰</div><div style="font-size:13px;font-weight:600;">تحسين المواعيد</div><div style="font-size:11.5px;color:var(--text-muted);">تحليل أوقات الذروة</div></div>
+  <div style="max-width:780px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--gold),var(--teal));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🤖</div>
+        <div>
+          <div style="font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--gold-light),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">المساعد الذكي</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">تحليل · توصيات · إجابات فورية</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:6px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--emerald);">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--emerald);display:inline-block;box-shadow:0 0 6px var(--emerald);"></span>
+          متصل
+        </div>
+        <button id="ai-clear-btn" onclick="aiClearChat()" style="display:none;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:10px;padding:6px 14px;color:var(--rose);cursor:pointer;font-size:12px;font-family:'Tajawal',sans-serif;font-weight:600;">🗑 مسح المحادثة</button>
+      </div>
     </div>
-    <div id="ai-chat" style="min-height:180px;max-height:360px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
-      <div style="text-align:center;color:var(--text-muted);font-size:13px;margin:auto;">اختر سؤالاً أو اكتب استفساراً 💬</div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:20px;width:fit-content;">
+      <div id="ai-tab-chat" onclick="aiSwitchTab('chat')" style="padding:7px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--bg-secondary);color:var(--text-primary);box-shadow:0 2px 8px rgba(0,0,0,.25);transition:all .18s;">💬 المحادثة</div>
+      <div id="ai-tab-prompts" onclick="aiSwitchTab('prompts')" style="padding:7px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:all .18s;">✨ اقتراحات</div>
     </div>
-    <div style="display:flex;gap:9px;">
-      <div class="sbox" style="flex:1;"><span>💬</span><input type="text" id="ai-inp" placeholder="اكتب سؤالك..." onkeydown="if(event.key==='Enter')askAI(this.value)"></div>
-      <button class="btn btn-primary" onclick="askAI(document.getElementById('ai-inp').value)">إرسال</button>
+
+    <!-- Prompts Tab -->
+    <div id="ai-panel-prompts" style="display:none;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:20px;"></div>
+
+    <!-- Chat Tab -->
+    <div id="ai-panel-chat">
+      <!-- Messages -->
+      <div id="ai-chat" style="min-height:280px;max-height:480px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;margin-bottom:14px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;">
+        <div id="ai-empty" style="margin:auto;text-align:center;color:var(--text-muted);">
+          <div style="font-size:40px;margin-bottom:12px;">🤖</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:6px;color:#64748B;">كيف يمكنني مساعدتك اليوم؟</div>
+          <div style="font-size:12.5px;">اكتب سؤالك أو اختر من الاقتراحات السريعة</div>
+        </div>
+      </div>
+
+      <!-- Quick chips -->
+      <div id="ai-chips" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;"></div>
+
+      <!-- Input -->
+      <div id="ai-input-wrap" style="display:flex;gap:10px;align-items:flex-end;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px 14px;transition:border-color .18s;"
+        onfocus="this.style.borderColor='rgba(196,168,130,.4)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+        <span style="font-size:20px;flex-shrink:0;padding-bottom:2px;">💬</span>
+        <textarea id="ai-inp" placeholder="اكتب سؤالك هنا... (Enter للإرسال، Shift+Enter لسطر جديد)"
+          rows="1"
+          style="flex:1;background:none;border:none;outline:none;color:var(--text-primary);font-family:'Tajawal',sans-serif;font-size:13.5px;direction:rtl;min-height:28px;max-height:120px;line-height:1.6;resize:none;"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend();}"></textarea>
+        <button id="ai-send-btn" onclick="aiSend()"
+          style="background:rgba(255,255,255,.06);border:none;border-radius:10px;padding:8px 16px;color:#475569;cursor:not-allowed;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;flex-shrink:0;transition:all .18s;">
+          إرسال ↩
+        </button>
+      </div>
+
+      <div style="text-align:center;font-size:11px;color:#334155;margin-top:10px;">المساعد الذكي يعمل بـ Claude AI · البيانات محمية ومشفرة</div>
     </div>
   </div>
 </div>
@@ -1205,28 +1250,222 @@ function buildChart(){
   if(labels)labels.innerHTML=months.map((m,i)=>`<div class="blbl" style="flex:1;color:${i===5?'var(--teal)':'var(--text-muted)'}">${m}</div>`).join('');
 }
 
-// AI
-async function askAI(q){
-  if(!q?.trim())return;
-  const chat=document.getElementById('ai-chat'),inp=document.getElementById('ai-inp');if(!chat)return;
-  chat.innerHTML='';
-  const ud=document.createElement('div');ud.style.cssText='display:flex;justify-content:flex-start;';
-  ud.innerHTML=`<div style="background:linear-gradient(135deg,rgba(196,168,130,.18),rgba(45,212,191,.12));border-radius:12px 12px 12px 2px;padding:10px 13px;max-width:80%;font-size:13px;line-height:1.6;">${q}</div>`;
-  chat.appendChild(ud);
-  const ld=document.createElement('div');ld.style.cssText='display:flex;justify-content:flex-end;';
-  ld.innerHTML='<div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px 12px 2px 12px;padding:10px 13px;font-size:12.5px;color:var(--text-muted);">🤖 يحلل البيانات...</div>';
-  chat.appendChild(ld);chat.scrollTop=chat.scrollHeight;
-  if(inp)inp.value='';
-  const pc=DB.get('patients').length,ac=DB.get('appointments').filter(a=>a.date===new Date().toISOString().split('T')[0]).length,ic=DB.get('inventory').filter(i=>i.status==='منخفض'||i.status==='نفذ').length;
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,system:'أنت مساعد ذكي لعيادة تجميل "عيادات الحياة". أجب بالعربية بشكل مهني ومختصر مع توصيات عملية. لا تذكر أنك Claude.',messages:[{role:'user',content:`بيانات: ${pc} عميل، ${ac} موعد اليوم، ${ic} منتج ناقص، إيرادات الشهر 312,800 ج.\n\nالسؤال: ${q}`}]})});
-    const data=await res.json();ld.remove();
-    const ad=document.createElement('div');ad.style.cssText='display:flex;justify-content:flex-end;';
-    ad.innerHTML=`<div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px 12px 2px 12px;padding:11px 13px;max-width:87%;font-size:13px;line-height:1.75;white-space:pre-wrap;">${data.content?.[0]?.text||'عذراً، تعذر الإجابة.'}</div>`;
-    chat.appendChild(ad);
-  }catch(e){ld.innerHTML='<div style="display:flex;justify-content:flex-end;"><div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:12px;padding:10px 13px;font-size:12.5px;color:var(--rose);">❌ تعذر الاتصال</div></div>';}
-  chat.scrollTop=chat.scrollHeight;
+// ══════════════════════════════════════════
+// 🤖 AI ASSISTANT — FULL IMPLEMENTATION
+// ══════════════════════════════════════════
+const AI_QUICK_PROMPTS = [
+  { icon:'📊', label:'تحليل الإيرادات',    sub:'أداء المبيعات',          q:'حلل إيرادات هذا الشهر (312,800 ج) وقدم توصيات لزيادتها' },
+  { icon:'💆', label:'خطة علاج',            sub:'بناءً على الملف الطبي',  q:'اقترح خطة علاج متكاملة لعميلة بشرة دهنية مع حب شباب وتصبغات' },
+  { icon:'📦', label:'توقع المخزون',        sub:'الاحتياجات القادمة',     q:'توقع احتياجات مخزون عيادة تجميل للشهر القادم بناءً على الخدمات الأكثر طلباً' },
+  { icon:'⏰', label:'تحسين المواعيد',      sub:'تحليل أوقات الذروة',     q:'ما أفضل أوقات المواعيد في عيادة تجميل وكيف نزيد الحجوزات وتقليل الغيابات؟' },
+  { icon:'🎯', label:'تحليل العملاء',       sub:'الاحتفاظ والولاء',       q:'اقترح استراتيجيات للاحتفاظ بعملاء عيادة تجميل وزيادة معدل العودة' },
+  { icon:'💰', label:'تحليل الأرباح',       sub:'الخدمات الأكثر ربحية',   q:'أي خدمات التجميل تحقق أعلى هامش ربح وكيف نركز عليها؟' },
+  { icon:'📣', label:'حملة تسويقية',        sub:'زيادة الحجوزات',         q:'اقترح حملة تسويقية لعيادة تجميل على السوشيال ميديا لشهر رمضان' },
+  { icon:'🩺', label:'بروتوكول الجلسات',   sub:'أفضل الممارسات',         q:'ما البروتوكول الصحيح لجلسات الليزر وكيف نضمن أفضل نتائج للعملاء؟' },
+];
+
+const AI_SYSTEM_PROMPT = `أنت مساعد ذكي متخصص لعيادات الحياة للتجميل. دورك تحليل البيانات وتقديم توصيات عملية ومهنية لمدير العيادة.
+
+قواعد الرد:
+- اجب بالعربية الفصحى البسيطة
+- استخدم الأرقام والنسب المئوية عند الإمكان
+- قدم توصيات عملية وقابلة للتنفيذ
+- استخدم نقاط واضحة ومرتبة
+- لا تذكر أنك نموذج AI
+- ركز على الجانب التجاري والطبي للعيادة`;
+
+// State
+window._aiMessages = [];
+window._aiLoading = false;
+
+function aiGetSystemPrompt(){
+  const pc = DB.get('patients').length;
+  const ac = DB.get('appointments').filter(a=>a.date===new Date().toISOString().split('T')[0]).length;
+  const ic = DB.get('inventory').filter(i=>i.status==='منخفض'||i.status==='نفذ').length;
+  const rev = DB.get('invoices').filter(i=>i.date===new Date().toISOString().split('T')[0]).reduce((s,i)=>s+(i.paid||0),0);
+  return AI_SYSTEM_PROMPT + `\n\nبيانات العيادة الحالية:\n- ${pc} عميل نشط\n- ${ac} مواعيد اليوم\n- إيرادات اليوم: ${rev.toLocaleString()} ج\n- إيرادات الشهر: 312,800 ج\n- ${ic} منتجات مخزون منخفض\n- فرعان: مدينة نصر والمهندسين\n- خدمات رئيسية: هيدرافيشل، ليزر، بوتكس، بلازما، تنظيف بشرة`;
 }
+
+function aiFormatText(text){
+  return text.split('\n').map(line => {
+    if(line.startsWith('**') && line.endsWith('**'))
+      return `<div style="font-weight:700;color:var(--gold-light);margin-top:10px;margin-bottom:3px;">${line.slice(2,-2)}</div>`;
+    if(line.startsWith('- ') || line.startsWith('• '))
+      return `<div style="padding-right:16px;position:relative;margin-bottom:4px;"><span style="position:absolute;right:0;color:var(--teal);">•</span>${line.slice(2)}</div>`;
+    if(/^\d+\./.test(line))
+      return `<div style="padding-right:20px;position:relative;margin-bottom:4px;"><span style="position:absolute;right:0;color:var(--gold-light);font-weight:700;">${line.match(/^\d+/)[0]}.</span>${line.replace(/^\d+\.\s*/,'')}</div>`;
+    if(line === '') return '<div style="height:6px;"></div>';
+    return `<div style="margin-bottom:2px;">${line}</div>`;
+  }).join('');
+}
+
+function aiRenderMessages(){
+  const chat = document.getElementById('ai-chat');
+  if(!chat) return;
+  const empty = document.getElementById('ai-empty');
+  if(empty) empty.style.display = window._aiMessages.length === 0 && !window._aiLoading ? 'block' : 'none';
+
+  // Remove old message nodes (keep empty placeholder)
+  Array.from(chat.querySelectorAll('.ai-msg')).forEach(el => el.remove());
+
+  window._aiMessages.forEach(msg => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg';
+    wrap.style.cssText = `display:flex;justify-content:${msg.role==='user'?'flex-start':'flex-end'};`;
+    if(msg.role === 'user'){
+      wrap.innerHTML = `<div style="max-width:85%;padding:12px 16px;border-radius:14px 14px 14px 3px;background:linear-gradient(135deg,rgba(196,168,130,.18),rgba(45,212,191,.12));border:1px solid rgba(196,168,130,.2);font-size:13.5px;line-height:1.8;color:var(--text-primary);">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11.5px;color:#94A3B8;"><span>👩‍⚕️</span> أنت</div>
+        ${msg.text}
+      </div>`;
+    } else {
+      wrap.innerHTML = `<div style="max-width:85%;padding:12px 16px;border-radius:14px 14px 3px 14px;background:${msg.isError?'rgba(244,63,94,.08)':'rgba(255,255,255,.06)'};border:1px solid ${msg.isError?'rgba(244,63,94,.2)':'rgba(255,255,255,.08)'};font-size:13.5px;line-height:1.8;color:${msg.isError?'var(--rose)':'var(--text-primary)'};">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:11.5px;color:#64748B;"><span>🤖</span> المساعد الذكي</div>
+        ${msg.isError ? msg.text : aiFormatText(msg.text)}
+      </div>`;
+    }
+    chat.appendChild(wrap);
+  });
+
+  // Loading bubble
+  const oldLoader = document.getElementById('ai-loader');
+  if(oldLoader) oldLoader.remove();
+  if(window._aiLoading){
+    const ld = document.createElement('div');
+    ld.id = 'ai-loader';
+    ld.className = 'ai-msg';
+    ld.style.cssText = 'display:flex;justify-content:flex-end;';
+    ld.innerHTML = `<div style="padding:12px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px 14px 3px 14px;font-size:13px;color:#64748B;display:flex;align-items:center;gap:10px;">
+      <div style="display:flex;gap:5px;">
+        <span class="ai-dot" style="animation-delay:0s"></span>
+        <span class="ai-dot" style="animation-delay:0.2s"></span>
+        <span class="ai-dot" style="animation-delay:0.4s"></span>
+      </div>
+      يحلل البيانات...
+    </div>`;
+    chat.appendChild(ld);
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+
+  // Update send button & clear button
+  const btn = document.getElementById('ai-send-btn');
+  const inp = document.getElementById('ai-inp');
+  const clearBtn = document.getElementById('ai-clear-btn');
+  if(btn){
+    const hasText = inp && inp.value.trim().length > 0;
+    const disabled = window._aiLoading || !hasText;
+    btn.disabled = disabled;
+    btn.style.background = disabled ? 'rgba(255,255,255,.06)' : 'linear-gradient(135deg,var(--gold),#9A7050)';
+    btn.style.color = disabled ? '#475569' : '#fff';
+    btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+    btn.style.boxShadow = disabled ? 'none' : '0 3px 14px rgba(196,168,130,.3)';
+    btn.textContent = window._aiLoading ? '⏳' : 'إرسال ↩';
+  }
+  if(clearBtn) clearBtn.style.display = window._aiMessages.length > 0 ? 'block' : 'none';
+}
+
+async function aiSend(q){
+  const inp = document.getElementById('ai-inp');
+  const question = q || (inp ? inp.value.trim() : '');
+  if(!question || window._aiLoading) return;
+  if(inp) { inp.value = ''; inp.style.height = 'auto'; }
+
+  window._aiMessages.push({ role:'user', text: question });
+  window._aiLoading = true;
+  aiRenderMessages();
+
+  try {
+    const history = window._aiMessages.slice(0,-1).map(m => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.text
+    }));
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: aiGetSystemPrompt(),
+        messages: [...history, { role:'user', content: question }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'عذراً، لم أتمكن من الإجابة.';
+    window._aiMessages.push({ role:'assistant', text: reply });
+  } catch(e) {
+    window._aiMessages.push({ role:'assistant', text:'❌ تعذر الاتصال. تحقق من الاتصال بالإنترنت.', isError:true });
+  }
+
+  window._aiLoading = false;
+  aiRenderMessages();
+}
+
+// Old askAI kept as alias for backward compat (dashboard quick buttons)
+function askAI(q){ aiSwitchTab('chat'); aiSend(q); }
+
+function aiClearChat(){
+  window._aiMessages = [];
+  window._aiLoading = false;
+  aiRenderMessages();
+}
+
+function aiSwitchTab(tab){
+  const chat = document.getElementById('ai-panel-chat');
+  const prompts = document.getElementById('ai-panel-prompts');
+  const tChat = document.getElementById('ai-tab-chat');
+  const tPrompts = document.getElementById('ai-tab-prompts');
+  const activeStyle = 'background:var(--bg-secondary);color:var(--text-primary);box-shadow:0 2px 8px rgba(0,0,0,.25);';
+  const inactiveStyle = 'background:transparent;color:var(--text-muted);box-shadow:none;';
+  if(tab === 'chat'){
+    if(chat) chat.style.display = 'block';
+    if(prompts) prompts.style.display = 'none';
+    if(tChat) tChat.style.cssText += activeStyle;
+    if(tPrompts) tPrompts.style.cssText += inactiveStyle;
+  } else {
+    if(chat) chat.style.display = 'none';
+    if(prompts){ prompts.style.display = 'grid'; aiRenderPrompts(); }
+    if(tChat) tChat.style.cssText += inactiveStyle;
+    if(tPrompts) tPrompts.style.cssText += activeStyle;
+  }
+}
+
+function aiRenderPrompts(){
+  const grid = document.getElementById('ai-panel-prompts');
+  if(!grid) return;
+  grid.innerHTML = AI_QUICK_PROMPTS.map(p => `
+    <div onclick="aiSwitchTab('chat');aiSend('${p.q.replace(/'/g,"\\'")}');"
+      style="background:var(--bg-card);border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .22s;"
+      onmouseover="this.style.background='var(--bg-card-hover)';this.style.transform='translateY(-2px)';this.style.borderColor='rgba(196,168,130,.3)';"
+      onmouseout="this.style.background='var(--bg-card)';this.style.transform='translateY(0)';this.style.borderColor='var(--glass-border)';">
+      <div style="font-size:24px;margin-bottom:8px;">${p.icon}</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px;">${p.label}</div>
+      <div style="font-size:11.5px;color:var(--text-muted);">${p.sub}</div>
+    </div>`).join('');
+}
+
+function aiRenderChips(){
+  const chips = document.getElementById('ai-chips');
+  if(!chips) return;
+  chips.innerHTML = AI_QUICK_PROMPTS.slice(0,4).map(p =>
+    `<button onclick="aiSend('${p.q.replace(/'/g,"\\'")}');"
+      style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:5px 13px;color:#94A3B8;cursor:pointer;font-size:12px;font-family:'Tajawal',sans-serif;transition:all .18s;"
+      onmouseover="this.style.borderColor='rgba(196,168,130,.4)';this.style.color='var(--gold-light)';"
+      onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='#94A3B8';">
+      ${p.icon} ${p.label}
+    </button>`).join('');
+}
+
+// Init AI screen on first show
+const _origShowAI = window.showScreen;
+window.showScreen = function(id){
+  _origShowAI(id);
+  if(id === 'ai'){ aiRenderMessages(); aiRenderChips(); }
+};
+
+// Watch input to toggle send button
+document.addEventListener('input', e => {
+  if(e.target.id === 'ai-inp') aiRenderMessages();
+});
 
 // SETTINGS
 function saveSettings(){

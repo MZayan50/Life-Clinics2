@@ -846,8 +846,86 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   </div></div>
   <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('staff-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveStaff()">💾 حفظ</button></div></div>
 </div>
-<div class="screen" id="screen-payments"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">💳</div><h3>المدفوعات</h3></div></div>
-<div class="screen" id="screen-installments"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">📆</div><h3>الأقساط</h3></div></div>
+<div class="screen" id="screen-payments">
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">💵</div><div class="kpi-value" id="pay-kpi-total">0</div><div class="kpi-label">إجمالي المحصل (ج)</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">📅</div><div class="kpi-value" id="pay-kpi-today">0</div><div class="kpi-label">محصل اليوم (ج)</div></div>
+    <div class="kpi-card kc-gold"><div class="kpi-icon">💳</div><div class="kpi-value" id="pay-kpi-visa">0</div><div class="kpi-label">فيزا (ج)</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">💵</div><div class="kpi-value" id="pay-kpi-cash">0</div><div class="kpi-label">كاش (ج)</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">📱</div><div class="kpi-value" id="pay-kpi-transfer">0</div><div class="kpi-label">تحويل إلكتروني (ج)</div></div>
+  </div>
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث بالعميل أو الخدمة..." oninput="renderPayments(this.value)"></div>
+    <select class="selbox" id="pay-method-filter" onchange="renderPayments()"><option value="">كل طرق الدفع</option><option>كاش</option><option>فيزا</option><option>إنستاباي</option><option>فودافون</option><option>تحويل</option></select>
+    <input type="date" class="selbox" id="pay-date-filter" onchange="renderPayments()">
+    <button class="btn btn-ghost btn-sm" onclick="showToast('info','📊 جارٍ التصدير...')">📊 تصدير</button>
+  </div>
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">سجل المدفوعات</div>
+      <span class="card-sub" id="pay-count-lbl">0 عملية</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>العميل</th><th>الخدمة</th><th>المبلغ</th><th>طريقة الدفع</th><th>التاريخ</th><th>المرجع</th><th>الحالة</th></tr></thead>
+        <tbody id="pay-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="screen" id="screen-installments">
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-amber"><div class="kpi-icon">📆</div><div class="kpi-value" id="inst-kpi-total">0</div><div class="kpi-label">إجمالي الأقساط المتبقية (ج)</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">⚠️</div><div class="kpi-value" id="inst-kpi-overdue">0</div><div class="kpi-label">أقساط متأخرة</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">✅</div><div class="kpi-value" id="inst-kpi-paid">0</div><div class="kpi-label">مكتملة هذا الشهر</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">👥</div><div class="kpi-value" id="inst-kpi-clients">0</div><div class="kpi-label">عملاء بأقساط</div></div>
+  </div>
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث بالعميل..." oninput="renderInstallments(this.value)"></div>
+    <select class="selbox" id="inst-status-filter" onchange="renderInstallments()"><option value="">كل الحالات</option><option value="نشط">نشط</option><option value="متأخر">متأخر</option><option value="مكتمل">مكتمل</option></select>
+    <button class="btn btn-primary" onclick="openInstModal()">+ قسط جديد</button>
+  </div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-hdr"><div class="card-title">📆 خطط الأقساط النشطة</div><span class="card-sub" id="inst-count-lbl">0 خطة</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>العميل</th><th>الخدمة</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الأقساط</th><th>القسط القادم</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="inst-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">📋 سجل مدفوعات الأقساط</div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>العميل</th><th>القسط</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+        <tbody id="inst-log-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="installment-modal">
+  <div class="modal" style="max-width:540px">
+    <div class="mhdr"><div class="mtitle" id="inst-modal-title">📆 إضافة خطة أقساط</div><button class="mclose" onclick="closeModal('installment-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fg">
+        <input type="hidden" id="inst-edit-id">
+        <div class="fgrp"><label class="flbl">العميل *</label><select class="fctl" id="inst-pat"><option value="">-- اختر عميل --</option></select></div>
+        <div class="fgrp"><label class="flbl">الخدمة</label><select class="fctl" id="inst-svc"><option>هيدرافيشل</option><option>ليزر شعر</option><option>بوتكس</option><option>بلازما</option><option>باقة ليزر كاملة</option></select></div>
+        <div class="fgrp"><label class="flbl">إجمالي المبلغ (ج) *</label><input class="fctl" type="number" id="inst-total" placeholder="0" oninput="calcInstPlan()"></div>
+        <div class="fgrp"><label class="flbl">المقدم (ج)</label><input class="fctl" type="number" id="inst-down" placeholder="0" oninput="calcInstPlan()"></div>
+        <div class="fgrp"><label class="flbl">عدد الأقساط</label><select class="fctl" id="inst-count-sel" onchange="calcInstPlan()"><option value="2">2 قسط</option><option value="3">3 أقساط</option><option value="4">4 أقساط</option><option value="6">6 أقساط</option><option value="12">12 قسط</option></select></div>
+        <div class="fgrp"><label class="flbl">تاريخ البداية</label><input class="fctl" type="date" id="inst-start"></div>
+      </div>
+      <div style="background:rgba(45,212,191,.07);border:1px solid rgba(45,212,191,.2);border-radius:var(--radius-sm);padding:13px;margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;"><span style="color:var(--text-muted)">المتبقي بعد المقدم:</span><span id="inst-preview-remain" style="font-weight:700">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;border-top:1px solid rgba(45,212,191,.2);padding-top:8px;"><span>قيمة كل قسط:</span><span style="color:var(--teal)" id="inst-preview-each">—</span></div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('installment-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveInstallment()">💾 إنشاء الخطة</button></div>
+  </div>
+</div>
 <div class="screen" id="screen-expenses">
   <div class="filter-bar">
     <div class="sbox"><span>🔍</span><input type="text" id="exp-search" placeholder="بحث عن مصروف..." oninput="renderExpenses()"></div>
@@ -877,12 +955,254 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('expense-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveExp()">💾 حفظ</button></div></div>
 </div>
 <div class="screen" id="screen-treasury"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🏦</div><h3>الخزينة</h3></div></div>
-<div class="screen" id="screen-accounts"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">📊</div><h3>الحسابات الكاملة</h3></div></div>
-<div class="screen" id="screen-suppliers"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🚚</div><h3>الموردون</h3></div></div>
-<div class="screen" id="screen-purchases"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🛒</div><h3>المشتريات</h3></div></div>
-<div class="screen" id="screen-transfers"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🔄</div><h3>تحويل المخزون</h3></div></div>
-<div class="screen" id="screen-campaigns"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">📣</div><h3>الحملات الإعلانية</h3></div></div>
-<div class="screen" id="screen-photos"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">📸</div><h3>الصور الطبية</h3><p style="color:var(--text-muted)">قبل وبعد · مقارنة · أرشفة</p></div></div>
+<div class="screen" id="screen-accounts">
+  <div style="margin-bottom:18px;">
+    <h2 style="font-size:17px;font-weight:800;">📊 الحسابات الكاملة</h2>
+    <p style="font-size:12.5px;color:var(--text-muted)" id="acc-period-lbl"></p>
+  </div>
+  <div class="tabs" style="margin-bottom:18px;" id="acc-tabs">
+    <div class="tab active" onclick="stab(this,'acc-tabs','acc-pl')">الأرباح والخسائر</div>
+    <div class="tab" onclick="stab(this,'acc-tabs','acc-bs')">الميزانية العمومية</div>
+    <div class="tab" onclick="stab(this,'acc-tabs','acc-cf')">التدفق النقدي</div>
+  </div>
+  <div id="acc-pl">
+    <div class="g2c" style="gap:16px;margin-bottom:16px;">
+      <div class="card" style="border-right:3px solid var(--emerald);">
+        <div class="card-hdr"><div class="card-title" style="color:var(--emerald)">📈 الإيرادات</div></div>
+        <div id="acc-revenues" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div style="border-top:1px solid var(--glass-border);padding-top:10px;margin-top:10px;display:flex;justify-content:space-between;font-weight:800;font-size:15px;">
+          <span>إجمالي الإيرادات</span><span style="color:var(--emerald)" id="acc-total-revenue">0 ج</span>
+        </div>
+      </div>
+      <div class="card" style="border-right:3px solid var(--rose);">
+        <div class="card-hdr"><div class="card-title" style="color:var(--rose)">📉 المصروفات</div></div>
+        <div id="acc-expenses-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div style="border-top:1px solid var(--glass-border);padding-top:10px;margin-top:10px;display:flex;justify-content:space-between;font-weight:800;font-size:15px;">
+          <span>إجمالي المصروفات</span><span style="color:var(--rose)" id="acc-total-expense">0 ج</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,rgba(45,212,191,.07),rgba(196,168,130,.05));border-color:rgba(45,212,191,.2);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">صافي الربح / الخسارة</div>
+          <div style="font-size:32px;font-weight:900;" id="acc-net-profit">0 ج</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">هامش الربح</div>
+          <div style="font-size:28px;font-weight:900;color:var(--teal);" id="acc-margin">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="acc-bs" style="display:none;">
+    <div class="g2c" style="gap:16px;">
+      <div class="card"><div class="card-hdr"><div class="card-title">الأصول</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text-muted)">النقدية في الخزينة</span><span id="bs-cash" style="font-weight:700">0 ج</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text-muted)">قيمة المخزون</span><span id="bs-inventory" style="font-weight:700">0 ج</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text-muted)">ذمم مدينة (أقساط)</span><span id="bs-receivables" style="font-weight:700;color:var(--amber)">0 ج</span></div>
+          <div style="border-top:1px solid var(--glass-border);padding-top:8px;display:flex;justify-content:space-between;font-weight:800;"><span>إجمالي الأصول</span><span style="color:var(--emerald)" id="bs-total-assets">0 ج</span></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-hdr"><div class="card-title">الخصوم وحقوق الملكية</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text-muted)">مستحقات موردين</span><span id="bs-suppliers" style="font-weight:700;color:var(--rose)">0 ج</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text-muted)">رواتب مستحقة</span><span id="bs-salaries" style="font-weight:700;color:var(--rose)">0 ج</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--text-muted)">صافي حقوق الملكية</span><span id="bs-equity" style="font-weight:700;color:var(--teal)">0 ج</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="acc-cf" style="display:none;">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">التدفق النقدي الشهري</div></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>الشهر</th><th>الوارد</th><th>الصادر</th><th>الصافي</th><th>الرصيد التراكمي</th></tr></thead>
+        <tbody id="cf-tbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+<div class="screen" id="screen-suppliers">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث عن مورد..." oninput="renderSuppliers(this.value)"></div>
+    <select class="selbox" id="sup-status-filter" onchange="renderSuppliers()"><option value="">كل الحالات</option><option value="نشط">نشط</option><option value="غير نشط">غير نشط</option></select>
+    <button class="btn btn-primary" onclick="openSupplierModal()">+ مورد جديد</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:14px;">
+    <div class="kpi-card kc-teal"><div class="kpi-icon">🚚</div><div class="kpi-value" id="sup-kpi-total">0</div><div class="kpi-label">إجمالي الموردين</div></div>
+    <div class="kpi-card kc-gold"><div class="kpi-icon">💰</div><div class="kpi-value" id="sup-kpi-owed">0</div><div class="kpi-label">مستحقات لهم (ج)</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">📦</div><div class="kpi-value" id="sup-kpi-orders">0</div><div class="kpi-label">طلبات هذا الشهر</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">قائمة الموردين</div><span class="card-sub" id="sup-count-lbl">0 مورد</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>المورد</th><th>الفئة</th><th>الهاتف</th><th>البريد</th><th>شروط الدفع</th><th>المستحقات</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="sup-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="supplier-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="mhdr"><div class="mtitle" id="sup-modal-title">🚚 مورد جديد</div><button class="mclose" onclick="closeModal('supplier-modal')">✕</button></div>
+    <div class="mbody"><div class="fg">
+      <input type="hidden" id="sup-id">
+      <div class="fgrp full"><label class="flbl">اسم المورد *</label><input class="fctl" id="sup-name" placeholder="اسم الشركة أو المورد"></div>
+      <div class="fgrp"><label class="flbl">الفئة</label><select class="fctl" id="sup-cat"><option>مستحضرات بشرة</option><option>أجهزة طبية</option><option>مستلزمات ليزر</option><option>حقن وأدوية</option><option>مستلزمات عامة</option></select></div>
+      <div class="fgrp"><label class="flbl">الهاتف</label><input class="fctl" id="sup-phone" placeholder="01X-XXX-XXXX"></div>
+      <div class="fgrp"><label class="flbl">البريد الإلكتروني</label><input class="fctl" id="sup-email" placeholder="supplier@company.com"></div>
+      <div class="fgrp"><label class="flbl">المسؤول</label><input class="fctl" id="sup-contact" placeholder="اسم مندوب المبيعات"></div>
+      <div class="fgrp"><label class="flbl">شروط الدفع</label><select class="fctl" id="sup-terms"><option>فوري</option><option>30 يوم</option><option>60 يوم</option><option>90 يوم</option></select></div>
+      <div class="fgrp"><label class="flbl">المستحقات (ج)</label><input class="fctl" type="number" id="sup-owed" placeholder="0"></div>
+      <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="sup-status"><option>نشط</option><option>غير نشط</option></select></div>
+      <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="sup-notes" placeholder="أي ملاحظات إضافية..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('supplier-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveSupplier()">💾 حفظ</button></div>
+  </div>
+</div>
+<div class="screen" id="screen-purchases">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث عن طلب شراء..." oninput="renderPurchases(this.value)"></div>
+    <select class="selbox" id="pur-status-filter" onchange="renderPurchases()"><option value="">كل الحالات</option><option value="معلق">معلق</option><option value="موافق عليه">موافق عليه</option><option value="مستلم">مستلم</option><option value="ملغي">ملغي</option></select>
+    <button class="btn btn-primary" onclick="openPurchaseModal()">+ طلب شراء</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:14px;">
+    <div class="kpi-card kc-amber"><div class="kpi-icon">🛒</div><div class="kpi-value" id="pur-kpi-pending">0</div><div class="kpi-label">طلبات معلقة</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="pur-kpi-received">0</div><div class="kpi-label">مستلمة هذا الشهر</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">💰</div><div class="kpi-value" id="pur-kpi-total">0</div><div class="kpi-label">إجمالي المشتريات (ج)</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">طلبات الشراء</div><span class="card-sub" id="pur-count-lbl">0 طلب</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>المنتج</th><th>المورد</th><th>الكمية</th><th>السعر الإجمالي</th><th>تاريخ الطلب</th><th>تاريخ التسليم</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="pur-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="purchase-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="mhdr"><div class="mtitle" id="pur-modal-title">🛒 طلب شراء جديد</div><button class="mclose" onclick="closeModal('purchase-modal')">✕</button></div>
+    <div class="mbody"><div class="fg">
+      <input type="hidden" id="pur-id">
+      <div class="fgrp full"><label class="flbl">المنتج *</label><input class="fctl" id="pur-product" placeholder="اسم المنتج أو المادة"></div>
+      <div class="fgrp"><label class="flbl">المورد</label><select class="fctl" id="pur-supplier"><option value="">-- اختر مورد --</option></select></div>
+      <div class="fgrp"><label class="flbl">الكمية</label><input class="fctl" type="number" id="pur-qty" placeholder="0" oninput="calcPurTotal()"></div>
+      <div class="fgrp"><label class="flbl">سعر الوحدة (ج)</label><input class="fctl" type="number" id="pur-unit-price" placeholder="0" oninput="calcPurTotal()"></div>
+      <div class="fgrp"><label class="flbl">تاريخ الطلب</label><input class="fctl" type="date" id="pur-order-date"></div>
+      <div class="fgrp"><label class="flbl">تاريخ التسليم المتوقع</label><input class="fctl" type="date" id="pur-delivery-date"></div>
+      <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="pur-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+      <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="pur-status"><option>معلق</option><option>موافق عليه</option><option>مستلم</option><option>ملغي</option></select></div>
+    </div>
+    <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:11px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="color:var(--text-muted);font-size:13px;">الإجمالي:</span>
+      <span id="pur-total-preview" style="font-weight:800;font-size:16px;color:var(--gold-light)">0 ج</span>
+    </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('purchase-modal')">إلغاء</button><button class="btn btn-primary" onclick="savePurchase()">💾 إرسال الطلب</button></div>
+  </div>
+</div>
+<div class="screen" id="screen-transfers">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث عن تحويل..." oninput="renderTransfers(this.value)"></div>
+    <select class="selbox" id="tr-status-filter" onchange="renderTransfers()"><option value="">كل الحالات</option><option value="معلق">معلق</option><option value="مكتمل">مكتمل</option></select>
+    <button class="btn btn-primary" onclick="openTransferModal()">+ تحويل جديد</button>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">🔄 سجل تحويلات المخزون</div><span class="card-sub" id="tr-count-lbl">0 تحويل</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>المنتج</th><th>من</th><th>إلى</th><th>الكمية</th><th>التاريخ</th><th>الموظف</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="tr-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="transfer-modal">
+  <div class="modal" style="max-width:480px">
+    <div class="mhdr"><div class="mtitle">🔄 تحويل مخزون</div><button class="mclose" onclick="closeModal('transfer-modal')">✕</button></div>
+    <div class="mbody"><div class="fg">
+      <input type="hidden" id="tr-id">
+      <div class="fgrp full"><label class="flbl">المنتج *</label><select class="fctl" id="tr-product"><option value="">-- اختر منتج --</option></select></div>
+      <div class="fgrp"><label class="flbl">من فرع</label><select class="fctl" id="tr-from"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+      <div class="fgrp"><label class="flbl">إلى فرع</label><select class="fctl" id="tr-to"><option>المهندسين</option><option>مدينة نصر</option></select></div>
+      <div class="fgrp"><label class="flbl">الكمية *</label><input class="fctl" type="number" id="tr-qty" placeholder="0"></div>
+      <div class="fgrp"><label class="flbl">التاريخ</label><input class="fctl" type="date" id="tr-date"></div>
+      <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="tr-notes" placeholder="سبب التحويل..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('transfer-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveTransfer()">🔄 تنفيذ التحويل</button></div>
+  </div>
+</div>
+<div class="screen" id="screen-campaigns">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث عن حملة..." oninput="renderCampaigns(this.value)"></div>
+    <select class="selbox" id="camp-status-filter" onchange="renderCampaigns()"><option value="">كل الحالات</option><option value="نشطة">نشطة</option><option value="منتهية">منتهية</option><option value="مجدولة">مجدولة</option></select>
+    <button class="btn btn-primary" onclick="openCampaignModal()">+ حملة جديدة</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-purple"><div class="kpi-icon">📣</div><div class="kpi-value" id="camp-kpi-active">0</div><div class="kpi-label">حملات نشطة</div></div>
+    <div class="kpi-card kc-gold"><div class="kpi-icon">💰</div><div class="kpi-value" id="camp-kpi-budget">0</div><div class="kpi-label">إجمالي الميزانية (ج)</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">🎯</div><div class="kpi-value" id="camp-kpi-leads">0</div><div class="kpi-label">عملاء محتملون</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">📈</div><div class="kpi-value" id="camp-kpi-conversion">0%</div><div class="kpi-label">نسبة التحويل</div></div>
+  </div>
+  <div id="camp-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+</div>
+
+<div class="modal-overlay" id="campaign-modal">
+  <div class="modal" style="max-width:560px">
+    <div class="mhdr"><div class="mtitle" id="camp-modal-title">📣 حملة إعلانية جديدة</div><button class="mclose" onclick="closeModal('campaign-modal')">✕</button></div>
+    <div class="mbody"><div class="fg">
+      <input type="hidden" id="camp-id">
+      <div class="fgrp full"><label class="flbl">اسم الحملة *</label><input class="fctl" id="camp-name" placeholder="مثال: حملة رمضان - ليزر 50%"></div>
+      <div class="fgrp"><label class="flbl">القناة</label><select class="fctl" id="camp-channel"><option>إنستجرام</option><option>فيسبوك</option><option>واتساب</option><option>SMS</option><option>إيميل</option><option>جوجل</option></select></div>
+      <div class="fgrp"><label class="flbl">الهدف</label><select class="fctl" id="camp-goal"><option>زيادة الحجوزات</option><option>ترويج خدمة</option><option>استقطاب عملاء جدد</option><option>ولاء العملاء</option></select></div>
+      <div class="fgrp"><label class="flbl">الميزانية (ج)</label><input class="fctl" type="number" id="camp-budget" placeholder="0"></div>
+      <div class="fgrp"><label class="flbl">العملاء المحتملون</label><input class="fctl" type="number" id="camp-leads-count" placeholder="0"></div>
+      <div class="fgrp"><label class="flbl">تاريخ البداية</label><input class="fctl" type="date" id="camp-start"></div>
+      <div class="fgrp"><label class="flbl">تاريخ النهاية</label><input class="fctl" type="date" id="camp-end"></div>
+      <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="camp-status"><option>مجدولة</option><option>نشطة</option><option>منتهية</option></select></div>
+      <div class="fgrp full"><label class="flbl">وصف الحملة</label><textarea class="fctl ta" id="camp-desc" placeholder="تفاصيل الحملة والعرض..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('campaign-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveCampaign()">💾 حفظ الحملة</button></div>
+  </div>
+</div>
+<div class="screen" id="screen-photos">
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث بالعميل أو الخدمة..." oninput="renderPhotos(this.value)"></div>
+    <select class="selbox" id="photo-cat-filter" onchange="renderPhotos()"><option value="">كل الخدمات</option><option>ليزر</option><option>بوتكس</option><option>هيدرافيشل</option><option>بلازما</option></select>
+    <button class="btn btn-primary" onclick="openPhotoModal()">📸 إضافة صور</button>
+  </div>
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-teal"><div class="kpi-icon">📷</div><div class="kpi-value" id="photo-kpi-total">0</div><div class="kpi-label">إجمالي الصور</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">👥</div><div class="kpi-value" id="photo-kpi-patients">0</div><div class="kpi-label">عملاء لديهم صور</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✨</div><div class="kpi-value" id="photo-kpi-pairs">0</div><div class="kpi-label">مقارنات قبل/بعد</div></div>
+  </div>
+  <div id="photo-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+</div>
+
+<div class="modal-overlay" id="photo-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="mhdr"><div class="mtitle">📸 إضافة صور قبل/بعد</div><button class="mclose" onclick="closeModal('photo-modal')">✕</button></div>
+    <div class="mbody"><div class="fg">
+      <input type="hidden" id="photo-id">
+      <div class="fgrp"><label class="flbl">العميل *</label><select class="fctl" id="photo-pat"><option value="">-- اختر عميل --</option></select></div>
+      <div class="fgrp"><label class="flbl">الخدمة</label><select class="fctl" id="photo-svc"><option>ليزر إزالة شعر</option><option>بوتكس</option><option>هيدرافيشل</option><option>بلازما</option><option>تنظيف بشرة</option></select></div>
+      <div class="fgrp"><label class="flbl">التاريخ</label><input class="fctl" type="date" id="photo-date"></div>
+      <div class="fgrp"><label class="flbl">رقم الجلسة</label><input class="fctl" type="number" id="photo-session" placeholder="1" min="1"></div>
+      <div class="fgrp full"><label class="flbl">صورة قبل (رابط أو اسم ملف)</label><input class="fctl" id="photo-before" placeholder="before.jpg"></div>
+      <div class="fgrp full"><label class="flbl">صورة بعد (رابط أو اسم ملف)</label><input class="fctl" id="photo-after" placeholder="after.jpg"></div>
+      <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="photo-notes" placeholder="تفاصيل النتيجة..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('photo-modal')">إلغاء</button><button class="btn btn-primary" onclick="savePhoto()">📸 حفظ الصور</button></div>
+  </div>
+</div>
 
 </main>
 <!-- MODALS -->
@@ -1099,6 +1419,14 @@ function showScreen(id){
   if(id==='leads')renderLeads();
   if(id==='calendar')buildCal();
   if(id==='whatsapp')renderWA();
+  if(id==='payments')renderPayments();
+  if(id==='installments')renderInstallments();
+  if(id==='suppliers')renderSuppliers();
+  if(id==='purchases'){renderPurchases();fillPurchaseSuppliers();}
+  if(id==='transfers')renderTransfers();
+  if(id==='campaigns')renderCampaigns();
+  if(id==='photos')renderPhotos();
+  if(id==='accounts')renderAccounts();
 }
 
 // MOBILE SIDEBAR
@@ -2769,6 +3097,585 @@ document.querySelector('.user-card')?.addEventListener('click', function(){
   document.body.appendChild(menu);
   setTimeout(()=>document.addEventListener('click',function rm(e){if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',rm);}},100));
 });
+
+// ══════════════════════════════════════════
+// 💳 PAYMENTS SCREEN
+// ══════════════════════════════════════════
+function renderPayments(q){
+  q = q || (document.getElementById('pay-search')?.value||'').toLowerCase();
+  const method = document.getElementById('pay-method-filter')?.value||'';
+  const dateFilter = document.getElementById('pay-date-filter')?.value||'';
+  let invs = DB.get('invoices').filter(i => i.paid > 0);
+  if(q) invs = invs.filter(i => i.patient.includes(q) || (i.service||'').includes(q));
+  if(method) invs = invs.filter(i => i.method === method);
+  if(dateFilter) invs = invs.filter(i => i.date === dateFilter);
+  invs = [...invs].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  const all = DB.get('invoices').filter(i=>i.paid>0);
+  const today = new Date().toISOString().split('T')[0];
+  const todayTotal = all.filter(i=>i.date===today).reduce((s,i)=>s+(i.paid||0),0);
+  const visa = all.filter(i=>i.method==='فيزا').reduce((s,i)=>s+(i.paid||0),0);
+  const cash = all.filter(i=>i.method==='كاش').reduce((s,i)=>s+(i.paid||0),0);
+  const transfer = all.filter(i=>['إنستاباي','فودافون','تحويل'].includes(i.method)).reduce((s,i)=>s+(i.paid||0),0);
+
+  txt('pay-kpi-total', all.reduce((s,i)=>s+(i.paid||0),0).toLocaleString()+' ج');
+  txt('pay-kpi-today', todayTotal.toLocaleString()+' ج');
+  txt('pay-kpi-visa', visa.toLocaleString()+' ج');
+  txt('pay-kpi-cash', cash.toLocaleString()+' ج');
+  txt('pay-kpi-transfer', transfer.toLocaleString()+' ج');
+  txt('pay-count-lbl', invs.length+' عملية');
+
+  const PAY_ICONS = {'كاش':'💵','فيزا':'💳','إنستاباي':'📱','فودافون':'📱','تحويل':'🏦','أقساط':'📆'};
+  const tb = document.getElementById('pay-tbody'); if(!tb) return;
+  tb.innerHTML = invs.map((inv,i)=>`<tr>
+    <td style="font-size:11px;color:var(--gold-light);font-weight:700">#PAY-${String(i+1).padStart(3,'0')}</td>
+    <td style="font-weight:600">${inv.patient}</td>
+    <td style="font-size:12px">${inv.service||'—'}</td>
+    <td style="font-weight:800;color:var(--emerald)">${(inv.paid||0).toLocaleString()} ج</td>
+    <td><span class="tag tg-teal">${PAY_ICONS[inv.method]||'💰'} ${inv.method||'—'}</span></td>
+    <td style="font-size:12px;color:var(--text-muted)">${inv.date||'—'}</td>
+    <td style="font-size:11px;color:var(--text-muted)">#INV-${String(i+1).padStart(3,'0')}</td>
+    <td><span class="ast sc">مكتمل</span></td>
+  </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد مدفوعات</td></tr>';
+}
+
+// ══════════════════════════════════════════
+// 📆 INSTALLMENTS SCREEN
+// ══════════════════════════════════════════
+function renderInstallments(q){
+  q = q||'';
+  const stFilter = document.getElementById('inst-status-filter')?.value||'';
+  let plans = DB.get('installments')||[];
+  if(q) plans = plans.filter(p=>p.patientName.includes(q));
+  if(stFilter) plans = plans.filter(p=>p.status===stFilter);
+
+  const all = DB.get('installments')||[];
+  const totalRemaining = all.reduce((s,p)=>s+(p.remaining||0),0);
+  const overdue = all.filter(p=>p.status==='متأخر').length;
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const paidThisMonth = all.filter(p=>p.status==='مكتمل'&&(p.startDate||'').startsWith(thisMonth)).length;
+  const clientsWithPlans = [...new Set(all.map(p=>p.patientId))].length;
+
+  txt('inst-kpi-total', totalRemaining.toLocaleString()+' ج');
+  txt('inst-kpi-overdue', overdue);
+  txt('inst-kpi-paid', paidThisMonth);
+  txt('inst-kpi-clients', clientsWithPlans);
+  txt('inst-count-lbl', plans.length+' خطة');
+
+  const tb = document.getElementById('inst-tbody'); if(!tb) return;
+  tb.innerHTML = plans.map(p=>{
+    const paidCount = p.payments ? p.payments.filter(x=>x.paid).length : 0;
+    const nextDue = p.payments ? p.payments.find(x=>!x.paid) : null;
+    const stClass = p.status==='مكتمل'?'sc':p.status==='متأخر'?'sx':'sp';
+    return `<tr>
+      <td style="font-weight:600">${p.patientName||'—'}</td>
+      <td style="font-size:12px">${p.service||'—'}</td>
+      <td style="font-weight:700">${(p.total||0).toLocaleString()} ج</td>
+      <td style="color:var(--emerald);font-weight:700">${(p.downPayment||0).toLocaleString()} ج</td>
+      <td style="color:${(p.remaining||0)>0?'var(--rose)':'var(--emerald)'};font-weight:700">${(p.remaining||0).toLocaleString()} ج</td>
+      <td><div class="prog"><div class="prog-f" style="width:${p.count?Math.round(paidCount/p.count*100):0}%;background:var(--teal)"></div></div><div style="font-size:10px;color:var(--text-muted);margin-top:3px">${paidCount}/${p.count||0}</div></td>
+      <td style="font-size:12px;color:var(--amber)">${nextDue?nextDue.dueDate:'—'}</td>
+      <td><span class="ast ${stClass}">${p.status||'نشط'}</span></td>
+      <td style="display:flex;gap:5px;">
+        ${nextDue?`<button class="btn btn-teal btn-xs" onclick="payInstallment('${p.id}')">💰 دفع</button>`:''}
+        <button class="btn btn-danger btn-xs" onclick="delInstallment('${p.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد خطط أقساط</td></tr>';
+
+  const logTb = document.getElementById('inst-log-tbody'); if(!logTb) return;
+  const logs = [];
+  (DB.get('installments')||[]).forEach(p=>{
+    (p.payments||[]).filter(x=>x.paid).forEach(x=>{
+      logs.push({patient:p.patientName, installNum:x.num, amount:p.installmentAmount, date:x.paidDate});
+    });
+  });
+  logs.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  logTb.innerHTML = logs.map(l=>`<tr>
+    <td style="font-weight:600">${l.patient}</td>
+    <td style="color:var(--text-muted)">قسط #${l.installNum}</td>
+    <td style="color:var(--emerald);font-weight:700">${(l.amount||0).toLocaleString()} ج</td>
+    <td style="font-size:12px">${l.date||'—'}</td>
+    <td><span class="ast sc">مدفوع</span></td>
+  </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:16px">لا توجد سجلات</td></tr>';
+}
+
+function openInstModal(){
+  const pats = DB.get('patients');
+  const sel = document.getElementById('inst-pat'); if(!sel) return;
+  sel.innerHTML = '<option value="">-- اختر عميل --</option>'+pats.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('inst-edit-id').value='';
+  document.getElementById('inst-total').value='';
+  document.getElementById('inst-down').value='0';
+  document.getElementById('inst-count-sel').value='3';
+  document.getElementById('inst-start').value=new Date().toISOString().split('T')[0];
+  calcInstPlan();
+  openModal('installment-modal');
+}
+function calcInstPlan(){
+  const total=parseFloat(document.getElementById('inst-total')?.value)||0;
+  const down=parseFloat(document.getElementById('inst-down')?.value)||0;
+  const count=parseInt(document.getElementById('inst-count-sel')?.value)||3;
+  const remain=Math.max(0,total-down);
+  const each=count?Math.ceil(remain/count):0;
+  txt('inst-preview-remain',remain.toLocaleString()+' ج');
+  txt('inst-preview-each',each.toLocaleString()+' ج');
+}
+function saveInstallment(){
+  const pid=document.getElementById('inst-pat')?.value;
+  const total=parseFloat(document.getElementById('inst-total')?.value)||0;
+  if(!pid||!total){showToast('warning','⚠️ اختر العميل والمبلغ');return;}
+  const pat=DB.get('patients').find(p=>p.id==pid);
+  const down=parseFloat(document.getElementById('inst-down')?.value)||0;
+  const count=parseInt(document.getElementById('inst-count-sel')?.value)||3;
+  const svc=document.getElementById('inst-svc')?.value||'';
+  const startDate=document.getElementById('inst-start')?.value||new Date().toISOString().split('T')[0];
+  const remain=Math.max(0,total-down);
+  const each=Math.ceil(remain/count);
+  const payments=[];
+  for(let i=1;i<=count;i++){
+    const d=new Date(startDate);d.setMonth(d.getMonth()+i);
+    payments.push({num:i,dueDate:d.toISOString().split('T')[0],paid:false,paidDate:null});
+  }
+  const plan={patientId:pid,patientName:pat?.name||'—',service:svc,total,downPayment:down,remaining:remain,installmentAmount:each,count,payments,startDate,status:'نشط'};
+  if(!DB.get('installments')) DB.set('installments',[]);
+  DB.push('installments',plan);
+  if(pat) DB.upd('patients',pat.id,{status:'قسط',balance:(pat.balance||0)+remain});
+  closeModal('installment-modal');
+  showToast('success',`✅ تم إنشاء خطة أقساط لـ ${pat?.name}`,`${count} أقساط × ${each.toLocaleString()} ج`);
+  renderInstallments();
+}
+function payInstallment(planId){
+  const plans=DB.get('installments')||[];
+  const plan=plans.find(p=>p.id===planId); if(!plan) return;
+  const nextInst=plan.payments.find(x=>!x.paid); if(!nextInst) return;
+  if(!confirm(`تأكيد دفع القسط #${nextInst.num} بمبلغ ${plan.installmentAmount.toLocaleString()} ج؟`)) return;
+  nextInst.paid=true;
+  nextInst.paidDate=new Date().toISOString().split('T')[0];
+  plan.remaining=Math.max(0,plan.remaining-plan.installmentAmount);
+  if(plan.payments.every(x=>x.paid)) plan.status='مكتمل';
+  DB.upd('installments',planId,plan);
+  const pat=DB.get('patients').find(p=>p.id===plan.patientId);
+  if(pat) DB.upd('patients',pat.id,{balance:Math.max(0,(pat.balance||0)-plan.installmentAmount)});
+  showToast('success',`✅ تم تسجيل دفع القسط #${nextInst.num}`,`${plan.installmentAmount.toLocaleString()} ج`);
+  renderInstallments();
+}
+function delInstallment(id){
+  if(confirm('حذف خطة الأقساط؟')){
+    const plan=(DB.get('installments')||[]).find(p=>p.id===id);
+    if(plan){
+      const patsArr=DB.get('installments').filter(p=>p.id!==id);
+      DB.set('installments',patsArr);
+    }
+    showToast('info','🗑️ تم حذف خطة الأقساط');
+    renderInstallments();
+  }
+}
+
+// ══════════════════════════════════════════
+// 🚚 SUPPLIERS SCREEN
+// ══════════════════════════════════════════
+function renderSuppliers(q){
+  q=q||'';
+  const stFilter=document.getElementById('sup-status-filter')?.value||'';
+  if(!DB.get('suppliers')) DB.set('suppliers',[
+    {id:'s1',name:'ميديكال تريد',cat:'مستحضرات بشرة',phone:'01055556666',email:'info@medicaltrade.com',contact:'أحمد سعيد',terms:'30 يوم',owed:12000,status:'نشط',notes:''},
+    {id:'s2',name:'ليزر سابلاي',cat:'مستلزمات ليزر',phone:'01033334444',email:'laser@supply.com',contact:'منى علي',terms:'60 يوم',owed:5500,status:'نشط',notes:''},
+    {id:'s3',name:'بيوتي إمبورت',cat:'حقن وأدوية',phone:'01099998888',email:'import@beauty.com',contact:'كريم حسن',terms:'فوري',owed:0,status:'نشط',notes:''},
+  ]);
+  let sups=DB.get('suppliers');
+  if(q) sups=sups.filter(s=>s.name.includes(q)||(s.cat||'').includes(q));
+  if(stFilter) sups=sups.filter(s=>s.status===stFilter);
+
+  const all=DB.get('suppliers');
+  txt('sup-kpi-total',all.length);
+  txt('sup-kpi-owed',all.reduce((s,x)=>s+(x.owed||0),0).toLocaleString()+' ج');
+  txt('sup-kpi-orders',(DB.get('purchases')||[]).filter(p=>p.status!=='ملغي').length);
+  txt('sup-count-lbl',sups.length+' مورد');
+
+  const tb=document.getElementById('sup-tbody');if(!tb)return;
+  tb.innerHTML=sups.map(s=>`<tr>
+    <td style="font-weight:700">${s.name}</td>
+    <td><span class="tag tg-purple">${s.cat||'—'}</span></td>
+    <td style="font-size:12px">${s.phone||'—'}</td>
+    <td style="font-size:11px;color:var(--text-muted)">${s.email||'—'}</td>
+    <td style="font-size:12px">${s.terms||'—'}</td>
+    <td style="color:${(s.owed||0)>0?'var(--rose)':'var(--emerald)'};font-weight:700">${(s.owed||0).toLocaleString()} ج</td>
+    <td><span class="ast ${s.status==='نشط'?'sc':'sd'}">${s.status}</span></td>
+    <td style="display:flex;gap:5px;">
+      <button class="btn btn-ghost btn-xs" onclick="openSupplierModal('${s.id}')">✏️</button>
+      <button class="btn btn-danger btn-xs" onclick="delSupplier('${s.id}')">🗑</button>
+    </td>
+  </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px">لا يوجد موردون</td></tr>';
+}
+function openSupplierModal(id){
+  const s=id?DB.get('suppliers').find(x=>x.id===id):null;
+  document.getElementById('sup-modal-title').textContent=s?'✏️ تعديل مورد':'🚚 مورد جديد';
+  ['id','name','cat','phone','email','contact','terms','owed','status','notes'].forEach(f=>{
+    const el=document.getElementById('sup-'+f);if(el)el.value=s?s[f]||'':'';
+  });
+  if(!s){document.getElementById('sup-status').value='نشط';document.getElementById('sup-terms').value='30 يوم';}
+  openModal('supplier-modal');
+}
+function saveSupplier(){
+  const name=document.getElementById('sup-name')?.value.trim();if(!name){showToast('warning','⚠️ اسم المورد مطلوب');return;}
+  const id=document.getElementById('sup-id')?.value;
+  const data={name,cat:gv('sup-cat'),phone:gv('sup-phone'),email:gv('sup-email'),contact:gv('sup-contact'),terms:gv('sup-terms'),owed:parseFloat(gv('sup-owed'))||0,status:gv('sup-status'),notes:gv('sup-notes')};
+  if(id){DB.upd('suppliers',id,data);showToast('success',`✅ تم تحديث ${name}`);}
+  else{DB.push('suppliers',data);showToast('success',`✅ تم إضافة ${name}`);}
+  closeModal('supplier-modal');renderSuppliers();fillPurchaseSuppliers();
+}
+function delSupplier(id){
+  const s=DB.get('suppliers').find(x=>x.id===id);
+  if(confirm(`حذف ${s?.name}؟`)){DB.del('suppliers',id);showToast('info','🗑 تم الحذف');renderSuppliers();}
+}
+
+// ══════════════════════════════════════════
+// 🛒 PURCHASES SCREEN
+// ══════════════════════════════════════════
+function renderPurchases(q){
+  q=q||'';
+  const stFilter=document.getElementById('pur-status-filter')?.value||'';
+  if(!DB.get('purchases')) DB.set('purchases',[]);
+  let purs=DB.get('purchases');
+  if(q) purs=purs.filter(p=>p.product.includes(q)||(p.supplier||'').includes(q));
+  if(stFilter) purs=purs.filter(p=>p.status===stFilter);
+  purs=[...purs].sort((a,b)=>(b.orderDate||'').localeCompare(a.orderDate||''));
+
+  const all=DB.get('purchases');
+  const thisMonth=new Date().toISOString().slice(0,7);
+  txt('pur-kpi-pending',all.filter(p=>p.status==='معلق').length);
+  txt('pur-kpi-received',all.filter(p=>p.status==='مستلم'&&(p.deliveryDate||'').startsWith(thisMonth)).length);
+  txt('pur-kpi-total',all.reduce((s,p)=>s+(p.total||0),0).toLocaleString()+' ج');
+  txt('pur-count-lbl',purs.length+' طلب');
+
+  const stClass={'معلق':'sp','موافق عليه':'sw','مستلم':'sc','ملغي':'sx'};
+  const tb=document.getElementById('pur-tbody');if(!tb)return;
+  tb.innerHTML=purs.map((p,i)=>`<tr>
+    <td style="font-size:11px;color:var(--gold-light);font-weight:700">#PO-${String(i+1).padStart(3,'0')}</td>
+    <td style="font-weight:600">${p.product}</td>
+    <td style="font-size:12px">${p.supplier||'—'}</td>
+    <td style="text-align:center;font-weight:700">${p.qty||0}</td>
+    <td style="color:var(--gold-light);font-weight:700">${(p.total||0).toLocaleString()} ج</td>
+    <td style="font-size:12px">${p.orderDate||'—'}</td>
+    <td style="font-size:12px;color:${p.deliveryDate&&new Date(p.deliveryDate)<new Date()&&p.status!=='مستلم'?'var(--rose)':'var(--text-muted)'}">${p.deliveryDate||'—'}</td>
+    <td><span class="ast ${stClass[p.status]||'sd'}">${p.status}</span></td>
+    <td style="display:flex;gap:5px;">
+      ${p.status==='معلق'||p.status==='موافق عليه'?`<button class="btn btn-teal btn-xs" onclick="recvPurchase('${p.id}')">✅ استلام</button>`:''}
+      <button class="btn btn-danger btn-xs" onclick="delPurchase('${p.id}')">🗑</button>
+    </td>
+  </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد طلبات شراء</td></tr>';
+}
+function openPurchaseModal(){
+  fillPurchaseSuppliers();
+  document.getElementById('pur-id').value='';
+  document.getElementById('pur-product').value='';
+  document.getElementById('pur-qty').value='';
+  document.getElementById('pur-unit-price').value='';
+  document.getElementById('pur-total-preview').textContent='0 ج';
+  document.getElementById('pur-order-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('pur-delivery-date').value='';
+  openModal('purchase-modal');
+}
+function fillPurchaseSuppliers(){
+  const sel=document.getElementById('pur-supplier');if(!sel)return;
+  const sups=DB.get('suppliers')||[];
+  sel.innerHTML='<option value="">-- اختر مورد --</option>'+sups.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+}
+function calcPurTotal(){
+  const q=parseFloat(document.getElementById('pur-qty')?.value)||0;
+  const p=parseFloat(document.getElementById('pur-unit-price')?.value)||0;
+  txt('pur-total-preview',(q*p).toLocaleString()+' ج');
+}
+function savePurchase(){
+  const product=gv('pur-product').trim();if(!product){showToast('warning','⚠️ اسم المنتج مطلوب');return;}
+  const qty=parseInt(gv('pur-qty'))||0;const unitPrice=parseFloat(gv('pur-unit-price'))||0;
+  const data={product,supplier:gv('pur-supplier'),qty,unitPrice,total:qty*unitPrice,orderDate:gv('pur-order-date'),deliveryDate:gv('pur-delivery-date'),branch:gv('pur-branch'),status:gv('pur-status')};
+  if(!DB.get('purchases')) DB.set('purchases',[]);
+  DB.push('purchases',data);
+  closeModal('purchase-modal');showToast('success',`✅ تم إرسال طلب شراء: ${product}`);renderPurchases();
+}
+function recvPurchase(id){
+  DB.upd('purchases',id,{status:'مستلم',deliveryDate:new Date().toISOString().split('T')[0]});
+  showToast('success','✅ تم تسجيل الاستلام');renderPurchases();
+}
+function delPurchase(id){
+  if(confirm('حذف طلب الشراء؟')){const purs=DB.get('purchases').filter(p=>p.id!==id);DB.set('purchases',purs);showToast('info','🗑 تم الحذف');renderPurchases();}
+}
+
+// ══════════════════════════════════════════
+// 🔄 TRANSFERS SCREEN
+// ══════════════════════════════════════════
+function renderTransfers(q){
+  q=q||'';
+  const stFilter=document.getElementById('tr-status-filter')?.value||'';
+  if(!DB.get('transfers')) DB.set('transfers',[]);
+  let trs=DB.get('transfers');
+  if(q) trs=trs.filter(t=>t.product.includes(q));
+  if(stFilter) trs=trs.filter(t=>t.status===stFilter);
+  txt('tr-count-lbl',trs.length+' تحويل');
+  const tb=document.getElementById('tr-tbody');if(!tb)return;
+  tb.innerHTML=trs.map((t,i)=>`<tr>
+    <td style="font-size:11px;color:var(--gold-light)">#TR-${String(i+1).padStart(3,'0')}</td>
+    <td style="font-weight:600">${t.product}</td>
+    <td><span class="tag tg-gold">${t.from}</span></td>
+    <td><span class="tag tg-teal">${t.to}</span></td>
+    <td style="font-weight:700;color:var(--teal)">${t.qty}</td>
+    <td style="font-size:12px">${t.date||'—'}</td>
+    <td style="font-size:12px">${t.staff||'—'}</td>
+    <td><span class="ast ${t.status==='مكتمل'?'sc':'sp'}">${t.status}</span></td>
+    <td><button class="btn btn-danger btn-xs" onclick="delTransfer('${t.id}')">🗑</button></td>
+  </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد تحويلات</td></tr>';
+}
+function openTransferModal(){
+  const invSel=document.getElementById('tr-product');
+  if(invSel) invSel.innerHTML='<option value="">-- اختر منتج --</option>'+(DB.get('inventory')||[]).map(i=>`<option value="${i.name}">${i.name} (${i.qty})</option>`).join('');
+  document.getElementById('tr-id').value='';
+  document.getElementById('tr-date').value=new Date().toISOString().split('T')[0];
+  openModal('transfer-modal');
+}
+function saveTransfer(){
+  const product=gv('tr-product');const qty=parseInt(gv('tr-qty'))||0;
+  if(!product||!qty){showToast('warning','⚠️ المنتج والكمية مطلوبان');return;}
+  const from=gv('tr-from'),to=gv('tr-to');
+  if(from===to){showToast('warning','⚠️ الفرعان متطابقان');return;}
+  if(!DB.get('transfers')) DB.set('transfers',[]);
+  DB.push('transfers',{product,from,to,qty,date:gv('tr-date'),notes:gv('tr-notes'),staff:window._session?.name||'—',status:'مكتمل'});
+  closeModal('transfer-modal');showToast('success',`✅ تم تحويل ${qty} × ${product} من ${from} إلى ${to}`);renderTransfers();
+}
+function delTransfer(id){
+  if(confirm('حذف سجل التحويل؟')){const trs=DB.get('transfers').filter(t=>t.id!==id);DB.set('transfers',trs);showToast('info','🗑 تم الحذف');renderTransfers();}
+}
+
+// ══════════════════════════════════════════
+// 📣 CAMPAIGNS SCREEN
+// ══════════════════════════════════════════
+function renderCampaigns(q){
+  q=q||'';
+  const stFilter=document.getElementById('camp-status-filter')?.value||'';
+  if(!DB.get('campaigns')) DB.set('campaigns',[
+    {id:'c1',name:'حملة عيد الأم - بوتكس 20%',channel:'إنستجرام',goal:'زيادة الحجوزات',budget:5000,leadsCount:45,converted:18,startDate:'2025-03-01',endDate:'2025-03-31',status:'منتهية',desc:'خصم 20% على جلسات البوتكس بمناسبة عيد الأم'},
+    {id:'c2',name:'صيف مثالي - ليزر الجسم',channel:'فيسبوك',goal:'ترويج خدمة',budget:8000,leadsCount:72,converted:31,startDate:'2025-06-01',endDate:'2025-08-31',status:'نشطة',desc:'باقات ليزر الجسم الكاملة بأسعار موسم الصيف'},
+    {id:'c3',name:'عروض رمضان الكريم',channel:'واتساب',goal:'ولاء العملاء',budget:3000,leadsCount:28,converted:24,startDate:'2025-09-01',endDate:'2025-09-30',status:'مجدولة',desc:'عروض حصرية لعملاء العيادة الحاليين'},
+  ]);
+  let camps=DB.get('campaigns');
+  if(q) camps=camps.filter(c=>c.name.includes(q));
+  if(stFilter) camps=camps.filter(c=>c.status===stFilter);
+
+  const all=DB.get('campaigns');
+  txt('camp-kpi-active',all.filter(c=>c.status==='نشطة').length);
+  txt('camp-kpi-budget',all.reduce((s,c)=>s+(c.budget||0),0).toLocaleString()+' ج');
+  txt('camp-kpi-leads',all.reduce((s,c)=>s+(c.leadsCount||0),0));
+  const totalLeads=all.reduce((s,c)=>s+(c.leadsCount||0),0);
+  const totalConv=all.reduce((s,c)=>s+(c.converted||0),0);
+  txt('camp-kpi-conversion',totalLeads?Math.round(totalConv/totalLeads*100)+'%':'0%');
+
+  const CAMP_COLORS={'نشطة':'kc-teal','منتهية':'kc-rose','مجدولة':'kc-amber'};
+  const CHAN_ICONS={'إنستجرام':'📸','فيسبوك':'👥','واتساب':'💬','SMS':'📱','إيميل':'📧','جوجل':'🔍'};
+  const grid=document.getElementById('camp-grid');if(!grid)return;
+  grid.innerHTML=camps.map(c=>{
+    const conv=c.leadsCount?Math.round((c.converted||0)/c.leadsCount*100):0;
+    return `<div class="kpi-card ${CAMP_COLORS[c.status]||'kc-purple'}" style="padding:18px;cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
+        <span style="font-size:18px">${CHAN_ICONS[c.channel]||'📣'}</span>
+        <span class="ast ${c.status==='نشطة'?'sc':c.status==='مجدولة'?'sp':'sd'}">${c.status}</span>
+      </div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:6px;">${c.name}</div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:12px;">${c.startDate} ← ${c.endDate}</div>
+      <div class="g2c" style="gap:8px;margin-bottom:12px;">
+        <div style="text-align:center;background:var(--glass);border-radius:8px;padding:8px;"><div style="font-size:17px;font-weight:800;color:var(--teal)">${c.leadsCount||0}</div><div style="font-size:10px;color:var(--text-muted)">Leads</div></div>
+        <div style="text-align:center;background:var(--glass);border-radius:8px;padding:8px;"><div style="font-size:17px;font-weight:800;color:var(--emerald)">${conv}%</div><div style="font-size:10px;color:var(--text-muted)">تحويل</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px;"><span style="color:var(--text-muted)">الميزانية:</span><span style="font-weight:700;color:var(--gold-light)">${(c.budget||0).toLocaleString()} ج</span></div>
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px" onclick="openCampaignModal('${c.id}')">✏️ تعديل</button>
+        <button class="btn btn-danger btn-sm" style="font-size:11px" onclick="delCampaign('${c.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);">لا توجد حملات</div>';
+}
+function openCampaignModal(id){
+  const c=id?DB.get('campaigns').find(x=>x.id===id):null;
+  document.getElementById('camp-modal-title').textContent=c?'✏️ تعديل الحملة':'📣 حملة جديدة';
+  ['id','name','channel','goal','budget','status','desc'].forEach(f=>{const el=document.getElementById('camp-'+f);if(el)el.value=c?c[f]||'':'';});
+  document.getElementById('camp-start').value=c?c.startDate:'';
+  document.getElementById('camp-end').value=c?c.endDate:'';
+  document.getElementById('camp-leads-count').value=c?c.leadsCount||0:0;
+  openModal('campaign-modal');
+}
+function saveCampaign(){
+  const name=gv('camp-name').trim();if(!name){showToast('warning','⚠️ اسم الحملة مطلوب');return;}
+  const id=gv('camp-id');
+  const data={name,channel:gv('camp-channel'),goal:gv('camp-goal'),budget:parseFloat(gv('camp-budget'))||0,leadsCount:parseInt(gv('camp-leads-count'))||0,converted:0,startDate:gv('camp-start'),endDate:gv('camp-end'),status:gv('camp-status'),desc:gv('camp-desc')};
+  if(id){DB.upd('campaigns',id,data);showToast('success',`✅ تم تحديث ${name}`);}
+  else{DB.push('campaigns',data);showToast('success',`✅ تم إضافة ${name}`);}
+  closeModal('campaign-modal');renderCampaigns();
+}
+function delCampaign(id){
+  const c=DB.get('campaigns').find(x=>x.id===id);
+  if(confirm(`حذف حملة "${c?.name}"؟`)){DB.del('campaigns',id);showToast('info','🗑 تم الحذف');renderCampaigns();}
+}
+
+// ══════════════════════════════════════════
+// 📸 PHOTOS SCREEN
+// ══════════════════════════════════════════
+function renderPhotos(q){
+  q=q||'';
+  const catFilter=document.getElementById('photo-cat-filter')?.value||'';
+  if(!DB.get('photos')) DB.set('photos',[
+    {id:'ph1',patientName:'سارة محمد',service:'ليزر',date:'2025-01-15',session:1,before:'📷',after:'📸',notes:'نتيجة ممتازة'},
+    {id:'ph2',patientName:'نادية عمر',service:'بوتكس',date:'2025-02-20',session:1,before:'📷',after:'📸',notes:'إزالة التجاعيد'},
+  ]);
+  let photos=DB.get('photos');
+  if(q) photos=photos.filter(p=>p.patientName.includes(q)||(p.service||'').includes(q));
+  if(catFilter) photos=photos.filter(p=>(p.service||'').includes(catFilter));
+
+  const all=DB.get('photos');
+  txt('photo-kpi-total',all.length*2);
+  txt('photo-kpi-patients',[...new Set(all.map(p=>p.patientName))].length);
+  txt('photo-kpi-pairs',all.length);
+
+  const grid=document.getElementById('photo-grid');if(!grid)return;
+  grid.innerHTML=photos.map(p=>`<div class="card" style="padding:0;overflow:hidden;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;height:180px;">
+      <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--glass-border);">
+        <div style="font-size:44px;margin-bottom:6px">${p.before||'📷'}</div>
+        <div style="font-size:11px;color:var(--rose);font-weight:700">قبل</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#0d2137,#0d3340);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="font-size:44px;margin-bottom:6px">${p.after||'📸'}</div>
+        <div style="font-size:11px;color:var(--teal);font-weight:700">بعد</div>
+      </div>
+    </div>
+    <div style="padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-weight:700;font-size:13px">${p.patientName}</div>
+        <span class="tag tg-teal" style="font-size:10.5px">${p.service}</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-muted)">📅 ${p.date||'—'} · جلسة ${p.session||1}</div>
+      ${p.notes?`<div style="font-size:11.5px;margin-top:5px;color:var(--text-secondary)">${p.notes}</div>`:''}
+      <div style="display:flex;gap:7px;margin-top:10px;">
+        <button class="btn btn-ghost btn-xs" style="flex:1">🔍 مقارنة</button>
+        <button class="btn btn-danger btn-xs" onclick="delPhoto('${p.id}')">🗑</button>
+      </div>
+    </div>
+  </div>`).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);">لا توجد صور طبية بعد</div>';
+}
+function openPhotoModal(){
+  const pats=DB.get('patients');
+  const sel=document.getElementById('photo-pat');if(!sel)return;
+  sel.innerHTML='<option value="">-- اختر عميل --</option>'+pats.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+  document.getElementById('photo-id').value='';
+  document.getElementById('photo-date').value=new Date().toISOString().split('T')[0];
+  openModal('photo-modal');
+}
+function savePhoto(){
+  const pat=gv('photo-pat');if(!pat){showToast('warning','⚠️ اختر العميل');return;}
+  if(!DB.get('photos')) DB.set('photos',[]);
+  DB.push('photos',{patientName:pat,service:gv('photo-svc'),date:gv('photo-date'),session:parseInt(gv('photo-session'))||1,before:'📷',after:'📸',notes:gv('photo-notes')});
+  closeModal('photo-modal');showToast('success',`✅ تم إضافة صور ${pat}`);renderPhotos();
+}
+function delPhoto(id){if(confirm('حذف الصور؟')){const ph=DB.get('photos').filter(p=>p.id!==id);DB.set('photos',ph);showToast('info','🗑 تم الحذف');renderPhotos();}}
+
+// ══════════════════════════════════════════
+// 📊 ACCOUNTS SCREEN
+// ══════════════════════════════════════════
+function renderAccounts(){
+  const invoices=DB.get('invoices');
+  const expenses=DB.get('expenses');
+  const today=new Date().toISOString().slice(0,7);
+
+  document.getElementById('acc-period-lbl').textContent=new Date().toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+
+  // P&L
+  const totalRevenue=invoices.reduce((s,i)=>s+(i.paid||0),0);
+  const totalExpense=expenses.reduce((s,e)=>s+(e.amount||0),0);
+  const netProfit=totalRevenue-totalExpense;
+  const margin=totalRevenue?Math.round(netProfit/totalRevenue*100):0;
+
+  // Revenue breakdown
+  const revByService={};
+  invoices.forEach(i=>{revByService[i.service]=(revByService[i.service]||0)+(i.paid||0);});
+  const revEl=document.getElementById('acc-revenues');
+  if(revEl) revEl.innerHTML=Object.entries(revByService).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--glass-border);"><span style="color:var(--text-muted)">${k}</span><span style="font-weight:700;color:var(--emerald)">${v.toLocaleString()} ج</span></div>`).join('')||'<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:16px">لا توجد إيرادات</div>';
+
+  // Expense breakdown
+  const expByType={};
+  expenses.forEach(e=>{expByType[e.type]=(expByType[e.type]||0)+(e.amount||0);});
+  const expEl=document.getElementById('acc-expenses-list');
+  if(expEl) expEl.innerHTML=Object.entries(expByType).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--glass-border);"><span style="color:var(--text-muted)">${k}</span><span style="font-weight:700;color:var(--rose)">${v.toLocaleString()} ج</span></div>`).join('')||'<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:16px">لا توجد مصروفات</div>';
+
+  txt('acc-total-revenue',totalRevenue.toLocaleString()+' ج');
+  txt('acc-total-expense',totalExpense.toLocaleString()+' ج');
+  const npEl=document.getElementById('acc-net-profit');
+  if(npEl){npEl.textContent=(netProfit>=0?'+':'')+netProfit.toLocaleString()+' ج';npEl.style.color=netProfit>=0?'var(--emerald)':'var(--rose)';}
+  txt('acc-margin',margin+'%');
+
+  // Balance Sheet
+  const invValue=DB.get('inventory').reduce((s,i)=>s+(i.qty*i.price),0);
+  const receivables=(DB.get('installments')||[]).reduce((s,p)=>s+(p.remaining||0),0);
+  const suppliersOwed=(DB.get('suppliers')||[]).reduce((s,x)=>s+(x.owed||0),0);
+  const staffSalaries=DB.get('staff').reduce((s,x)=>s+(x.salary||0),0);
+  const cashBalance=totalRevenue-totalExpense;
+  txt('bs-cash',cashBalance.toLocaleString()+' ج');
+  txt('bs-inventory',invValue.toLocaleString()+' ج');
+  txt('bs-receivables',receivables.toLocaleString()+' ج');
+  txt('bs-total-assets',(Math.max(0,cashBalance)+invValue+receivables).toLocaleString()+' ج');
+  txt('bs-suppliers',suppliersOwed.toLocaleString()+' ج');
+  txt('bs-salaries',staffSalaries.toLocaleString()+' ج');
+  txt('bs-equity',(Math.max(0,cashBalance)+invValue+receivables-suppliersOwed-staffSalaries).toLocaleString()+' ج');
+
+  // Cash flow table
+  const cfTb=document.getElementById('cf-tbody');if(!cfTb)return;
+  const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const year=new Date().getFullYear();
+  let cumulative=0;
+  cfTb.innerHTML=MONTHS.map((m,i)=>{
+    const mStr=`${year}-${String(i+1).padStart(2,'0')}`;
+    const inflow=invoices.filter(x=>(x.date||'').startsWith(mStr)).reduce((s,x)=>s+(x.paid||0),0);
+    const outflow=expenses.filter(x=>(x.date||'').startsWith(mStr)).reduce((s,x)=>s+(x.amount||0),0);
+    const net=inflow-outflow;cumulative+=net;
+    return `<tr>
+      <td style="font-weight:600">${m}</td>
+      <td style="color:var(--emerald);font-weight:700">${inflow.toLocaleString()} ج</td>
+      <td style="color:var(--rose);font-weight:700">${outflow.toLocaleString()} ج</td>
+      <td style="color:${net>=0?'var(--teal)':'var(--rose)'};font-weight:800">${net>=0?'+':''}${net.toLocaleString()} ج</td>
+      <td style="color:${cumulative>=0?'var(--gold-light)':'var(--rose)'};font-weight:700">${cumulative.toLocaleString()} ج</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// PATCH showScreen for new screens
+// ══════════════════════════════════════════
+const _origShow3 = window.showScreen;
+window.showScreen = function(id){
+  _origShow3(id);
+  if(id==='payments') renderPayments();
+  if(id==='installments') renderInstallments();
+  if(id==='suppliers') renderSuppliers();
+  if(id==='purchases'){renderPurchases();fillPurchaseSuppliers();}
+  if(id==='transfers') renderTransfers();
+  if(id==='campaigns') renderCampaigns();
+  if(id==='photos') renderPhotos();
+  if(id==='accounts') renderAccounts();
+};
+
+// Patch DB to support arrays that don't exist yet
+const _origDBGet = DB.get.bind(DB);
+DB.get = function(key){
+  const result = _origDBGet(key);
+  if(!result && ['installments','suppliers','purchases','transfers','campaigns','photos'].includes(key)){
+    return [];
+  }
+  return result;
+};
+DB.push = function(key, item){
+  item.id = item.id || Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  const arr = DB.get(key)||[];
+  arr.push(item);
+  DB.set(key, arr);
+};
 
 // Add session timer to topbar
 const syncBtn = document.querySelector('.sync-btn');

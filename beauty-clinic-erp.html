@@ -685,8 +685,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
       </div>
       <div style="display:flex;gap:9px;margin-top:14px;">
         <button class="btn btn-primary" onclick="saveFB()">💾 حفظ وتفعيل</button>
-        <button class="btn btn-ghost" onclick="document.getElementById('setup-screen').classList.add('show')">📖 شرح الخطوات</button>
-        <button class="btn btn-ghost btn-sm" onclick="showToast('info','🧪 جارٍ اختبار الاتصال...')">🧪 اختبار</button>
+        <button class="btn btn-teal btn-sm" onclick="uploadSeedToFirestore()" title="يرفع البيانات المحلية إلى Firestore لأول مرة">☁️ رفع بيانات محلية</button>
+        <button class="btn btn-ghost btn-sm" onclick="testFBConnection()">🧪 اختبار الاتصال</button>
+        <button class="btn btn-ghost btn-sm" onclick="disconnectFirebase()" style="color:var(--rose);">🔌 قطع</button>
       </div>
     </div>
   </div>
@@ -1237,7 +1238,213 @@ function loadSettings(){
   if(s.managerName){txt('user-name',s.managerName);txt('user-role',s.managerRole||'مدير النظام');txt('dash-uname',s.managerName);}
   ['s-cname','s-cphone','s-mname','s-mrole'].forEach((id,i)=>{const e=document.getElementById(id);if(e)e.value=[s.clinicName,s.phone,s.managerName,s.managerRole][i]||e.value;});
 }
-function saveFB(){const k=gv('fb-key');if(!k){showToast('warning','⚠️ أدخل بيانات Firebase');return;}showToast('success','🔥 تم حفظ إعدادات Firebase','أعد تحميل الصفحة لتطبيق الإعدادات');}
+// ══════════════════════════════════════════
+// 🔥 FIREBASE REAL INTEGRATION
+// ══════════════════════════════════════════
+window._fbReady = false;
+window._fbListeners = {}; // active onSnapshot listeners
+
+async function saveFB(){
+  const cfg = {
+    apiKey:            gv('fb-key').trim(),
+    authDomain:        gv('fb-auth').trim(),
+    projectId:         gv('fb-proj').trim(),
+    storageBucket:     gv('fb-stor').trim(),
+    messagingSenderId: gv('fb-send').trim(),
+    appId:             gv('fb-app').trim()
+  };
+  if(!cfg.apiKey || !cfg.projectId){
+    showToast('warning','⚠️ API Key و Project ID مطلوبان');
+    return;
+  }
+  // Save config to localStorage for reuse after reload
+  localStorage.setItem('ha_fb_config', JSON.stringify(cfg));
+  showToast('info','🔥 جارٍ الاتصال بـ Firebase...');
+  await initFirebase(cfg);
+}
+
+async function initFirebase(cfg){
+  try {
+    // Dynamically load Firebase SDK v9 compat (CDN)
+    if(!window.firebase){
+      await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+      await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js');
+    }
+
+    // Initialize or get existing app
+    if(window.firebase.apps.length === 0){
+      window.firebase.initializeApp(cfg);
+    }
+    const db = window.firebase.firestore();
+
+    // Test connection with a lightweight read
+    await db.collection('_ping').limit(1).get();
+
+    window._firestore = db;
+    window._fbReady = true;
+
+    // Update connection indicator
+    txt('conn-txt','متصل بـ Firebase ☁️');
+    const dot = document.getElementById('conn-dot');
+    if(dot) dot.style.background = 'var(--emerald)';
+
+    showToast('success','✅ تم الاتصال بـ Firebase بنجاح','البيانات ستُزامَن تلقائياً');
+
+    // Start syncing all collections
+    const COLLECTIONS = ['patients','appointments','inventory','invoices','services','leads'];
+    COLLECTIONS.forEach(col => attachFirestoreSync(col));
+
+  } catch(err) {
+    console.error('Firebase init error:', err);
+    const msg = err.code === 'permission-denied'
+      ? 'تحقق من قواعد Firestore Security Rules'
+      : err.message || 'فشل الاتصال';
+    showToast('error', '❌ خطأ في الاتصال', msg);
+    window._fbReady = false;
+  }
+}
+
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    if(document.querySelector(`script[src="${src}"]`)){resolve();return;}
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ── Attach a realtime listener for one collection ──
+function attachFirestoreSync(col){
+  if(!window._firestore) return;
+  // Unsubscribe previous listener if any
+  if(window._fbListeners[col]) window._fbListeners[col]();
+
+  window._fbListeners[col] = window._firestore
+    .collection(col)
+    .onSnapshot(snapshot => {
+      const docs = [];
+      snapshot.forEach(doc => docs.push({...doc.data(), id: doc.id}));
+      // Merge into localStorage so offline reads still work
+      localStorage.setItem('ha_' + col, JSON.stringify(docs));
+      // Refresh active screen
+      const active = document.querySelector('.screen.active')?.id?.replace('screen-','');
+      if(active === col || (col === 'appointments' && active === 'calendar')){
+        if(col === 'patients')    renderPat();
+        if(col === 'appointments'){renderAppts(); buildCal(); renderTodayAppts();}
+        if(col === 'inventory')   renderInv();
+        if(col === 'invoices')    renderInvs();
+        if(col === 'services')    renderSvcs();
+        if(col === 'leads')       renderLeads();
+      }
+      // Always refresh dashboard KPIs
+      if(col === 'patients')    { txt('kpi-pat', docs.length); txt('badge-patients', docs.length); }
+      if(col === 'inventory')   { const l=docs.filter(i=>i.status==='منخفض'||i.status==='نفذ').length; txt('kpi-stk',l); txt('badge-stock',l); }
+      if(col === 'invoices')    { const p=docs.filter(i=>i.status!=='مدفوع').reduce((s,i)=>s+(i.remaining||0),0); txt('kpi-pend',p.toLocaleString()); }
+    }, err => {
+      console.error('Firestore listener error on', col, err);
+    });
+}
+
+// ── Write a single record to Firestore ──
+async function fbSet(col, id, data){
+  if(!window._fbReady || !window._firestore) return;
+  try {
+    await window._firestore.collection(col).doc(String(id)).set(data, {merge: true});
+  } catch(e){ console.warn('Firestore write error:', e); }
+}
+
+// ── Delete a single record from Firestore ──
+async function fbDel(col, id){
+  if(!window._fbReady || !window._firestore) return;
+  try {
+    await window._firestore.collection(col).doc(String(id)).delete();
+  } catch(e){ console.warn('Firestore delete error:', e); }
+}
+
+// ── Upload full localStorage collection to Firestore (first-time seed) ──
+async function uploadSeedToFirestore(){
+  if(!window._fbReady || !window._firestore) return;
+  const cols = ['patients','appointments','inventory','invoices','services','leads'];
+  let total = 0;
+  for(const col of cols){
+    const items = DB.get(col);
+    const batch = window._firestore.batch();
+    items.forEach(item => {
+      const ref = window._firestore.collection(col).doc(String(item.id));
+      batch.set(ref, item, {merge: true});
+    });
+    if(items.length > 0){ await batch.commit(); total += items.length; }
+  }
+  showToast('success', `☁️ تم رفع ${total} سجل إلى Firebase`);
+}
+
+// ── Patch DB to write to Firestore whenever Firebase is ready ──
+const _origPush = DB.push.bind(DB);
+const _origUpd  = DB.upd.bind(DB);
+const _origDel  = DB.del.bind(DB);
+
+DB.push = function(k, o){
+  const result = _origPush(k, o);
+  fbSet(k, result.id, result);
+  return result;
+};
+DB.upd = function(k, id, d){
+  _origUpd(k, id, d);
+  // Re-read merged object and send to Firestore
+  const item = DB.get(k).find(x => x.id == id);
+  if(item) fbSet(k, id, item);
+};
+DB.del = function(k, id){
+  _origDel(k, id);
+  fbDel(k, id);
+};
+
+// ── Test connection ──
+async function testFBConnection(){
+  if(!window._fbReady || !window._firestore){
+    showToast('warning','⚠️ Firebase غير متصل — احفظ الإعدادات أولاً');
+    return;
+  }
+  showToast('info','🧪 جارٍ اختبار الاتصال...');
+  try {
+    const start = Date.now();
+    await window._firestore.collection('_ping').limit(1).get();
+    const ms = Date.now() - start;
+    showToast('success', `✅ الاتصال يعمل`, `زمن الاستجابة: ${ms}ms`);
+  } catch(e) {
+    showToast('error', '❌ فشل الاتصال', e.message);
+  }
+}
+
+// ── Disconnect Firebase ──
+function disconnectFirebase(){
+  // Unsubscribe all listeners
+  Object.values(window._fbListeners).forEach(unsub => { try{ unsub(); }catch(e){} });
+  window._fbListeners = {};
+  window._fbReady = false;
+  window._firestore = null;
+  localStorage.removeItem('ha_fb_config');
+  txt('conn-txt','وضع محلي 💾');
+  const dot = document.getElementById('conn-dot');
+  if(dot) dot.style.background = 'var(--amber)';
+  showToast('info','🔌 تم قطع الاتصال بـ Firebase');
+}
+
+// ── Auto-reconnect on page load if config was saved before ──
+(function autoConnectFirebase(){
+  const saved = localStorage.getItem('ha_fb_config');
+  if(!saved) return;
+  try {
+    const cfg = JSON.parse(saved);
+    if(cfg.apiKey && cfg.projectId){
+      // Pre-fill settings fields
+      const F = {apiKey:'fb-key',authDomain:'fb-auth',projectId:'fb-proj',storageBucket:'fb-stor',messagingSenderId:'fb-send',appId:'fb-app'};
+      Object.entries(F).forEach(([k,id])=>{ const e=document.getElementById(id); if(e) e.value=cfg[k]||''; });
+      // Connect after page is ready
+      setTimeout(()=>initFirebase(cfg), 1500);
+    }
+  } catch(e){}
+})();
 function toggleSw(el){const on=el.style.background.includes('2DD4BF')||el.style.background.includes('teal');el.style.background=on?'var(--glass-border)':'var(--teal)';const k=el.querySelector('div');if(k)k.style.cssText=`width:19px;height:19px;background:#fff;border-radius:50%;position:absolute;top:2px;transition:.2s;${on?'left:2px':'right:2px'}`;}
 function exportAll(){
   const d={patients:DB.get('patients'),appointments:DB.get('appointments'),inventory:DB.get('inventory'),invoices:DB.get('invoices'),services:DB.get('services'),leads:DB.get('leads'),exportedAt:new Date().toISOString()};

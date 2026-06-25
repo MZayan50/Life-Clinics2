@@ -1379,12 +1379,12 @@ async function aiSend(q){
       role: m.role === 'user' ? 'user' : 'assistant',
       content: m.text
     }));
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    // غيّر الرابط ده بعد نشر الدالة على Firebase (الرابط هيظهر لك في التيرمينال بعد deploy)
+    const AI_FUNCTION_URL = 'https://aichat-XXXXXXXXXX-uc.a.run.app';
+    const res = await fetch(AI_FUNCTION_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
         system: aiGetSystemPrompt(),
         messages: [...history, { role:'user', content: question }]
       })

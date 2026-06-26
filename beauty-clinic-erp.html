@@ -135,6 +135,29 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg-primary);color:var(--t
 .sw{background:rgba(59,130,246,.13);color:var(--blue);}
 .sd{background:rgba(148,163,184,.1);color:var(--text-secondary);}
 .sx{background:rgba(244,63,94,.13);color:var(--rose);}
+.s-upcoming{background:rgba(59,130,246,.13);color:var(--blue);}
+.s-waiting{background:rgba(245,158,11,.18);color:var(--amber);}
+.s-checkin{background:rgba(45,212,191,.13);color:var(--teal);}
+.s-consult{background:rgba(139,92,246,.15);color:var(--purple);}
+.s-late{background:rgba(244,63,94,.18);color:var(--rose);}
+.s-noshow{background:rgba(148,163,184,.13);color:var(--text-secondary);}
+.s-rescheduled{background:rgba(196,168,130,.13);color:var(--gold-light);}
+/* Waitlist queue card */
+.wq-card{background:var(--bg-card);border:1px solid var(--glass-border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:all .2s;position:relative;overflow:hidden;}
+.wq-card:hover{background:var(--bg-card-hover);}
+.wq-card.wq-late{border-color:rgba(244,63,94,.35);background:rgba(244,63,94,.04);}
+.wq-card.wq-consult{border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.04);}
+.wq-card.wq-checkin{border-color:rgba(45,212,191,.35);background:rgba(45,212,191,.04);}
+.wq-rank{width:28px;height:28px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text-muted);flex-shrink:0;}
+.wq-ava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.wq-info{flex:1;min-width:0;}
+.wq-name{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wq-meta{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+.wq-timer{font-size:12px;font-weight:700;color:var(--amber);min-width:60px;text-align:center;}
+.wq-timer.wq-timer-ok{color:var(--emerald);}
+.wq-actions{display:flex;gap:6px;flex-shrink:0;}
+.wq-pulse{animation:wqPulse 1.5s ease-in-out infinite;}
+@keyframes wqPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
 thead th{background:rgba(255,255,255,.03);padding:11px 13px;text-align:right;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--glass-border);white-space:nowrap;}
@@ -327,6 +350,8 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="nav-item" onclick="showScreen('patients')"><span class="nav-icon">👥</span><span class="nav-text">قائمة العملاء</span><span class="nb nb-teal" id="badge-patients">0</span></div>
     <div class="nav-item" onclick="showScreen('photos')"><span class="nav-icon">📸</span><span class="nav-text">الصور قبل/بعد</span></div>
     <div class="nav-label">المواعيد</div>
+    <div class="nav-item" onclick="showScreen('reception')"><span class="nav-icon">🖥️</span><span class="nav-text">شاشة الاستقبال</span></div>
+    <div class="nav-item" onclick="showScreen('doctor-view')"><span class="nav-icon">🩺</span><span class="nav-text">شاشة الطبيب</span></div>
     <div class="nav-item" onclick="showScreen('calendar')"><span class="nav-icon">📅</span><span class="nav-text">التقويم</span><span class="nb nb-rose" id="badge-appts">0</span></div>
     <div class="nav-item" onclick="showScreen('appointments')"><span class="nav-icon">🕐</span><span class="nav-text">قائمة المواعيد</span></div>
     <div class="nav-item" onclick="showScreen('waitlist')"><span class="nav-icon">⏳</span><span class="nav-text">قائمة الانتظار</span></div>
@@ -355,6 +380,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="nav-item" onclick="showScreen('whatsapp')"><span class="nav-icon">💬</span><span class="nav-text">واتساب</span></div>
     <div class="nav-label">إدارة</div>
     <div class="nav-item" onclick="showScreen('branches')"><span class="nav-icon">🏢</span><span class="nav-text">الفروع</span></div>
+    <div class="nav-item" onclick="showScreen('resources')"><span class="nav-icon">🏗️</span><span class="nav-text">الغرف والأجهزة</span></div>
     <div class="nav-item" onclick="showScreen('reports')"><span class="nav-icon">📈</span><span class="nav-text">التقارير</span></div>
     <div class="nav-item" onclick="showScreen('ai')"><span class="nav-icon">🤖</span><span class="nav-text">المساعد الذكي</span></div>
     <div class="nav-item" onclick="showScreen('settings')"><span class="nav-icon">⚙️</span><span class="nav-text">الإعدادات</span></div>
@@ -507,6 +533,105 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div id="t-hist" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">📋 السجل</div></div><div style="display:flex;flex-direction:column;gap:10px;" id="hist-list"></div></div></div>
 </div>
 
+<!-- RECEPTION SCREEN -->
+<div class="screen" id="screen-reception">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <h2 style="font-size:17px;font-weight:800;">🖥️ شاشة الاستقبال</h2>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="rec-date-lbl"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <select class="selbox" id="rec-doc-filter" onchange="renderReception()"><option value="">كل الأطباء</option></select>
+      <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);"><div class="ai-dot"></div> تحديث تلقائي</div>
+      <button class="btn btn-primary" onclick="openApptModal()">+ موعد جديد</button>
+    </div>
+  </div>
+  <!-- KPIs -->
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-amber"><div class="kpi-icon">📅</div><div class="kpi-value" id="rec-kpi-total">0</div><div class="kpi-label">مواعيد اليوم</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">✅</div><div class="kpi-value" id="rec-kpi-checkin">0</div><div class="kpi-label">سجّلوا وصولهم</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">⏰</div><div class="kpi-value" id="rec-kpi-late">0</div><div class="kpi-label">متأخرون</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✔</div><div class="kpi-value" id="rec-kpi-done">0</div><div class="kpi-label">مكتملون</div></div>
+  </div>
+  <!-- Queue cards -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">👥 المرضى — مرتبون بوقت الموعد</div>
+      <span class="card-sub" id="rec-count-lbl"></span>
+    </div>
+    <div id="rec-queue" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<!-- DOCTOR VIEW SCREEN -->
+<div class="screen" id="screen-doctor-view">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <h2 style="font-size:17px;font-weight:800;">🩺 شاشة الطبيب</h2>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="dv-date-lbl"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <select class="selbox" id="dv-doc-select" onchange="renderDoctorView()">
+        <option value="">-- اختر طبيب --</option>
+      </select>
+      <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);"><div class="ai-dot"></div> تحديث تلقائي</div>
+    </div>
+  </div>
+  <!-- Doctor KPIs -->
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-teal"><div class="kpi-icon">📋</div><div class="kpi-value" id="dv-kpi-today">0</div><div class="kpi-label">مرضى اليوم</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">💬</div><div class="kpi-value" id="dv-kpi-waiting">0</div><div class="kpi-label">ينتظرون الآن</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✔</div><div class="kpi-value" id="dv-kpi-done">0</div><div class="kpi-label">أنهيت اليوم</div></div>
+    <div class="kpi-card kc-gold"><div class="kpi-icon">💰</div><div class="kpi-value" id="dv-kpi-comm">0</div><div class="kpi-label">عمولتي (ج)</div></div>
+  </div>
+  <!-- Patient queue for doctor -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">🗂️ مرضاي اليوم — مرتبون بوقت الوصول الفعلي</div>
+      <span class="card-sub" id="dv-count-lbl"></span>
+    </div>
+    <div id="dv-queue" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<!-- CONSULTATION COMPLETE MODAL -->
+<div class="modal-overlay" id="consult-done-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="mhdr">
+      <div class="mtitle">✅ إنهاء الاستشارة</div>
+      <button class="mclose" onclick="closeModal('consult-done-modal')">✕</button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="cd-appt-id">
+      <!-- Patient & visit summary -->
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:14px;margin-bottom:16px;" id="cd-summary"></div>
+      <div class="fg">
+        <div class="fgrp full"><label class="flbl">ملاحظات الاستشارة</label><textarea class="fctl ta" id="cd-notes" placeholder="تشخيص، توصيات، ملاحظات..."></textarea></div>
+        <div class="fgrp full"><label class="flbl">الخدمات المُنفَّذة</label><select class="fctl" id="cd-svc" onchange="onCdSvcChange()"></select></div>
+        <div class="fgrp"><label class="flbl">السعر (ج)</label><input class="fctl" type="number" id="cd-price" oninput="calcCdTotal()"></div>
+        <div class="fgrp"><label class="flbl">الخصم (ج)</label><input class="fctl" type="number" id="cd-disc" value="0" oninput="calcCdTotal()"></div>
+        <div class="fgrp full" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text-muted)">الصافي:</span><span id="cd-net" style="font-weight:800;color:var(--gold-light);">0 ج</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted)">عمولة الطبيب:</span><span id="cd-comm-display" style="color:var(--teal);">0 ج</span></div>
+        </div>
+        <div class="fgrp full"><label class="flbl">طريقة الدفع</label>
+          <div class="pay-g" style="grid-template-columns:repeat(5,1fr);">
+            <div class="pay-m sel" onclick="selPay(this)"><div class="pay-ic">💵</div>كاش</div>
+            <div class="pay-m" onclick="selPay(this)"><div class="pay-ic">💳</div>فيزا</div>
+            <div class="pay-m" onclick="selPay(this)"><div class="pay-ic">📱</div>إنستاباي</div>
+            <div class="pay-m" onclick="selPay(this)"><div class="pay-ic">📱</div>فودافون</div>
+            <div class="pay-m" onclick="selPay(this)"><div class="pay-ic">📆</div>أقساط</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('consult-done-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="finalizeConsultation()">✅ إنهاء وإصدار الفاتورة</button>
+    </div>
+  </div>
+</div>
+
 <!-- CALENDAR -->
 <div class="screen" id="screen-calendar">
   <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start;">
@@ -530,7 +655,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 <div class="screen" id="screen-appointments">
   <div class="filter-bar">
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث..." oninput="filterAppts(this.value)"></div>
-    <select class="selbox" onchange="filterApptSt(this.value)"><option value="">كل الحالات</option><option value="مؤكد">مؤكد</option><option value="انتظار">انتظار</option><option value="في العيادة">في العيادة</option><option value="مكتمل">مكتمل</option><option value="ملغي">ملغي</option></select>
+    <select class="selbox" onchange="filterApptSt(this.value)"><option value="">كل الحالات</option><option value="مؤكد">مؤكد</option><option value="قادم">قادم</option><option value="انتظار">انتظار</option><option value="وصل">وصل</option><option value="في الاستشارة">في الاستشارة</option><option value="متأخر">متأخر</option><option value="مكتمل">مكتمل</option><option value="ملغي">ملغي</option><option value="لم يحضر">لم يحضر</option><option value="محول">محول</option></select>
     <input type="date" class="selbox" onchange="filterApptDate(this.value)">
     <button class="btn btn-primary" onclick="openApptModal()">+ موعد جديد</button>
   </div>
@@ -684,6 +809,45 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="bgrid" id="branches-grid">
     <div style="text-align:center;color:var(--text-muted);padding:30px;font-size:13px">جارٍ تحميل الفروع...</div>
   </div>
+</div>
+
+<!-- ROOMS & EQUIPMENT -->
+<div class="screen" id="screen-resources">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h2 style="font-size:17px;font-weight:800;">🏗️ الغرف والأجهزة</h2>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <h3 style="font-size:14px;font-weight:700;color:var(--text-secondary);">🚪 الغرف</h3>
+    <button class="btn btn-primary btn-sm" onclick="openRoomModal()">+ غرفة جديدة</button>
+  </div>
+  <div class="bgrid" id="rooms-grid"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;">
+    <h3 style="font-size:14px;font-weight:700;color:var(--text-secondary);">🔌 الأجهزة</h3>
+    <button class="btn btn-primary btn-sm" onclick="openEquipModal()">+ جهاز جديد</button>
+  </div>
+  <div class="bgrid" id="equip-grid"></div>
+</div>
+
+<div class="modal-overlay" id="room-modal">
+  <div class="modal" style="max-width:420px"><div class="mhdr"><div class="mtitle" id="room-modal-title">🚪 غرفة جديدة</div><button class="mclose" onclick="closeModal('room-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="rm-id">
+    <div class="fgrp full"><label class="flbl">اسم الغرفة *</label><input class="fctl" id="rm-name" placeholder="مثال: غرفة كشف 1"></div>
+    <div class="fgrp full"><label class="flbl">الفرع</label><select class="fctl" id="rm-branch"></select></div>
+    <div class="fgrp full"><label class="flbl">الحالة</label><select class="fctl" id="rm-status"><option>متاحة</option><option>تحت الصيانة</option></select></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('room-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveRoom()">💾 حفظ</button></div></div>
+</div>
+
+<div class="modal-overlay" id="equip-modal">
+  <div class="modal" style="max-width:420px"><div class="mhdr"><div class="mtitle" id="equip-modal-title">🔌 جهاز جديد</div><button class="mclose" onclick="closeModal('equip-modal')">✕</button></div>
+  <div class="mbody"><div class="fg">
+    <input type="hidden" id="eq-id">
+    <div class="fgrp full"><label class="flbl">اسم الجهاز *</label><input class="fctl" id="eq-name" placeholder="مثال: جهاز ليزر إزالة الشعر"></div>
+    <div class="fgrp full"><label class="flbl">الفرع</label><select class="fctl" id="eq-branch"></select></div>
+    <div class="fgrp full"><label class="flbl">الحالة</label><select class="fctl" id="eq-status"><option>شغال</option><option>تحت الصيانة</option></select></div>
+  </div></div>
+  <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('equip-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveEquip()">💾 حفظ</button></div></div>
 </div>
 
 <!-- SETTINGS -->
@@ -866,25 +1030,47 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 <!-- PLACEHOLDERS -->
 <!-- WAITLIST -->
 <div class="screen" id="screen-waitlist">
-  <div class="filter-bar">
-    <div class="sbox"><span>🔍</span><input type="text" id="wl-search" placeholder="بحث عن عميل..." oninput="renderWaitlist()"></div>
-    <select class="selbox" id="wl-branch-filter" onchange="renderWaitlist()"><option value="">كل الفروع</option><option>مدينة نصر</option><option>المهندسين</option></select>
-    <button class="btn btn-primary" onclick="openWaitlistModal()">+ إضافة للقائمة</button>
-  </div>
-  <div class="kpi-grid" style="margin-bottom:18px;">
-    <div class="kpi-card kc-amber"><div class="kpi-icon">⏳</div><div class="kpi-value" id="wl-kpi-total">0</div><div class="kpi-label">إجمالي قائمة الانتظار</div></div>
-    <div class="kpi-card kc-rose"><div class="kpi-icon">🔥</div><div class="kpi-value" id="wl-kpi-urgent">0</div><div class="kpi-label">عاجل (48 ساعة)</div></div>
-    <div class="kpi-card kc-teal"><div class="kpi-icon">📅</div><div class="kpi-value" id="wl-kpi-today">0</div><div class="kpi-label">أضيفوا اليوم</div></div>
-    <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="wl-kpi-converted">0</div><div class="kpi-label">تحولوا لمواعيد</div></div>
-  </div>
-  <div class="card">
-    <div class="card-hdr"><div class="card-title">⏳ العملاء في قائمة الانتظار</div><span class="card-sub" id="wl-count-lbl">0 عميل</span></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>العميل</th><th>الخدمة المطلوبة</th><th>الفرع</th><th>الأولوية</th><th>تاريخ الإضافة</th><th>ملاحظات</th><th></th></tr></thead>
-        <tbody id="wl-tbody"></tbody>
-      </table>
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <h2 style="font-size:17px;font-weight:800;">⏳ قائمة الانتظار اليومية</h2>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="wl-date-lbl"></div>
     </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <div class="sbox" style="min-width:160px;"><span>🔍</span><input type="text" id="wl-search" placeholder="بحث..." oninput="renderWaitlist()"></div>
+      <select class="selbox" id="wl-branch-filter" onchange="renderWaitlist()"><option value="">كل الفروع</option></select>
+      <select class="selbox" id="wl-status-filter" onchange="renderWaitlist()">
+        <option value="">كل الحالات</option>
+        <option value="قادم">قادم</option>
+        <option value="انتظار">انتظار</option>
+        <option value="وصل">وصل</option>
+        <option value="في الاستشارة">في الاستشارة</option>
+        <option value="متأخر">متأخر</option>
+        <option value="مكتمل">مكتمل</option>
+        <option value="لم يحضر">لم يحضر</option>
+      </select>
+      <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);" id="wl-auto-lbl">
+        <div class="ai-dot"></div> تحديث تلقائي
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-amber"><div class="kpi-icon">📅</div><div class="kpi-value" id="wl-kpi-today">0</div><div class="kpi-label">مواعيد اليوم</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">🏃</div><div class="kpi-value" id="wl-kpi-active">0</div><div class="kpi-label">في العيادة الآن</div></div>
+    <div class="kpi-card kc-purple"><div class="kpi-icon">💬</div><div class="kpi-value" id="wl-kpi-consult">0</div><div class="kpi-label">في الاستشارة</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">⏰</div><div class="kpi-value" id="wl-kpi-late">0</div><div class="kpi-label">متأخرون</div></div>
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">✅</div><div class="kpi-value" id="wl-kpi-done">0</div><div class="kpi-label">مكتملون اليوم</div></div>
+  </div>
+
+  <!-- Queue list -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">🗂️ طابور الانتظار</div>
+      <span class="card-sub" id="wl-count-lbl">يتم التحميل...</span>
+    </div>
+    <div id="wl-queue-list" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 </div>
 <div class="modal-overlay" id="waitlist-modal">
@@ -991,6 +1177,10 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="fgrp"><label class="flbl">البريد الإلكتروني</label><input class="fctl" id="doc-email" placeholder="email@example.com"></div>
     <div class="fgrp"><label class="flbl">نسبة العمولة (%)</label><input class="fctl" type="number" id="doc-commission" placeholder="15"></div>
     <div class="fgrp"><label class="flbl">الحالة</label><select class="fctl" id="doc-status"><option>نشط</option><option>غير نشط</option></select></div>
+    <div class="fgrp"><label class="flbl">بداية الدوام</label><input class="fctl" type="time" id="doc-workstart" value="09:00"></div>
+    <div class="fgrp"><label class="flbl">نهاية الدوام</label><input class="fctl" type="time" id="doc-workend" value="17:00"></div>
+    <div class="fgrp"><label class="flbl">يوم الإجازة الأسبوعية</label><select class="fctl" id="doc-offday"><option value="">بدون</option><option>الجمعة</option><option>السبت</option><option>الأحد</option><option>الإثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option></select></div>
+    <div class="fgrp full"><label class="flbl">إجازات محددة (تواريخ مفصولة بفاصلة)</label><input class="fctl" id="doc-leaves" placeholder="2026-07-01, 2026-07-05"></div>
   </div></div>
   <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('doctor-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveDoc()">💾 حفظ</button></div></div>
 </div>
@@ -1396,8 +1586,10 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="fgrp"><label class="flbl">الطبيب</label><select class="fctl" id="am-doc"><option>د. منى سامي</option><option>د. أحمد رضا</option><option>د. لمياء حسن</option></select></div>
     <div class="fgrp"><label class="flbl">التاريخ *</label><input class="fctl" type="date" id="am-date"></div>
     <div class="fgrp"><label class="flbl">الوقت *</label><input class="fctl" type="time" id="am-time"></div>
-    <div class="fgrp"><label class="flbl">الخدمة</label><select class="fctl" id="am-svc"><option>هيدرافيشل</option><option>ليزر إزالة شعر</option><option>بوتكس</option><option>بلازما</option><option>تنظيف بشرة</option></select></div>
+    <div class="fgrp"><label class="flbl">الخدمة</label><select class="fctl" id="am-svc" onchange="onApptSvcChange()"></select></div>
+    <div class="fgrp"><label class="flbl">الغرفة</label><select class="fctl" id="am-room"><option value="">— تلقائي حسب الخدمة —</option></select></div>
     <div class="fgrp"><label class="flbl">الفرع</label><select class="fctl" id="am-branch"><option>مدينة نصر</option><option>المهندسين</option></select></div>
+    <div class="fgrp full" id="am-conflict-box" style="display:none;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--rose);"></div>
     <div class="fgrp full"><label class="flbl">ملاحظات</label><textarea class="fctl ta" id="am-notes" placeholder="أي ملاحظات..."></textarea></div>
     <div class="fgrp full"><label class="flbl">تذكير بـ</label><div style="display:flex;gap:14px;"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> واتساب</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox"> SMS</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox"> إيميل</label></div></div>
   </div></div>
@@ -1485,6 +1677,8 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="fgrp"><label class="flbl">السعر (ج)</label><input class="fctl" type="number" id="sv-price" placeholder="0"></div>
     <div class="fgrp"><label class="flbl">التكلفة (ج)</label><input class="fctl" type="number" id="sv-cost" placeholder="0"></div>
     <div class="fgrp"><label class="flbl">المدة (دقيقة)</label><input class="fctl" type="number" id="sv-dur" placeholder="60"></div>
+    <div class="fgrp"><label class="flbl">الغرفة المطلوبة</label><select class="fctl" id="sv-room"><option value="">— بدون تحديد —</option></select></div>
+    <div class="fgrp"><label class="flbl">الجهاز المطلوب</label><select class="fctl" id="sv-equip"><option value="">— بدون تحديد —</option></select></div>
   </div></div>
   <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('service-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveSvc()">💾 حفظ</button></div></div>
 </div>
@@ -1507,7 +1701,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 const CLINIC_LOGO_URI='data:image/jpeg;base64,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';
 function clinicLogoHTML(size){size=size||34;return `<img src="${CLINIC_LOGO_URI}" style="width:${size}px;height:${size}px;object-fit:contain;border-radius:8px;flex-shrink:0;" alt="logo">`;}
 const DB={
-  _fb:['patients','appointments','inventory','invoices','services','leads','doctors','staff','expenses','branches','campaigns','packages','sessions','waitlist'],
+  _fb:['patients','appointments','inventory','invoices','services','leads','doctors','staff','expenses','branches','campaigns','packages','sessions','waitlist','rooms','equipment'],
   get(k){try{return JSON.parse(localStorage.getItem('ha_'+k))||[];}catch{return [];}},
   obj(k){try{return JSON.parse(localStorage.getItem('ha_'+k))||{};}catch{return {};}},
   set(k,v){localStorage.setItem('ha_'+k,JSON.stringify(v));},
@@ -1540,10 +1734,21 @@ if(!localStorage.getItem('ha_seeded')){
     {id:'v2',patient:'مي إبراهيم حسن',service:'ليزر شعر',total:1200,paid:600,remaining:600,status:'جزئي',method:'فيزا',date:today}
   ]);
   DB.set('services',[
-    {id:'s1',name:'هيدرافيشل',cat:'البشرة',price:800,cost:200,duration:60,doctor:'د. منى سامي'},
-    {id:'s2',name:'ليزر إزالة شعر',cat:'ليزر',price:1200,cost:300,duration:45,doctor:'د. أحمد رضا'},
-    {id:'s3',name:'بوتكس',cat:'حقن',price:3500,cost:800,duration:30,doctor:'د. منى سامي'},
-    {id:'s4',name:'بلازما',cat:'البشرة',price:2000,cost:400,duration:50,doctor:'د. لمياء حسن'}
+    {id:'s1',name:'هيدرافيشل',cat:'البشرة',price:800,cost:200,duration:60,doctor:'د. منى سامي',room:'غرفة كشف 1',equipment:''},
+    {id:'s2',name:'ليزر إزالة شعر',cat:'ليزر',price:1200,cost:300,duration:45,doctor:'د. أحمد رضا',room:'غرفة ليزر',equipment:'جهاز ليزر إزالة الشعر'},
+    {id:'s3',name:'بوتكس',cat:'حقن',price:3500,cost:800,duration:30,doctor:'د. منى سامي',room:'غرفة كشف 1',equipment:''},
+    {id:'s4',name:'بلازما',cat:'البشرة',price:2000,cost:400,duration:50,doctor:'د. لمياء حسن',room:'غرفة كشف 2',equipment:'جهاز بلازما'}
+  ]);
+  DB.set('rooms',[
+    {id:'r1',name:'غرفة كشف 1',branch:'مدينة نصر',status:'متاحة'},
+    {id:'r2',name:'غرفة كشف 2',branch:'مدينة نصر',status:'متاحة'},
+    {id:'r3',name:'غرفة ليزر',branch:'مدينة نصر',status:'متاحة'},
+    {id:'r4',name:'غرفة كشف 1',branch:'المهندسين',status:'متاحة'}
+  ]);
+  DB.set('equipment',[
+    {id:'e1',name:'جهاز ليزر إزالة الشعر',branch:'مدينة نصر',status:'شغال'},
+    {id:'e2',name:'جهاز بلازما',branch:'المهندسين',status:'شغال'},
+    {id:'e3',name:'جهاز هيدرافيشل',branch:'مدينة نصر',status:'شغال'}
   ]);
   DB.set('leads',[
     {id:'l1',name:'رانيا مصطفى',phone:'01011111111',service:'ليزر شعر',source:'إنستجرام',status:'جديد',notes:''},
@@ -1554,9 +1759,9 @@ if(!localStorage.getItem('ha_seeded')){
   ]);
   DB.set('settings',{clinicName:'عيادات الحياة للتجميل',phone:'0100-000-0000',managerName:'د. سارة محمد',managerRole:'مدير النظام'});
   DB.set('doctors',[
-    {id:'d1',name:'د. منى سامي',specialty:'بشرة وجلدية',phone:'01112223331',email:'mona@lifeclinics.com',branch:'مدينة نصر',commission:15,status:'نشط'},
-    {id:'d2',name:'د. أحمد رضا',specialty:'ليزر وإزالة شعر',phone:'01112223332',email:'ahmed@lifeclinics.com',branch:'مدينة نصر',commission:12,status:'نشط'},
-    {id:'d3',name:'د. لمياء حسن',specialty:'حقن وبلازما',phone:'01112223333',email:'lamia@lifeclinics.com',branch:'المهندسين',commission:18,status:'نشط'}
+    {id:'d1',name:'د. منى سامي',specialty:'بشرة وجلدية',phone:'01112223331',email:'mona@lifeclinics.com',branch:'مدينة نصر',commission:15,status:'نشط',workStart:'09:00',workEnd:'17:00',offDay:'الجمعة',leaveDates:''},
+    {id:'d2',name:'د. أحمد رضا',specialty:'ليزر وإزالة شعر',phone:'01112223332',email:'ahmed@lifeclinics.com',branch:'مدينة نصر',commission:12,status:'نشط',workStart:'10:00',workEnd:'18:00',offDay:'الجمعة',leaveDates:''},
+    {id:'d3',name:'د. لمياء حسن',specialty:'حقن وبلازما',phone:'01112223333',email:'lamia@lifeclinics.com',branch:'المهندسين',commission:18,status:'نشط',workStart:'09:00',workEnd:'16:00',offDay:'السبت',leaveDates:''}
   ]);
   DB.set('expenses',[
     {id:'e1',name:'إيجار الفرع',amount:8000,type:'إيجار',branch:'مدينة نصر',date:today,notes:''},
@@ -1586,7 +1791,7 @@ function useSysTheme(){localStorage.removeItem('ha_theme');applyTheme(window.mat
 window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{if(!localStorage.getItem('ha_theme'))applyTheme(e.matches?'dark':'light');});
 
 // NAVIGATION
-const TITLES={dashboard:'لوحة التحكم',patients:'قائمة العملاء','patient-profile':'ملف العميل',calendar:'التقويم',appointments:'المواعيد',waitlist:'قائمة الانتظار',sessions:'الجلسات',services:'الخدمات',packages:'الباقات',doctors:'الأطباء',staff:'الموظفون',invoices:'الفواتير',payments:'المدفوعات',installments:'الأقساط',expenses:'المصروفات',treasury:'الخزينة',accounts:'الحسابات',inventory:'المخزون',suppliers:'الموردون',purchases:'المشتريات',transfers:'تحويل المخزون',leads:'العملاء المحتملون',campaigns:'الحملات',whatsapp:'واتساب',branches:'الفروع',reports:'التقارير',ai:'المساعد الذكي',settings:'الإعدادات',photos:'الصور'};
+const TITLES={dashboard:'لوحة التحكم',patients:'قائمة العملاء','patient-profile':'ملف العميل',reception:'شاشة الاستقبال','doctor-view':'شاشة الطبيب',calendar:'التقويم',appointments:'المواعيد',waitlist:'قائمة الانتظار',sessions:'الجلسات',services:'الخدمات',packages:'الباقات',doctors:'الأطباء',staff:'الموظفون',invoices:'الفواتير',payments:'المدفوعات',installments:'الأقساط',expenses:'المصروفات',treasury:'الخزينة',accounts:'الحسابات',inventory:'المخزون',suppliers:'الموردون',purchases:'المشتريات',transfers:'تحويل المخزون',leads:'العملاء المحتملون',campaigns:'الحملات',whatsapp:'واتساب',branches:'الفروع',resources:'الغرف والأجهزة',reports:'التقارير',ai:'المساعد الذكي',settings:'الإعدادات',photos:'الصور'};
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -1617,7 +1822,7 @@ function showScreen(id){
   if(id==='campaigns')renderCampaigns();
   if(id==='photos')renderPhotos();
   if(id==='accounts')renderAccounts();
-  if(id==='waitlist')renderWaitlist();
+  if(id==='waitlist'){_wlAutoUpdateStatuses();renderWaitlist();}
   if(id==='sessions')renderSessions();
   if(id==='packages')renderPackages();
 }
@@ -1630,7 +1835,7 @@ document.addEventListener('touchstart',e=>_tx=e.touches[0].clientX,{passive:true
 document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_tx;if(dx<-55)closeSidebar();if(dx>55&&_tx<30)toggleSidebar();},{passive:true});
 
 // MODAL
-function openModal(id){document.getElementById(id)?.classList.add('open');fillPatDropdowns();fillDocDropdowns();}
+function openModal(id){document.getElementById(id)?.classList.add('open');fillPatDropdowns();fillDocDropdowns();fillSvcDropdowns();}
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 function fillPatDropdowns(){
@@ -1895,11 +2100,23 @@ let _af='',_as='',_ad='';
 function filterAppts(q){_af=q;renderAppts();}
 function filterApptSt(s){_as=s;renderAppts();}
 function filterApptDate(d){_ad=d;renderAppts();}
-const ASC={'مؤكد':'sc','انتظار':'sp','في العيادة':'sw','مكتمل':'sd','ملغي':'sx'};
+const ASC={
+  'مؤكد':'sc',
+  'قادم':'s-upcoming',
+  'انتظار':'sp',
+  'وصل':'s-checkin',
+  'في الاستشارة':'s-consult',
+  'مكتمل':'sd',
+  'ملغي':'sx',
+  'متأخر':'s-late',
+  'لم يحضر':'s-noshow',
+  'محول':'s-rescheduled',
+  'في العيادة':'sw'
+};
 function renderAppts(){
   const appts=DB.get('appointments').filter(a=>(!_af||a.patient.includes(_af))&&(!_as||a.status===_as)&&(!_ad||a.date===_ad));
   const tb=document.getElementById('appts-tbody');if(!tb)return;
-  tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;white-space:nowrap;"><button class="btn btn-ghost btn-xs" onclick="openApptModal('${a.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-teal btn-xs" onclick="sendApptWA('${a.id}')" title="إرسال الموعد عبر واتساب">💬</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}${a.endTime?` <span style="color:var(--text-muted);font-weight:400;font-size:11px">- ${a.endTime}</span>`:''}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;white-space:nowrap;"><button class="btn btn-ghost btn-xs" onclick="openApptModal('${a.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-teal btn-xs" onclick="sendApptWA('${a.id}')" title="إرسال الموعد عبر واتساب">💬</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
   renderTodayAppts();
 }
 function updAppt(id,st){DB.upd('appointments',id,{status:st});renderAppts();showToast('success','✅ تم تحديث حالة الموعد');}
@@ -1918,8 +2135,10 @@ function sendApptWA(id){
 function openApptModal(id){
   const a=id?DB.get('appointments').find(x=>x.id===id):null;
   document.getElementById('appt-modal-title').textContent=a?'✏️ تعديل موعد':'📅 موعد جديد';
+  clearApptConflictBox();
   document.getElementById('am-id').value=a?a.id:'';
   fillPatDropdowns();
+  fillSvcDropdowns();
   if(a){
     document.getElementById('am-pat').value=a.patId||'';
     document.getElementById('am-type').value=a.type||'كشف';
@@ -1927,11 +2146,14 @@ function openApptModal(id){
     document.getElementById('am-date').value=a.date||'';
     document.getElementById('am-time').value=a.time||'';
     document.getElementById('am-svc').value=a.service||'';
+    fillApptRoomDropdown(a.service||'');
+    document.getElementById('am-room').value=a.room||'';
     document.getElementById('am-branch').value=a.branch||'';
     const notesEl=document.getElementById('am-notes');if(notesEl)notesEl.value=a.notes||'';
   } else {
     document.getElementById('am-date').value=new Date().toISOString().split('T')[0];
     document.getElementById('am-time').value='10:00';
+    fillApptRoomDropdown(gv('am-svc'));
     const notesEl=document.getElementById('am-notes');if(notesEl)notesEl.value='';
     document.getElementById('am-id').value='';
   }
@@ -1942,11 +2164,89 @@ function saveAppt(){
   if(!pid||!date||!time){showToast('warning','⚠️ اختر العميل والتاريخ والوقت');return;}
   const pat=DB.get('patients').find(p=>String(p.id)===String(pid));
   const id=gv('am-id');
-  const data={patId:pid,patient:pat?.name||pid,service:gv('am-svc'),type:gv('am-type'),doctor:gv('am-doc'),date,time,branch:gv('am-branch'),notes:gv('am-notes')};
+  const svcName=gv('am-svc');
+  const svc=DB.get('services').find(s=>s.name===svcName);
+  const duration=svc?(svc.duration||60):60;
+  const endTime=addMinutesToTime(time,duration);
+  const doctor=gv('am-doc');
+  const room=gv('am-room')||svc?.room||'';
+  const equipment=svc?.equipment||'';
+  const conflict=checkApptConflict({doctor,date,time,duration,room,equipment,excludeId:id});
+  if(!conflict.ok){
+    const suggestions=suggestApptSlots({doctor,date,duration,room,equipment,excludeId:id});
+    renderApptConflictBox(conflict.reasons,suggestions);
+    showToast('warning','⚠️ تعارض في الموعد — راجع التفاصيل');
+    return;
+  }
+  clearApptConflictBox();
+  const data={patId:pid,patient:pat?.name||pid,service:svcName,type:gv('am-type'),doctor,date,time,endTime,duration,room,equipment,branch:gv('am-branch'),notes:gv('am-notes')};
   if(id){DB.upd('appointments',id,data);showToast('success','✅ تم تحديث الموعد');}
   else{DB.push('appointments',{...data,status:'مؤكد'});showToast('success','📅 تم حجز الموعد بنجاح',`${pat?.name} - ${date} ${time}`);}
   closeModal('appt-modal');renderAppts();buildCal();renderTodayAppts();
   const e=document.getElementById('am-notes');if(e)e.value='';
+}
+function addMinutesToTime(time,mins){
+  const [h,m]=(time||'00:00').split(':').map(Number);
+  const total=h*60+m+(mins||0);
+  const hh=String(Math.floor((total%1440)/60)).padStart(2,'0');
+  const mm=String(total%60).padStart(2,'0');
+  return `${hh}:${mm}`;
+}
+function _timeToMin(t){const [h,m]=(t||'00:00').split(':').map(Number);return h*60+(m||0);}
+function _rangesOverlap(s1,e1,s2,e2){return s1<e2 && s2<e1;}
+const AR_WEEKDAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+// Checks doctor / room / equipment / working-hours / leave conflicts for a proposed appointment slot.
+// Returns {ok:true} or {ok:false, reasons:[...]}
+function checkApptConflict({doctor,date,time,duration,room,equipment,excludeId}){
+  const reasons=[];
+  const start=_timeToMin(time), end=start+(duration||60);
+  const docInfo=DB.get('doctors').find(d=>d.name===doctor);
+  if(docInfo){
+    if(docInfo.workStart && start<_timeToMin(docInfo.workStart)) reasons.push(`الوقت قبل بداية دوام ${doctor} (${docInfo.workStart})`);
+    if(docInfo.workEnd && end>_timeToMin(docInfo.workEnd)) reasons.push(`الوقت بعد نهاية دوام ${doctor} (${docInfo.workEnd})`);
+    const dow=AR_WEEKDAYS[new Date(date+'T00:00:00').getDay()];
+    if(docInfo.offDay && docInfo.offDay===dow) reasons.push(`${doctor} في إجازته الأسبوعية (${dow})`);
+    const leaves=(docInfo.leaveDates||'').split(',').map(s=>s.trim()).filter(Boolean);
+    if(leaves.includes(date)) reasons.push(`${doctor} في إجازة بتاريخ ${date}`);
+  }
+  const others=DB.get('appointments').filter(a=>a.date===date && a.status!=='ملغي' && String(a.id)!==String(excludeId));
+  for(const a of others){
+    const aStart=_timeToMin(a.time), aEnd=_timeToMin(a.endTime)||aStart+(a.duration||60);
+    if(!_rangesOverlap(start,end,aStart,aEnd)) continue;
+    if(doctor && a.doctor===doctor) reasons.push(`الطبيب ${doctor} محجوز بموعد آخر (${a.patient} - ${a.time})`);
+    if(room && a.room===room) reasons.push(`الغرفة "${room}" محجوزة في نفس الوقت (${a.patient} - ${a.time})`);
+    if(equipment && a.equipment===equipment) reasons.push(`الجهاز "${equipment}" محجوز في نفس الوقت (${a.patient} - ${a.time})`);
+  }
+  return reasons.length?{ok:false,reasons:[...new Set(reasons)]}:{ok:true};
+}
+// Suggests up to `count` nearest free time slots (15-minute steps) for the same doctor/room/equipment/date.
+function suggestApptSlots({doctor,date,duration,room,equipment,excludeId},count=3){
+  const docInfo=DB.get('doctors').find(d=>d.name===doctor);
+  const dayStart=docInfo?.workStart?_timeToMin(docInfo.workStart):540;
+  const dayEnd=docInfo?.workEnd?_timeToMin(docInfo.workEnd):1080;
+  const found=[];
+  for(let t=dayStart;t+(duration||60)<=dayEnd;t+=15){
+    const hh=String(Math.floor(t/60)).padStart(2,'0'),mm=String(t%60).padStart(2,'0');
+    const timeStr=`${hh}:${mm}`;
+    const res=checkApptConflict({doctor,date,time:timeStr,duration,room,equipment,excludeId});
+    if(res.ok){found.push(timeStr);if(found.length>=count)break;}
+  }
+  return found;
+}
+function clearApptConflictBox(){
+  const box=document.getElementById('am-conflict-box');
+  if(box){box.style.display='none';box.innerHTML='';}
+}
+function renderApptConflictBox(reasons,suggestions){
+  const box=document.getElementById('am-conflict-box');if(!box)return;
+  box.style.display='block';
+  let html=`<div style="font-weight:700;margin-bottom:4px;">⚠️ في تعارض بالموعد:</div><ul style="margin:0;padding-right:18px;">${reasons.map(r=>`<li>${r}</li>`).join('')}</ul>`;
+  if(suggestions && suggestions.length){
+    html+=`<div style="margin-top:8px;font-weight:700;color:var(--text-primary);">أقرب أوقات متاحة:</div><div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">${suggestions.map(s=>`<button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('am-time').value='${s}';clearApptConflictBox();">${s}</button>`).join('')}</div>`;
+  } else {
+    html+=`<div style="margin-top:8px;">لا يوجد وقت متاح آخر لنفس اليوم — جرّب يوم آخر.</div>`;
+  }
+  box.innerHTML=html;
 }
 function renderTodayAppts(){
   const today=new Date().toISOString().split('T')[0];
@@ -2159,12 +2459,16 @@ function openDocModal(id){
   document.getElementById('doc-email').value=d?d.email||'':'';
   document.getElementById('doc-commission').value=d?d.commission||15:15;
   document.getElementById('doc-status').value=d?d.status:'نشط';
+  document.getElementById('doc-workstart').value=d?(d.workStart||'09:00'):'09:00';
+  document.getElementById('doc-workend').value=d?(d.workEnd||'17:00'):'17:00';
+  document.getElementById('doc-offday').value=d?(d.offDay||''):'';
+  document.getElementById('doc-leaves').value=d?(d.leaveDates||''):'';
   openModal('doctor-modal');
 }
 function saveDoc(){
   const name=gv('doc-name').trim();if(!name){showToast('warning','⚠️ اسم الطبيب مطلوب');return;}
   const id=gv('doc-id');
-  const data={name,specialty:gv('doc-specialty'),branch:gv('doc-branch'),phone:gv('doc-phone'),email:gv('doc-email'),commission:parseFloat(gv('doc-commission'))||0,status:gv('doc-status')};
+  const data={name,specialty:gv('doc-specialty'),branch:gv('doc-branch'),phone:gv('doc-phone'),email:gv('doc-email'),commission:parseFloat(gv('doc-commission'))||0,status:gv('doc-status'),workStart:gv('doc-workstart')||'09:00',workEnd:gv('doc-workend')||'17:00',offDay:gv('doc-offday'),leaveDates:gv('doc-leaves')};
   if(id){DB.upd('doctors',id,data);showToast('success',`✅ تم تحديث بيانات ${name}`);}
   else{DB.push('doctors',data);showToast('success',`✅ تم إضافة ${name}`);}
   closeModal('doctor-modal');renderDocs();
@@ -2181,6 +2485,24 @@ function fillDocDropdowns(){
     sel.innerHTML=docs.map(d=>`<option value="${d.name}">${d.name}</option>`).join('')||'<option value="">-- لا يوجد أطباء --</option>';
     if(cur && docs.some(d=>d.name===cur))sel.value=cur;
   });
+}
+function fillSvcDropdowns(){
+  const svcs=DB.get('services');
+  const sel=document.getElementById('am-svc');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=svcs.map(s=>`<option value="${s.name}">${s.name} (${s.duration||60} د)</option>`).join('')||'<option value="">-- لا توجد خدمات --</option>';
+  if(cur && svcs.some(s=>s.name===cur))sel.value=cur;
+}
+function fillApptRoomDropdown(svcName){
+  const sel=document.getElementById('am-room');if(!sel)return;
+  const cur=sel.value;
+  const svc=DB.get('services').find(s=>s.name===svcName);
+  sel.innerHTML='<option value="">— تلقائي حسب الخدمة —</option>'+DB.get('rooms').map(r=>`<option>${r.name}</option>`).join('');
+  if(svc && svc.room)sel.value=svc.room;
+  else if(cur)sel.value=cur;
+}
+function onApptSvcChange(){
+  fillApptRoomDropdown(gv('am-svc'));
 }
 
 // EXPENSES
@@ -2321,12 +2643,16 @@ function openSvcModal(id){
   if(catSel&&s)catSel.value=s.cat||catSel.options[0].value;
   const docSel=document.getElementById('sv-doc');
   if(docSel&&s)docSel.value=s.doctor||docSel.options[0].value;
+  const roomSel=document.getElementById('sv-room');
+  if(roomSel){roomSel.innerHTML='<option value="">— بدون تحديد —</option>'+DB.get('rooms').map(r=>`<option>${r.name}</option>`).join('');roomSel.value=s?(s.room||''):'';}
+  const equipSel=document.getElementById('sv-equip');
+  if(equipSel){equipSel.innerHTML='<option value="">— بدون تحديد —</option>'+DB.get('equipment').map(e=>`<option>${e.name}</option>`).join('');equipSel.value=s?(s.equipment||''):'';}
   openModal('service-modal');
 }
 function saveSvc(){
   const name=gv('sv-name').trim();if(!name){showToast('warning','⚠️ اسم الخدمة مطلوب');return;}
   const id=gv('sv-id');
-  const data={name,cat:gv('sv-cat'),doctor:gv('sv-doc'),price:parseFloat(gv('sv-price'))||0,cost:parseFloat(gv('sv-cost'))||0,duration:parseInt(gv('sv-dur'))||60};
+  const data={name,cat:gv('sv-cat'),doctor:gv('sv-doc'),price:parseFloat(gv('sv-price'))||0,cost:parseFloat(gv('sv-cost'))||0,duration:parseInt(gv('sv-dur'))||60,room:gv('sv-room'),equipment:gv('sv-equip')};
   if(id){DB.upd('services',id,data);showToast('success',`✅ تم تحديث "${name}"`);}
   else{DB.push('services',data);showToast('success',`✅ تم إضافة "${name}"`);}
   closeModal('service-modal');renderSvcs();
@@ -3368,6 +3694,10 @@ function init(){
   ['am-date','im-date'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=td;});
   // Show setup on first visit
   if(!localStorage.getItem('ha_setup_shown')){setTimeout(()=>{document.getElementById('setup-screen')?.classList.add('show');localStorage.setItem('ha_setup_shown','1');},800);}
+  // Phase 2: run first status auto-update, then start 60s timer
+  window._wlTimer=null;
+  _wlAutoUpdateStatuses();
+  _startWLAutoRefresh();
 }
 init();
 // ══════════════════════════════════════════
@@ -3502,11 +3832,71 @@ function delBranch(id){
   if(confirm(`حذف فرع "${b?.name}"؟`)){ DB.del('branches',id); renderBranches(); showToast('info','🗑 تم حذف الفرع'); }
 }
 
+// ROOMS & EQUIPMENT
+function fillResBranchSelect(id,cur){
+  const sel=document.getElementById(id);if(!sel)return;
+  sel.innerHTML=DB.get('branches').map(b=>`<option>${b.name}</option>`).join('')||'<option>مدينة نصر</option>';
+  if(cur)sel.value=cur;
+}
+function renderRooms(){
+  const grid=document.getElementById('rooms-grid');if(!grid)return;
+  const rooms=DB.get('rooms');
+  grid.innerHTML=rooms.map(r=>`<div class="bcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-weight:700;font-size:14px;">🚪 ${r.name}</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${r.branch||'—'}</div></div><span class="ast ${r.status==='متاحة'?'sc':'sd'}">${r.status||'متاحة'}</span></div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-ghost btn-sm" onclick="openRoomModal('${r.id}')">✏️ تعديل</button><button class="btn btn-ghost btn-sm" onclick="delRoom('${r.id}')">🗑️ حذف</button></div></div>`).join('')||'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">لا توجد غرف مضافة</div>';
+}
+function openRoomModal(id){
+  const r=id?DB.get('rooms').find(x=>x.id===id):null;
+  document.getElementById('room-modal-title').textContent=r?'✏️ تعديل غرفة':'🚪 غرفة جديدة';
+  document.getElementById('rm-id').value=r?r.id:'';
+  document.getElementById('rm-name').value=r?r.name:'';
+  fillResBranchSelect('rm-branch',r?r.branch:null);
+  document.getElementById('rm-status').value=r?(r.status||'متاحة'):'متاحة';
+  openModal('room-modal');
+}
+function saveRoom(){
+  const name=gv('rm-name').trim();if(!name){showToast('warning','⚠️ اسم الغرفة مطلوب');return;}
+  const id=gv('rm-id');
+  const data={name,branch:gv('rm-branch'),status:gv('rm-status')};
+  if(id){DB.upd('rooms',id,data);showToast('success','✅ تم تحديث الغرفة');}
+  else{DB.push('rooms',data);showToast('success','✅ تم إضافة الغرفة');}
+  closeModal('room-modal');renderRooms();
+}
+function delRoom(id){
+  const r=DB.get('rooms').find(x=>x.id===id);
+  if(confirm(`حذف "${r?.name}"؟`)){DB.del('rooms',id);renderRooms();showToast('info','🗑️ تم حذف الغرفة');}
+}
+function renderEquipment(){
+  const grid=document.getElementById('equip-grid');if(!grid)return;
+  const eq=DB.get('equipment');
+  grid.innerHTML=eq.map(e=>`<div class="bcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div style="font-weight:700;font-size:14px;">🔌 ${e.name}</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${e.branch||'—'}</div></div><span class="ast ${e.status==='شغال'?'sc':'sd'}">${e.status||'شغال'}</span></div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-ghost btn-sm" onclick="openEquipModal('${e.id}')">✏️ تعديل</button><button class="btn btn-ghost btn-sm" onclick="delEquip('${e.id}')">🗑️ حذف</button></div></div>`).join('')||'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">لا توجد أجهزة مضافة</div>';
+}
+function openEquipModal(id){
+  const e=id?DB.get('equipment').find(x=>x.id===id):null;
+  document.getElementById('equip-modal-title').textContent=e?'✏️ تعديل جهاز':'🔌 جهاز جديد';
+  document.getElementById('eq-id').value=e?e.id:'';
+  document.getElementById('eq-name').value=e?e.name:'';
+  fillResBranchSelect('eq-branch',e?e.branch:null);
+  document.getElementById('eq-status').value=e?(e.status||'شغال'):'شغال';
+  openModal('equip-modal');
+}
+function saveEquip(){
+  const name=gv('eq-name').trim();if(!name){showToast('warning','⚠️ اسم الجهاز مطلوب');return;}
+  const id=gv('eq-id');
+  const data={name,branch:gv('eq-branch'),status:gv('eq-status')};
+  if(id){DB.upd('equipment',id,data);showToast('success','✅ تم تحديث الجهاز');}
+  else{DB.push('equipment',data);showToast('success','✅ تم إضافة الجهاز');}
+  closeModal('equip-modal');renderEquipment();
+}
+function delEquip(id){
+  const e=DB.get('equipment').find(x=>x.id===id);
+  if(confirm(`حذف "${e?.name}"؟`)){DB.del('equipment',id);renderEquipment();showToast('info','🗑️ تم حذف الجهاز');}
+}
+
 // Hook showScreen for branches
 const _origShowBranch = window.showScreen;
 window.showScreen = function(id){
   _origShowBranch(id);
   if(id==='branches') renderBranches();
+  if(id==='resources'){ renderRooms(); renderEquipment(); }
 };
 // ══════════════════════════════════════════
 // 🔐 SESSION MANAGEMENT (Secure — base64 encoded session)
@@ -3608,6 +3998,7 @@ const ALL_SCREENS = [
   {key:'campaigns',    label:'الحملات',            icon:'📣', group:'تسويق'},
   {key:'whatsapp',     label:'واتساب',             icon:'💬', group:'تسويق'},
   {key:'branches',     label:'الفروع',             icon:'🏢', group:'إدارة'},
+  {key:'resources',    label:'الغرف والأجهزة',     icon:'🏗️', group:'إدارة'},
   {key:'reports',      label:'التقارير',           icon:'📈', group:'إدارة'},
   {key:'ai',           label:'المساعد الذكي',      icon:'🤖', group:'إدارة'},
   {key:'settings',     label:'الإعدادات',          icon:'⚙️', group:'إدارة'},
@@ -5232,87 +5623,197 @@ DB.push = function(key, item){
 // ══════════════════════════════════════════
 // ⏳ WAITLIST
 // ══════════════════════════════════════════
-function renderWaitlist(){
-  const tb=document.getElementById('wl-tbody');if(!tb)return;
-  const q=(document.getElementById('wl-search')?.value||'').toLowerCase();
-  const branch=document.getElementById('wl-branch-filter')?.value||'';
+// ─── PHASE 2: Smart Auto-Queue (Waitlist) ───────────────────────────────────
+
+// Status auto-transition rules (run every minute)
+function _wlAutoUpdateStatuses(){
   const today=new Date().toISOString().split('T')[0];
-  let items=DB.get('waitlist');
-  if(q)items=items.filter(w=>w.patName?.toLowerCase().includes(q)||(w.service||'').toLowerCase().includes(q));
-  if(branch)items=items.filter(w=>w.branch===branch);
-  const urgent=items.filter(w=>w.priority==='عاجل'||w.priority==='VIP');
-  const todayAdded=DB.get('waitlist').filter(w=>w.date===today);
-  const converted=DB.get('waitlist').filter(w=>w.converted);
-  txt('wl-kpi-total',DB.get('waitlist').length);
-  txt('wl-kpi-urgent',urgent.length);
-  txt('wl-kpi-today',todayAdded.length);
-  txt('wl-kpi-converted',converted.length);
-  txt('wl-count-lbl',items.length+' عميل');
-  const PCOL={عاجل:'nb-rose',VIP:'nb-amber',عادي:'nb-teal'};
-  tb.innerHTML=items.map(w=>`<tr>
-    <td><div style="font-weight:600;font-size:13px;">${w.patName||'—'}</div><div style="font-size:11px;color:var(--text-muted)">${w.phone||''}</div></td>
-    <td><span class="tag tg-teal" style="font-size:11px;">${w.service||'—'}</span></td>
-    <td style="font-size:12.5px;">${w.branch||'—'}</td>
-    <td><span class="nb ${PCOL[w.priority]||'nb-teal'}" style="font-size:11px;">${w.priority||'عادي'}</span></td>
-    <td style="font-size:12px;color:var(--text-muted)">${w.date||'—'}</td>
-    <td style="font-size:12px;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${w.notes||'—'}</td>
-    <td><div style="display:flex;gap:5px;">
-      <button class="btn btn-ghost btn-xs" onclick="openWaitlistModal('${w.id}')">✏️</button>
-      <button class="btn btn-teal btn-xs" onclick="convertToAppt('${w.id}')">📅 موعد</button>
-      <button class="btn btn-danger btn-xs" onclick="delWaitlist('${w.id}')">🗑</button>
-    </div></td>
-  </tr>`).join('')||`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">قائمة الانتظار فارغة ✨</td></tr>`;
+  const now=new Date();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  const appts=DB.get('appointments').filter(a=>a.date===today);
+  let changed=false;
+  appts.forEach(a=>{
+    if(['مكتمل','ملغي','لم يحضر'].includes(a.status)) return;
+    const apptMin=_timeToMin(a.time||'00:00');
+    let newStatus=null;
+    if(a.status==='مؤكد'){
+      if(nowMin>=apptMin-15 && nowMin<apptMin) newStatus='قادم';
+      else if(nowMin>=apptMin && nowMin<apptMin+15) newStatus='انتظار';
+      else if(nowMin>=apptMin+15) newStatus='متأخر';
+    } else if(a.status==='قادم'){
+      if(nowMin>=apptMin) newStatus='انتظار';
+    } else if(a.status==='انتظار'){
+      if(nowMin>=apptMin+15) newStatus='متأخر';
+    }
+    if(newStatus){ DB.upd('appointments',a.id,{status:newStatus}); changed=true; }
+  });
+  return changed;
 }
-function openWaitlistModal(id){
-  const w=id?(DB.get('waitlist')||[]).find(x=>String(x.id)===String(id)):null;
-  const titleEl=document.getElementById('wl-modal-title');
-  if(titleEl) titleEl.textContent=w?'✏️ تعديل':'⏳ إضافة لقائمة الانتظار';
-  const idEl=document.getElementById('wl-id');if(idEl)idEl.value=w?w.id:'';
-  // fill patients
-  const patSel=document.getElementById('wl-pat');
-  if(patSel){
-    const pats=DB.get('patients')||[];
-    patSel.innerHTML='<option value="">-- اختر عميل --</option>'+pats.map(p=>`<option value="${p.id}" data-name="${p.name}" data-phone="${p.phone||''}">${p.name}</option>`).join('');
-    if(w)patSel.value=w.patId||'';
+
+// Timer string: elapsed minutes since checkIn or apptTime
+function _wlTimerStr(a){
+  const now=new Date();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  let ref=null;
+  if(a.checkInTime) ref=_timeToMin(a.checkInTime);
+  else if(a.status==='في الاستشارة'&&a.consultStart) ref=_timeToMin(a.consultStart);
+  else if(['انتظار','متأخر'].includes(a.status)) ref=_timeToMin(a.time||'00:00');
+  if(ref===null) return '';
+  const diff=nowMin-ref;
+  if(diff<0) return '';
+  const h=Math.floor(diff/60), m=diff%60;
+  return h>0?`${h}س ${m}د`:`${m}د`;
+}
+
+// Priority order for queue: late > checkin/consult > waiting > upcoming > booked
+function _wlPriority(a){
+  const P={'متأخر':0,'وصل':1,'في الاستشارة':2,'انتظار':3,'قادم':4,'مؤكد':5};
+  const p=P[a.status]??9;
+  return p*10000+_timeToMin(a.time||'00:00');
+}
+
+function renderWaitlist(){
+  const today=new Date().toISOString().split('T')[0];
+  const now=new Date();
+  // Update date label
+  const dlbl=document.getElementById('wl-date-lbl');
+  if(dlbl) dlbl.textContent=now.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Fill branch filter from DB
+  const brSel=document.getElementById('wl-branch-filter');
+  if(brSel && brSel.options.length<=1){
+    const brs=DB.get('branches')||[];
+    brSel.innerHTML='<option value="">كل الفروع</option>'+brs.map(b=>`<option>${b.name||b}</option>`).join('');
   }
-  const svcEl=document.getElementById('wl-service');if(svcEl)svcEl.value=w?w.service||'':'';
-  const brEl=document.getElementById('wl-branch');if(brEl)brEl.value=w?w.branch||'':'';
-  const prEl=document.getElementById('wl-priority');if(prEl)prEl.value=w?w.priority||'عادي':'عادي';
-  const ntEl=document.getElementById('wl-notes');if(ntEl)ntEl.value=w?w.notes||'':'';
-  openModal('waitlist-modal');
-}
-function _openWaitlistModal_old(){
-  document.getElementById('wl-id').value='';
-  const sel=document.getElementById('wl-pat');
-  sel.innerHTML=DB.get('patients').map(p=>`<option value="${p.id}" data-name="${p.name}" data-phone="${p.phone||''}">${p.name}</option>`).join('')||'<option>لا يوجد عملاء</option>';
-  document.getElementById('wl-notes').value='';
-  openModal('waitlist-modal');
-}
-function saveWaitlist(){
-  const sel=document.getElementById('wl-pat');
-  const opt=sel.options[sel.selectedIndex];
-  if(!opt?.value){showToast('warning','⚠️ اختر عميلاً');return;}
-  const id=gv('wl-id');
-  const data={patId:opt.value,patName:opt.dataset.name||opt.text,phone:opt.dataset.phone||'',service:gv('wl-service'),branch:gv('wl-branch'),priority:gv('wl-priority'),notes:gv('wl-notes')};
-  if(id){
-    DB.upd('waitlist',id,data);
-    showToast('success',`✅ تم تحديث ${data.patName}`);
-  } else {
-    DB.push('waitlist',{...data,date:new Date().toISOString().split('T')[0],converted:false});
-    showToast('success',`✅ تم إضافة ${data.patName} لقائمة الانتظار`);
+  const q=(document.getElementById('wl-search')?.value||'').trim().toLowerCase();
+  const branch=document.getElementById('wl-branch-filter')?.value||'';
+  const statusF=document.getElementById('wl-status-filter')?.value||'';
+
+  // Load today's appointments as the queue source
+  let appts=DB.get('appointments').filter(a=>a.date===today && a.status!=='ملغي');
+  if(branch) appts=appts.filter(a=>a.branch===branch);
+  if(statusF) appts=appts.filter(a=>a.status===statusF);
+  if(q) appts=appts.filter(a=>(a.patient||'').toLowerCase().includes(q)||(a.service||'').toLowerCase().includes(q)||(a.doctor||'').toLowerCase().includes(q));
+
+  // Sort by priority
+  appts.sort((a,b)=>_wlPriority(a)-_wlPriority(b));
+
+  // KPIs
+  const allToday=DB.get('appointments').filter(a=>a.date===today&&a.status!=='ملغي');
+  const active=allToday.filter(a=>['وصل','انتظار','متأخر'].includes(a.status));
+  const consult=allToday.filter(a=>a.status==='في الاستشارة');
+  const late=allToday.filter(a=>a.status==='متأخر');
+  const done=allToday.filter(a=>a.status==='مكتمل');
+  txt('wl-kpi-today',allToday.length);
+  txt('wl-kpi-active',active.length);
+  txt('wl-kpi-consult',consult.length);
+  txt('wl-kpi-late',late.length);
+  txt('wl-kpi-done',done.length);
+  txt('wl-count-lbl',appts.length+' في القائمة');
+
+  const AVA_COLORS=['linear-gradient(135deg,#C4A882,#9A7050)','linear-gradient(135deg,#2DD4BF,#14B8A6)','linear-gradient(135deg,#8B5CF6,#6D28D9)','linear-gradient(135deg,#F43F5E,#BE123C)','linear-gradient(135deg,#10B981,#047857)','linear-gradient(135deg,#F59E0B,#B45309)'];
+
+  const STATUS_LABEL={
+    'مؤكد':'مؤكد','قادم':'🔔 قادم','انتظار':'⏳ انتظار','وصل':'✅ وصل',
+    'في الاستشارة':'💬 في الاستشارة','متأخر':'⚠️ متأخر','مكتمل':'✔ مكتمل','لم يحضر':'❌ لم يحضر'
+  };
+
+  const container=document.getElementById('wl-queue-list');
+  if(!container) return;
+
+  if(!appts.length){
+    container.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">
+      ${statusF||q||branch?'لا توجد نتائج للفلتر المحدد':'لا توجد مواعيد اليوم 📅'}</div>`;
+    return;
   }
-  closeModal('waitlist-modal');renderWaitlist();
+
+  container.innerHTML=appts.map((a,i)=>{
+    const cardCls=a.status==='متأخر'?'wq-late':a.status==='في الاستشارة'?'wq-consult':['وصل','انتظار'].includes(a.status)?'wq-checkin':'';
+    const stCls=ASC[a.status]||'sd';
+    const timer=_wlTimerStr(a);
+    const timerCls=a.status==='مكتمل'?'wq-timer-ok':'';
+    const avaBg=AVA_COLORS[i%AVA_COLORS.length];
+    // Action buttons per status
+    let actions='';
+    if(a.status==='مؤكد'||a.status==='قادم'||a.status==='انتظار'||a.status==='متأخر'){
+      actions=`<button class="btn btn-teal btn-xs" onclick="wlCheckIn('${a.id}')">تسجيل وصول</button>`;
+    }
+    if(a.status==='وصل'||a.status==='انتظار'){
+      actions+=` <button class="btn btn-primary btn-xs" onclick="wlCallPatient('${a.id}')">📢 استدعاء</button>`;
+    }
+    if(a.status==='في الاستشارة'){
+      actions+=` <button class="btn btn-ghost btn-xs" style="border-color:var(--emerald);color:var(--emerald)" onclick="wlFinish('${a.id}')">✅ إنهاء</button>`;
+    }
+    if(!['مكتمل','ملغي'].includes(a.status)){
+      actions+=` <button class="btn btn-ghost btn-xs" onclick="wlMarkNoShow('${a.id}')">❌</button>`;
+    }
+    return `<div class="wq-card ${cardCls}" id="wq-${a.id}">
+      <div class="wq-rank">${i+1}</div>
+      <div class="wq-ava" style="background:${avaBg}">👤</div>
+      <div class="wq-info">
+        <div class="wq-name">${a.patient||'—'}</div>
+        <div class="wq-meta">${a.time}${a.endTime?' – '+a.endTime:''} · ${a.service||'—'} · ${a.doctor||'—'}</div>
+        ${a.checkInTime?`<div style="font-size:11px;color:var(--teal);margin-top:2px;">وصل ${a.checkInTime}</div>`:''}
+      </div>
+      <div class="wq-timer ${timerCls}">${timer}</div>
+      <span class="ast ${stCls}" style="font-size:11.5px;">${STATUS_LABEL[a.status]||a.status}</span>
+      <div class="wq-actions">${actions}</div>
+    </div>`;
+  }).join('');
 }
-function convertToAppt(id){
-  const w=DB.get('waitlist').find(x=>x.id===id);if(!w)return;
-  DB.upd('waitlist',id,{converted:true});
-  showToast('success',`📅 تم تحويل ${w.patName} — أضف الموعد الآن`,'افتح شاشة المواعيد');
-  renderWaitlist();
+
+// Check-in: receptionist clicks
+function wlCheckIn(id){
+  const now=new Date();
+  const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  DB.upd('appointments',id,{status:'وصل',checkInTime:t});
+  showToast('success','✅ تم تسجيل الوصول',`الوقت: ${t}`);
+  renderWaitlist(); renderTodayAppts();
 }
-function delWaitlist(id){
-  const w=DB.get('waitlist').find(x=>x.id===id);
-  if(confirm(`حذف ${w?.patName||'العميل'} من قائمة الانتظار؟`)){DB.del('waitlist',id);showToast('info','🗑 تم الحذف');renderWaitlist();}
+
+// Doctor calls patient
+function wlCallPatient(id){
+  const now=new Date();
+  const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  DB.upd('appointments',id,{status:'في الاستشارة',consultStart:t});
+  showToast('info','💬 بدأت الاستشارة',`الوقت: ${t}`);
+  renderWaitlist(); renderTodayAppts();
 }
+
+// Doctor finishes consultation
+function wlFinish(id){
+  const now=new Date();
+  const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  DB.upd('appointments',id,{status:'مكتمل',consultEnd:t});
+  showToast('success','✔ اكتملت الاستشارة',`الوقت: ${t}`);
+  renderWaitlist(); renderTodayAppts();
+}
+
+// Mark no-show
+function wlMarkNoShow(id){
+  const a=DB.get('appointments').find(x=>x.id===id);
+  if(!confirm(`تأكيد: ${a?.patient||'العميل'} لم يحضر؟`)) return;
+  DB.upd('appointments',id,{status:'لم يحضر'});
+  showToast('info','❌ سُجِّل كـ "لم يحضر"');
+  renderWaitlist(); renderTodayAppts();
+}
+
+// Legacy waitlist functions (kept for backward compat)
+function openWaitlistModal(id){ openApptModal(); }
+function saveWaitlist(){ saveAppt(); }
+function convertToAppt(id){ openApptModal(); }
+function delWaitlist(id){ if(confirm('حذف من قائمة الانتظار؟')){ DB.del('waitlist',id); renderWaitlist(); } }
+
+// Auto-refresh: update statuses + re-render every 60s
+function _startWLAutoRefresh(){
+  if(window._wlTimer) clearInterval(window._wlTimer);
+  window._wlTimer=setInterval(()=>{
+    _wlAutoUpdateStatuses();
+    const scr=document.getElementById('screen-waitlist');
+    if(scr && scr.classList.contains('active')) renderWaitlist();
+    renderTodayAppts(); // keep dashboard in sync
+  },60000);
+}
+
 
 // ══════════════════════════════════════════
 // ✨ SESSIONS (TREATMENT PLANS)
@@ -5493,6 +5994,239 @@ function delPackage(id){
   const p=DB.get('packages').find(x=>x.id===id);
   if(confirm(`حذف باقة "${p?.name||''}"؟`)){DB.del('packages',id);showToast('info','🗑 تم الحذف');renderPackages();}
 }
+
+// ─── PHASE 3: Reception & Doctor Screens + Consultation Engine ───────────────
+
+function renderReception(){
+  const today=new Date().toISOString().split('T')[0];
+  const now=new Date();
+  const dlbl=document.getElementById('rec-date-lbl');
+  if(dlbl) dlbl.textContent=now.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const docSel=document.getElementById('rec-doc-filter');
+  if(docSel && docSel.options.length<=1){
+    DB.get('doctors').forEach(d=>{const o=document.createElement('option');o.value=d.name;o.textContent=d.name;docSel.appendChild(o);});
+  }
+  const docF=docSel?.value||'';
+  let appts=DB.get('appointments').filter(a=>a.date===today&&a.status!=='ملغي');
+  if(docF) appts=appts.filter(a=>a.doctor===docF);
+  appts.sort((a,b)=>_timeToMin(a.time)-_timeToMin(b.time));
+  const allToday=DB.get('appointments').filter(a=>a.date===today&&a.status!=='ملغي');
+  txt('rec-kpi-total',allToday.length);
+  txt('rec-kpi-checkin',allToday.filter(a=>['وصل','في الاستشارة','مكتمل'].includes(a.status)).length);
+  txt('rec-kpi-late',allToday.filter(a=>a.status==='متأخر').length);
+  txt('rec-kpi-done',allToday.filter(a=>a.status==='مكتمل').length);
+  txt('rec-count-lbl',appts.length+' موعد');
+  const AVA_C=['linear-gradient(135deg,#C4A882,#9A7050)','linear-gradient(135deg,#2DD4BF,#14B8A6)','linear-gradient(135deg,#8B5CF6,#6D28D9)','linear-gradient(135deg,#F43F5E,#BE123C)','linear-gradient(135deg,#10B981,#047857)'];
+  const ST_LBL={'مؤكد':'مؤكد 📋','قادم':'🔔 قادم','انتظار':'⏳ انتظار','وصل':'✅ وصل','في الاستشارة':'💬 استشارة','متأخر':'⚠️ متأخر','مكتمل':'✔ مكتمل','لم يحضر':'❌ لم يحضر'};
+  const container=document.getElementById('rec-queue');
+  if(!container) return;
+  if(!appts.length){container.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-muted)">لا توجد مواعيد اليوم${docF?' للطبيب المحدد':''} 📅</div>`;return;}
+  container.innerHTML=appts.map((a,i)=>{
+    const stCls=ASC[a.status]||'sd';
+    const canCheckIn=['مؤكد','قادم','انتظار','متأخر'].includes(a.status);
+    const isActive=['وصل','في الاستشارة'].includes(a.status);
+    const isDone=['مكتمل','لم يحضر'].includes(a.status);
+    const timer=_wlTimerStr(a);
+    return `<div class="wq-card ${a.status==='متأخر'?'wq-late':isActive?'wq-checkin':''}">
+      <div class="wq-ava" style="background:${AVA_C[i%AVA_C.length]}">👤</div>
+      <div class="wq-info">
+        <div class="wq-name">${a.patient}</div>
+        <div class="wq-meta">${a.time}${a.endTime?' – '+a.endTime:''} · ${a.service||'—'} · <span style="color:var(--teal)">${a.doctor||'—'}</span></div>
+        ${a.checkInTime?`<div style="font-size:11px;color:var(--teal)">وصل ${a.checkInTime}</div>`:''}
+      </div>
+      <div class="wq-timer">${timer}</div>
+      <span class="ast ${stCls}" style="font-size:11.5px">${ST_LBL[a.status]||a.status}</span>
+      <div class="wq-actions">
+        ${canCheckIn?`<button class="btn btn-teal btn-sm" onclick="wlCheckIn('${a.id}');renderReception()">✅ وصل</button>`:''}
+        ${!isDone?`<button class="btn btn-ghost btn-xs" onclick="wlMarkNoShow('${a.id}');renderReception()" title="لم يحضر">❌</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _nowTimeStr(){
+  const n=new Date();
+  return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+
+function renderDoctorView(){
+  const today=new Date().toISOString().split('T')[0];
+  const now=new Date();
+  const dlbl=document.getElementById('dv-date-lbl');
+  if(dlbl) dlbl.textContent=now.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const docSel=document.getElementById('dv-doc-select');
+  if(docSel && docSel.options.length<=1){
+    DB.get('doctors').forEach(d=>{const o=document.createElement('option');o.value=d.name;o.textContent=d.name;docSel.appendChild(o);});
+  }
+  const docName=docSel?.value||'';
+  const docInfo=DB.get('doctors').find(d=>d.name===docName);
+  const container=document.getElementById('dv-queue');
+  if(!container) return;
+  if(!docName){
+    container.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-muted)">اختر طبيباً من القائمة أعلاه 👆</div>`;
+    txt('dv-kpi-today',0);txt('dv-kpi-waiting',0);txt('dv-kpi-done',0);txt('dv-kpi-comm','—');txt('dv-count-lbl','');
+    return;
+  }
+  let appts=DB.get('appointments').filter(a=>a.date===today&&a.doctor===docName&&a.status!=='ملغي');
+  const PRIO={'في الاستشارة':0,'وصل':1,'متأخر':2,'انتظار':3,'قادم':4,'مؤكد':5,'مكتمل':9,'لم يحضر':10};
+  appts.sort((a,b)=>{
+    const pa=PRIO[a.status]??8,pb=PRIO[b.status]??8;
+    if(pa!==pb) return pa-pb;
+    const ta=a.checkInTime?_timeToMin(a.checkInTime):_timeToMin(a.time);
+    const tb=b.checkInTime?_timeToMin(b.checkInTime):_timeToMin(b.time);
+    return ta-tb;
+  });
+  const waiting=appts.filter(a=>['وصل','انتظار','متأخر'].includes(a.status)).length;
+  const done=appts.filter(a=>a.status==='مكتمل').length;
+  const todayInvs=DB.get('invoices').filter(i=>i.doctor===docName&&(i.date||'')==today);
+  const todayRev=todayInvs.reduce((s,i)=>s+(i.paid||0),0);
+  const comm=Math.round(todayRev*(docInfo?.commission||0)/100);
+  txt('dv-kpi-today',appts.length);txt('dv-kpi-waiting',waiting);txt('dv-kpi-done',done);
+  txt('dv-kpi-comm',comm.toLocaleString());txt('dv-count-lbl',appts.length+' مريض');
+  const AVA_C=['linear-gradient(135deg,#C4A882,#9A7050)','linear-gradient(135deg,#2DD4BF,#14B8A6)','linear-gradient(135deg,#8B5CF6,#6D28D9)','linear-gradient(135deg,#F43F5E,#BE123C)','linear-gradient(135deg,#10B981,#047857)'];
+  if(!appts.length){container.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-muted)">لا توجد مرضى لـ ${docName} اليوم ✨</div>`;return;}
+  const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  container.innerHTML=appts.map((a,i)=>{
+    const stCls=ASC[a.status]||'sd';
+    const canCall=['وصل','انتظار','متأخر'].includes(a.status);
+    const inConsult=a.status==='في الاستشارة';
+    const isDone=a.status==='مكتمل';
+    const timer=_wlTimerStr(a);
+    const waitMin=a.checkInTime&&!inConsult&&!isDone?Math.max(0,nowMin-_timeToMin(a.checkInTime)):null;
+    return `<div class="wq-card ${inConsult?'wq-consult':canCall?'wq-checkin':''}" style="${isDone?'opacity:.6':''}">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text-muted);flex-shrink:0">${i+1}</div>
+      <div class="wq-ava" style="background:${AVA_C[i%AVA_C.length]}">👤</div>
+      <div class="wq-info">
+        <div class="wq-name">${a.patient}</div>
+        <div class="wq-meta">${a.service||'—'} · موعد ${a.time}${a.checkInTime?' · وصل '+a.checkInTime:''}</div>
+        ${inConsult&&a.consultStart?`<div style="font-size:11px;color:var(--purple)">بدأت ${a.consultStart} · مضى ${timer}</div>`:''}
+        ${waitMin!==null?`<div style="font-size:11px;color:var(--amber)">ينتظر ${waitMin} دقيقة</div>`:''}
+      </div>
+      <span class="ast ${stCls}" style="font-size:11px">${a.status}</span>
+      <div class="wq-actions">
+        ${canCall?`<button class="btn btn-primary btn-sm" onclick="wlCallPatient('${a.id}');renderDoctorView()">📢 استدعاء</button>`:''}
+        ${inConsult?`<button class="btn btn-sm" style="background:linear-gradient(135deg,var(--emerald),#047857);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-family:Tajawal,sans-serif;font-weight:600;cursor:pointer" onclick="openConsultDoneModal('${a.id}')">✅ إنهاء</button>`:''}
+        ${isDone?`<span style="font-size:11px;color:var(--emerald)">✔ مكتمل</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openConsultDoneModal(apptId){
+  const a=DB.get('appointments').find(x=>x.id===apptId);
+  if(!a) return;
+  document.getElementById('cd-appt-id').value=apptId;
+  const now=_nowTimeStr();
+  const startMin=a.consultStart?_timeToMin(a.consultStart):_timeToMin(a.time);
+  const durMin=Math.max(0,_timeToMin(now)-startMin);
+  const dur=durMin>0?`${durMin} دقيقة`:'—';
+  const doc=DB.get('doctors').find(d=>d.name===a.doctor);
+  document.getElementById('cd-summary').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
+      <div><span style="color:var(--text-muted)">المريض:</span> <strong>${a.patient}</strong></div>
+      <div><span style="color:var(--text-muted)">الطبيب:</span> <strong>${a.doctor||'—'}</strong></div>
+      <div><span style="color:var(--text-muted)">بدأت:</span> ${a.consultStart||'—'}</div>
+      <div><span style="color:var(--text-muted)">مدة الاستشارة:</span> <strong style="color:var(--teal)">${dur}</strong></div>
+      <div><span style="color:var(--text-muted)">الخدمة:</span> ${a.service||'—'}</div>
+      <div><span style="color:var(--text-muted)">العمولة:</span> ${doc?.commission||0}%</div>
+    </div>`;
+  const svcSel=document.getElementById('cd-svc');
+  const svcs=DB.get('services')||[];
+  svcSel.innerHTML=svcs.length
+    ? svcs.map(s=>`<option value="${s.name}" data-price="${s.price||0}">${s.name}${s.price?' — '+Number(s.price).toLocaleString()+' ج':''}</option>`).join('')
+    : '<option value="">— لا توجد خدمات —</option>';
+  if(a.service) svcSel.value=a.service;
+  onCdSvcChange();
+  const ntEl=document.getElementById('cd-notes');if(ntEl)ntEl.value='';
+  const discEl=document.getElementById('cd-disc');if(discEl)discEl.value=0;
+  document.querySelectorAll('#consult-done-modal .pay-m').forEach(el=>el.classList.remove('sel'));
+  document.querySelector('#consult-done-modal .pay-m')?.classList.add('sel');
+  document.getElementById('consult-done-modal')?.classList.add('open');
+}
+
+function onCdSvcChange(){
+  const svcSel=document.getElementById('cd-svc');
+  const opt=svcSel?.options[svcSel.selectedIndex];
+  const price=parseFloat(opt?.dataset?.price)||0;
+  const priceEl=document.getElementById('cd-price');
+  if(priceEl)priceEl.value=price;
+  calcCdTotal();
+}
+
+function calcCdTotal(){
+  const apptId=document.getElementById('cd-appt-id')?.value;
+  const a=DB.get('appointments').find(x=>x.id===apptId);
+  const doc=a?DB.get('doctors').find(d=>d.name===a.doctor):null;
+  const price=parseFloat(document.getElementById('cd-price')?.value)||0;
+  const disc=parseFloat(document.getElementById('cd-disc')?.value)||0;
+  const net=Math.max(0,price-disc);
+  const comm=Math.round(net*(doc?.commission||0)/100);
+  const netEl=document.getElementById('cd-net');
+  const commEl=document.getElementById('cd-comm-display');
+  if(netEl)netEl.textContent=net.toLocaleString()+' ج';
+  if(commEl)commEl.textContent=comm.toLocaleString()+' ج ('+(doc?.commission||0)+'%)';
+}
+
+function finalizeConsultation(){
+  const apptId=document.getElementById('cd-appt-id')?.value;
+  if(!apptId){showToast('error','❌ خطأ: لا يوجد موعد');return;}
+  const a=DB.get('appointments').find(x=>x.id===apptId);
+  if(!a){showToast('error','❌ الموعد غير موجود');return;}
+  const now=_nowTimeStr();
+  const svcSel=document.getElementById('cd-svc');
+  const svcName=svcSel?.options[svcSel?.selectedIndex]?.value||a.service||'';
+  const price=parseFloat(document.getElementById('cd-price')?.value)||0;
+  const disc=parseFloat(document.getElementById('cd-disc')?.value)||0;
+  const net=Math.max(0,price-disc);
+  const notes=document.getElementById('cd-notes')?.value||'';
+  const method=document.querySelector('#consult-done-modal .pay-m.sel')?.textContent?.trim()||'كاش';
+  const doc=DB.get('doctors').find(d=>d.name===a.doctor);
+  const pat=DB.get('patients').find(p=>String(p.id)===String(a.patId));
+  const today=new Date().toISOString().split('T')[0];
+  const comm=Math.round(net*(doc?.commission||0)/100);
+  const startMin=a.consultStart?_timeToMin(a.consultStart):_timeToMin(a.time);
+  const durMin=Math.max(0,_timeToMin(now)-startMin);
+  // 1. Complete appointment
+  DB.upd('appointments',apptId,{status:'مكتمل',consultEnd:now,consultDuration:durMin,consultNotes:notes});
+  // 2. Auto-generate invoice
+  DB.push('invoices',{
+    patient:a.patient,patId:a.patId,doctor:a.doctor||'',service:svcName,
+    date:today,originalPrice:price,discount:disc,total:net,paid:net,remaining:0,
+    status:'مدفوع',method,fromAppt:apptId,commission:comm,commissionPct:doc?.commission||0,branch:a.branch||''
+  });
+  // 3. Deduct inventory
+  deductInventory(svcName);
+  // 4. Update patient profile
+  if(pat) DB.upd('patients',pat.id,{spent:(pat.spent||0)+net,sessions:(pat.sessions||0)+1,lastVisit:today,lastDoctor:a.doctor||''});
+  // 5. Sync screens
+  renderInvs();renderTodayAppts();
+  if(document.getElementById('screen-doctor-view')?.classList.contains('active')) renderDoctorView();
+  if(document.getElementById('screen-reception')?.classList.contains('active')) renderReception();
+  if(document.getElementById('screen-waitlist')?.classList.contains('active')) renderWaitlist();
+  const tr=DB.get('invoices').filter(i=>i.date===today).reduce((s,i)=>s+(i.paid||0),0);
+  txt('kpi-rev',tr.toLocaleString());
+  closeModal('consult-done-modal');
+  showToast('success',`✅ اكتملت استشارة ${a.patient}`,`فاتورة ${net.toLocaleString()} ج · عمولة ${comm.toLocaleString()} ج`);
+}
+
+// Hook showScreen for phase 3 screens
+const _p3Orig=window.showScreen;
+window.showScreen=function(id){
+  _p3Orig(id);
+  if(id==='reception'){_wlAutoUpdateStatuses();renderReception();}
+  if(id==='doctor-view'){_wlAutoUpdateStatuses();renderDoctorView();}
+};
+
+// Restart auto-refresh timer to cover all 3 screens
+if(window._wlTimer) clearInterval(window._wlTimer);
+window._wlTimer=setInterval(()=>{
+  _wlAutoUpdateStatuses();
+  if(document.getElementById('screen-waitlist')?.classList.contains('active')) renderWaitlist();
+  if(document.getElementById('screen-reception')?.classList.contains('active')) renderReception();
+  if(document.getElementById('screen-doctor-view')?.classList.contains('active')) renderDoctorView();
+  renderTodayAppts();
+},60000);
+
 </script>
 </body>
 </html>

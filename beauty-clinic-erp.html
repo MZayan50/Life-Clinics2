@@ -431,7 +431,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     </div>
     <div class="card">
       <div class="card-hdr"><div class="card-title">📊 توزيع الخدمات</div></div>
-      <div style="display:flex;flex-direction:column;gap:9px;">
+      <div id="dash-svc-dist" style="display:flex;flex-direction:column;gap:9px;">
         <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>ليزر شعر</span><span style="color:var(--teal);font-weight:700">34%</span></div><div class="prog"><div class="prog-f" style="width:34%;background:var(--teal)"></div></div></div>
         <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>هيدرافيشل</span><span style="color:var(--purple);font-weight:700">22%</span></div><div class="prog"><div class="prog-f" style="width:22%;background:var(--purple)"></div></div></div>
         <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>بوتكس وفيلر</span><span style="color:var(--gold-light);font-weight:700">18%</span></div><div class="prog"><div class="prog-f" style="width:18%;background:var(--gold)"></div></div></div>
@@ -2433,6 +2433,32 @@ function buildChart(){
   buildTopDoctors();
 }
 
+function updateServiceDistribution(){
+  const el = document.getElementById('dash-svc-dist');
+  if(!el) return;
+  const COLORS = ['var(--teal)','var(--purple)','var(--gold)','var(--rose)','var(--amber)','var(--blue)','var(--emerald)'];
+  const thisMonth = new Date().toISOString().substring(0,7);
+  const invoices = DB.get('invoices').filter(i=>(i.date||'').startsWith(thisMonth));
+  const svcMap = {};
+  invoices.forEach(inv=>{
+    const svc = (inv.service||inv.items?.[0]?.name||'أخرى').trim()||'أخرى';
+    svcMap[svc] = (svcMap[svc]||0) + (inv.paid||0);
+  });
+  const total = Object.values(svcMap).reduce((a,b)=>a+b,0);
+  if(!total){
+    // keep static default if no data
+    return;
+  }
+  const sorted = Object.entries(svcMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  let otherSum = Object.values(svcMap).reduce((a,b)=>a+b,0) - sorted.reduce((a,b)=>a+b[1],0);
+  if(otherSum>0) sorted.push(['أخرى', otherSum]);
+  el.innerHTML = sorted.map(([name,val],i)=>{
+    const pct = Math.round(val/total*100);
+    const color = COLORS[i % COLORS.length];
+    return `<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>${name}</span><span style="color:${color};font-weight:700">${pct}%</span></div><div class="prog"><div class="prog-f" style="width:${pct}%;background:${color}"></div></div></div>`;
+  }).join('');
+}
+
 function buildTopDoctors(){
   const el = document.getElementById('dash-top-doctors');
   if(!el) return;
@@ -2612,11 +2638,7 @@ async function aiSend(q){
   // Check API key before sending
   const _apiKey = (DB.obj('settings').anthropicKey||'').trim();
   if(!_apiKey){
-    window._aiMessages.push({ role:'assistant', text:'🔑 لم يتم إعداد مفتاح Anthropic API بعد.
-
-ادخل الإعدادات ⚙️ ← تبويب عام ← حقل «مفتاح Anthropic API» والصق مفتاحك ثم اضغط حفظ.
-
-بعد الحفظ سيعمل المساعد على جميع الأجهزة تلقائياً ☁️', isError:true });
+    window._aiMessages.push({ role:'assistant', text:'🔑 لم يتم إعداد مفتاح Anthropic API بعد.\n\nادخل الإعدادات ⚙️ ← تبويب عام ← حقل «مفتاح Anthropic API» والصق مفتاحك ثم اضغط حفظ.\n\nبعد الحفظ سيعمل المساعد على جميع الأجهزة تلقائياً ☁️', isError:true });
     window._aiLoading = false;
     aiRenderMessages();
     return;

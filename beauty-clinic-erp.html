@@ -663,14 +663,14 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     </div>
   </div>
   <div class="rgrid">
-    <div class="rcard"><div style="font-size:30px;">👥</div><div style="font-weight:700;font-size:13.5px;">تقرير العملاء</div><div style="font-size:12px;color:var(--text-muted);">جدد، نشطين، غيابات</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">💰</div><div style="font-weight:700;font-size:13.5px;">تقرير الإيرادات</div><div style="font-size:12px;color:var(--text-muted);">المبيعات والأرباح</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">👨‍⚕️</div><div style="font-weight:700;font-size:13.5px;">تقرير الأطباء</div><div style="font-size:12px;color:var(--text-muted);">الأداء والعمولات</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">✨</div><div style="font-weight:700;font-size:13.5px;">تقرير الجلسات</div><div style="font-size:12px;color:var(--text-muted);">خطط العلاج</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">📦</div><div style="font-weight:700;font-size:13.5px;">تقرير المخزون</div><div style="font-size:12px;color:var(--text-muted);">المنتجات والمبيعات</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">🏢</div><div style="font-weight:700;font-size:13.5px;">تقرير الفروع</div><div style="font-size:12px;color:var(--text-muted);">مقارنة الأداء</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">📣</div><div style="font-weight:700;font-size:13.5px;">تقرير التسويق</div><div style="font-size:12px;color:var(--text-muted);">الحملات والـ Leads</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
-    <div class="rcard"><div style="font-size:30px;">📊</div><div style="font-weight:700;font-size:13.5px;">الأرباح والخسائر</div><div style="font-size:12px;color:var(--text-muted);">الميزانية الكاملة</div><button class="btn btn-ghost btn-sm" style="width:fit-content;">عرض</button></div>
+    <div class="rcard" onclick="showReport('patients')" style="cursor:pointer;"><div style="font-size:30px;">👥</div><div style="font-weight:700;font-size:13.5px;">تقرير العملاء</div><div style="font-size:12px;color:var(--text-muted);">جدد، نشطين، غيابات</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('patients')">عرض</button></div>
+    <div class="rcard" onclick="showReport('revenue')" style="cursor:pointer;"><div style="font-size:30px;">💰</div><div style="font-weight:700;font-size:13.5px;">تقرير الإيرادات</div><div style="font-size:12px;color:var(--text-muted);">المبيعات والأرباح</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('revenue')">عرض</button></div>
+    <div class="rcard" onclick="showReport('doctors')" style="cursor:pointer;"><div style="font-size:30px;">👨‍⚕️</div><div style="font-weight:700;font-size:13.5px;">تقرير الأطباء</div><div style="font-size:12px;color:var(--text-muted);">الأداء والعمولات</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('doctors')">عرض</button></div>
+    <div class="rcard" onclick="showReport('appointments')" style="cursor:pointer;"><div style="font-size:30px;">✨</div><div style="font-weight:700;font-size:13.5px;">تقرير الجلسات</div><div style="font-size:12px;color:var(--text-muted);">خطط العلاج</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('appointments')">عرض</button></div>
+    <div class="rcard" onclick="showReport('inventory')" style="cursor:pointer;"><div style="font-size:30px;">📦</div><div style="font-weight:700;font-size:13.5px;">تقرير المخزون</div><div style="font-size:12px;color:var(--text-muted);">المنتجات والمبيعات</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('inventory')">عرض</button></div>
+    <div class="rcard" onclick="showReport('branches')" style="cursor:pointer;"><div style="font-size:30px;">🏢</div><div style="font-weight:700;font-size:13.5px;">تقرير الفروع</div><div style="font-size:12px;color:var(--text-muted);">مقارنة الأداء</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('branches')">عرض</button></div>
+    <div class="rcard" onclick="showReport('campaigns')" style="cursor:pointer;"><div style="font-size:30px;">📣</div><div style="font-weight:700;font-size:13.5px;">تقرير التسويق</div><div style="font-size:12px;color:var(--text-muted);">الحملات والـ Leads</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showReport('campaigns')">عرض</button></div>
+    <div class="rcard" onclick="showScreen('accounts')" style="cursor:pointer;"><div style="font-size:30px;">📊</div><div style="font-weight:700;font-size:13.5px;">الأرباح والخسائر</div><div style="font-size:12px;color:var(--text-muted);">الميزانية الكاملة</div><button class="btn btn-ghost btn-sm" style="width:fit-content;" onclick="event.stopPropagation();showScreen('accounts')">عرض</button></div>
   </div>
 </div>
 
@@ -3659,13 +3659,7 @@ ${bodyHtml}
   showToast('success','📄 تم فتح نافذة الطباعة');
 }
 
-// Bind report cards
-document.querySelectorAll('.rcard').forEach((card,i)=>{
-  const types = ['patients','revenue','doctors','appointments','inventory','branches','campaigns','accounts'];
-  card.addEventListener('click',()=>{
-    showReport(types[i]);
-  });
-});
+// Report cards use inline onclick handlers (see screen-reports HTML)
 
 function generateDoctorsReport(){
   const invoices = DB.get('invoices');

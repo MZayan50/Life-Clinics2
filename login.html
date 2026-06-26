@@ -162,14 +162,7 @@ async function sha256(message) {
 // لتغيير كلمة مرور: افتح DevTools Console وشغل:
 //   sha256("كلمة_المرور_الجديدة").then(h => console.log(h))
 // ثم ضع الـ hash هنا
-// ============================================================
-// الكلمات الأصلية (للمطور فقط — احذف هذا التعليق في الإنتاج):
-//   admin      → admin123
-//   doctor     → doc123
-//   reception  → rec123
-//   accountant → acc123
-//   manager2   → mgr123
-// ============================================================
+
 const USERS = {
   'admin':      { hash:'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', role:'admin',         name:'د. سارة محمد',    branch:'all',          permissions:['all'] },
   'doctor':     { hash:'c3362e4da49c24d379b72152ae6c99f1fa035f52829dceed715a7bf8bb464b98', role:'doctor',        name:'د. منى سامي',     branch:'مدينة نصر',    permissions:['patients','appointments','sessions'] },
@@ -343,9 +336,8 @@ async function doLogin() {
     token: sessionToken
   };
 
-  // تخزين Session مشفر (base64)
-  const sessionEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(session))));
-  localStorage.setItem('ha_session', sessionEncoded);
+  // تخزين Session كـ JSON عادي (متوافق مع ERP)
+  localStorage.setItem('ha_session', JSON.stringify(session));
   localStorage.setItem('ha_current_user', JSON.stringify({ name: user.name, role: user.role, branch: user.branch }));
 
   loader.innerHTML = '<div style="font-size:24px;margin-bottom:6px;">✅</div><div style="font-size:13px;color:#10B981;font-weight:600;">مرحباً ' + user.name + '!</div>';
@@ -360,7 +352,7 @@ async function doLogin() {
   const sessRaw = localStorage.getItem('ha_session');
   if (sessRaw) {
     try {
-      const s = JSON.parse(decodeURIComponent(escape(atob(sessRaw))));
+      const s = JSON.parse(sessRaw);
       if (s.expiry > Date.now()) {
         window.location.href = 'beauty-clinic-erp.html';
         return;

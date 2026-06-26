@@ -3446,8 +3446,7 @@ function renewSession(){
       const s = _parseSession(sess);
       if(!s) return;
       s.expiry = Date.now() + (8 * 60 * 60 * 1000);
-      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(s))));
-      localStorage.setItem('ha_session', encoded);
+      localStorage.setItem('ha_session', JSON.stringify(s));
       showToast('success','✅ تم تجديد الجلسة لـ 8 ساعات');
     }catch(e){}
   }

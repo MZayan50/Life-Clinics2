@@ -281,6 +281,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   .ptags{justify-content:center;}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <!-- FIREBASE SETUP -->
@@ -3821,11 +3822,11 @@ function toggleUmPass(){
 // ══════════════════════════════════════════
 // 🖨️ PRINT INVOICE (REAL PDF)
 // ══════════════════════════════════════════
-function printInvoiceReal(inv){
-  if(!inv) return;
-  const clinicName = DB.obj('settings').clinicName || 'عيادات الحياة للتجميل';
-  const clinicPhone = DB.obj('settings').phone || '';
-  const html = `<!DOCTYPE html>
+function buildInvoiceHTML(inv, clinicName, clinicPhone, idx){
+  if(!clinicName) clinicName = DB.obj('settings').clinicName || 'عيادات الحياة للتجميل';
+  if(!clinicPhone) clinicPhone = DB.obj('settings').phone || '';
+  const invNum = idx !== undefined ? String(idx+1).padStart(3,'0') : inv.id;
+  return `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -3853,7 +3854,7 @@ function printInvoiceReal(inv){
   .status-paid{background:#dcfce7;color:#166534;}
   .status-partial{background:#fef9c3;color:#713f12;}
   .footer{text-align:center;font-size:12px;color:#999;border-top:1px solid #eee;padding-top:16px;margin-top:20px;}
-  @media print{body{padding:15px;}}
+  @media print{body{padding:15px;} #inv-toolbar{display:none!important;}}
 </style>
 </head>
 <body>
@@ -3867,7 +3868,7 @@ function printInvoiceReal(inv){
   </div>
   <div class="inv-num">
     <span>رقم الفاتورة</span>
-    <strong>#INV-${inv.id}</strong>
+    <strong>#INV-${invNum}</strong>
     <div style="font-size:12px;color:#666;margin-top:4px">📅 ${inv.date}</div>
   </div>
 </div>
@@ -3901,17 +3902,50 @@ function printInvoiceReal(inv){
 </div>
 
 <div class="footer">
-  شكراً لثقتكم في ${clinicName} 💎<br>
+  شكراً لثقتكم في ${clinicName}<br>
   هذه الفاتورة صادرة إلكترونياً وسارية بدون توقيع
 </div>
 </body>
 </html>`;
+}
 
-  const w = window.open('','_blank','width=800,height=700,scrollbars=yes');
+function printInvoiceReal(inv){
+  if(!inv) return;
+  const clinicName = DB.obj('settings').clinicName || 'عيادات الحياة للتجميل';
+  const clinicPhone = DB.obj('settings').phone || '';
+  const idx = DB.get('invoices').findIndex(x=>String(x.id)===String(inv.id));
+  const html = buildInvoiceHTML(inv, clinicName, clinicPhone, idx);
+  openInvoiceWindow(html, inv, null);
+}
+
+function openInvoiceWindow(html, inv, waUrl){
+  const invId = inv ? inv.id : '';
+  const waBtnHtml = waUrl
+    ? `<button onclick="window.open('`+waUrl+`','_blank')" style="padding:9px 22px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;">💬 فتح واتساب</button>`
+    : '';
+  const toolbar = `<div id="inv-toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #C4A882;padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;z-index:9999;font-family:'Tajawal',sans-serif;">
+    <button id="pdf-btn" onclick="downloadInvPDF()" style="padding:9px 22px;background:#1a6dcc;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;">📄 تحميل PDF</button>
+    `+waBtnHtml+`
+    <button onclick="window.print()" style="padding:9px 22px;background:#C4A882;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;">🖨 طباعة</button>
+    <button onclick="window.close()" style="padding:9px 22px;background:#eee;color:#333;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;">✕ إغلاق</button>
+  </div>
+  <div style="height:70px"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+  <script>
+  function downloadInvPDF(){
+    var btn=document.getElementById('pdf-btn');
+    btn.textContent='⏳ جارٍ التحميل...';btn.disabled=true;
+    var tb=document.getElementById('inv-toolbar');
+    tb.style.display='none';
+    html2pdf().set({margin:10,filename:'فاتورة-`+invId+`.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(document.body).save().then(function(){tb.style.display='flex';btn.textContent='📄 تحميل PDF';btn.disabled=false;});
+  }
+  <\/script>`;
+
+  const modifiedHtml = html.replace('</body>', toolbar + '</body>');
+  const w = window.open('','_blank','width=820,height=750,scrollbars=yes');
   if(!w){ showToast('error','❌ السماح بفتح النوافذ المنبثقة مطلوب'); return; }
-  w.document.write(html);
+  w.document.write(modifiedHtml);
   w.document.close();
-  setTimeout(()=>w.print(), 600);
 }
 
 // Override the print function
@@ -3921,18 +3955,21 @@ window.printInvoice = function(id){
   else showToast('error','❌ لم يتم العثور على الفاتورة');
 };
 
-// إرسال فاتورة عبر واتساب
+// إرسال فاتورة عبر واتساب - يعرض الفاتورة كـ PDF أولاً + زر واتساب
 function sendInvoiceWA(id){
   const inv=DB.get('invoices').find(x=>String(x.id)===String(id));
   if(!inv){showToast('error','❌ الفاتورة غير موجودة');return;}
   const pat=DB.get('patients').find(p=>p.name===inv.patient);
   const phone=getWAPhone(pat);
-  if(!phone){showToast('error','❌ لا يوجد رقم واتساب لهذا العميل');return;}
   const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const clinicPhone2=DB.obj('settings').phone||'';
   const idx=DB.get('invoices').findIndex(x=>String(x.id)===String(id));
-  const msg=`مرحباً ${inv.patient} 😊\nإليك تفاصيل فاتورتك من ${clinicName}\n🧾 رقم الفاتورة: #INV-${String(idx+1).padStart(3,'0')}\n💆 الخدمة: ${inv.service||'—'}\n💰 الإجمالي: ${inv.total} ج\n✅ المدفوع: ${inv.paid} ج${inv.remaining>0?`\n⏳ المتبقي: ${inv.remaining} ج`:''}\n💳 طريقة الدفع: ${inv.method||'—'}\n📅 التاريخ: ${inv.date}\n\nشكراً لثقتكم بـ ${clinicName} 💎`;
-  window.open(`https://wa.me/${phone.replace('+','')}?text=${encodeURIComponent(msg)}`,'_blank');
-  showToast('success',`✅ فُتح واتساب لإرسال الفاتورة لـ ${inv.patient}`);
+  const waMsg=`مرحباً ${inv.patient} 😊\nإليك تفاصيل فاتورتك من ${clinicName}\n🧾 رقم الفاتورة: #INV-${String(idx+1).padStart(3,'0')}\n💆 الخدمة: ${inv.service||'—'}\n💰 الإجمالي: ${inv.total} ج\n✅ المدفوع: ${inv.paid} ج${inv.remaining>0?`\n⏳ المتبقي: ${inv.remaining} ج`:''}\n💳 طريقة الدفع: ${inv.method||'—'}\n📅 التاريخ: ${inv.date}\n\nشكراً لثقتكم بـ ${clinicName}`;
+  const waUrl = phone ? `https://wa.me/${phone.replace('+','')}?text=${encodeURIComponent(waMsg)}` : null;
+  const html = buildInvoiceHTML(inv, clinicName, clinicPhone2, idx);
+  openInvoiceWindow(html, inv, waUrl);
+  if(!phone) showToast('warning','⚠️ لا يوجد رقم واتساب للعميل - يمكنك تحميل PDF فقط');
+  else showToast('success',`✅ حمّل PDF ثم اضغط "فتح واتساب" لإرساله لـ ${inv.patient}`);
 }
 
 // ══════════════════════════════════════════

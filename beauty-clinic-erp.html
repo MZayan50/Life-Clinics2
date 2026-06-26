@@ -1027,6 +1027,133 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   </div>
 </div>
 
+<!-- ══════════ INVOICES SCREEN ══════════ -->
+<div class="screen" id="screen-invoices">
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card kc-emerald"><div class="kpi-icon">🧾</div><div class="kpi-value" id="inv-kpi-total">0</div><div class="kpi-label">إجمالي الفواتير (ج)</div></div>
+    <div class="kpi-card kc-teal"><div class="kpi-icon">✅</div><div class="kpi-value" id="inv-kpi-paid">0</div><div class="kpi-label">مدفوعة بالكامل</div></div>
+    <div class="kpi-card kc-amber"><div class="kpi-icon">⏳</div><div class="kpi-value" id="inv-kpi-partial">0</div><div class="kpi-label">دفع جزئي</div></div>
+    <div class="kpi-card kc-rose"><div class="kpi-icon">💸</div><div class="kpi-value" id="inv-kpi-pending">0</div><div class="kpi-label">إجمالي المتبقي (ج)</div></div>
+  </div>
+  <div class="filter-bar">
+    <div class="sbox"><span>🔍</span><input type="text" id="inv-search-input" placeholder="بحث بالعميل أو الخدمة..." oninput="filterInvs(this.value)"></div>
+    <select class="selbox" id="inv-status-filter" onchange="renderInvs()"><option value="">كل الحالات</option><option value="مدفوع">مدفوع</option><option value="جزئي">جزئي</option><option value="معلق">معلق</option></select>
+    <select class="selbox" id="inv-method-filter" onchange="renderInvs()"><option value="">كل طرق الدفع</option><option>كاش</option><option>فيزا</option><option>إنستاباي</option><option>فودافون</option><option>تحويل</option><option>أقساط</option></select>
+    <input type="date" class="selbox" id="inv-date-filter" onchange="renderInvs()">
+    <button class="btn btn-ghost btn-sm" onclick="exportInvs()">📊 تصدير</button>
+  </div>
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">🧾 قائمة الفواتير</div>
+      <span class="card-sub" id="inv-count-lbl">0 فاتورة</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>العميل</th><th>الخدمة</th><th>الطبيب</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الطريقة</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="inv-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SMART PAYMENT MODAL (Phase 6) ══════════ -->
+<div class="modal-overlay" id="smart-pay-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="mhdr">
+      <div class="mtitle">💳 تسوية الدفع — <span id="sp-inv-ref" style="color:var(--gold-light)"></span></div>
+      <button class="mclose" onclick="closeModal('smart-pay-modal')">✕</button>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="sp-inv-id">
+      <!-- Patient info bar -->
+      <div style="display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:18px;">
+        <div style="font-size:28px;">👤</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px;" id="sp-pat-name">—</div>
+          <div style="font-size:12px;color:var(--text-muted);" id="sp-service-name">—</div>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:11px;color:var(--text-muted);">رصيد العميل</div>
+          <div style="font-size:16px;font-weight:800;" id="sp-credit-display" style="color:var(--emerald)">0 ج</div>
+        </div>
+      </div>
+
+      <!-- Invoice summary -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">
+        <div style="text-align:center;background:var(--glass);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">إجمالي الفاتورة</div>
+          <div style="font-size:18px;font-weight:800;color:var(--text-primary);" id="sp-total">0 ج</div>
+        </div>
+        <div style="text-align:center;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.15);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">مدفوع سابقاً</div>
+          <div style="font-size:18px;font-weight:800;color:var(--emerald);" id="sp-paid-before">0 ج</div>
+        </div>
+        <div style="text-align:center;background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.15);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">المتبقي</div>
+          <div style="font-size:18px;font-weight:800;color:var(--rose);" id="sp-remaining-display">0 ج</div>
+        </div>
+      </div>
+
+      <!-- Smart suggestions -->
+      <div id="sp-suggestions" style="margin-bottom:16px;display:none;">
+        <div style="font-size:12px;font-weight:700;color:var(--gold-light);margin-bottom:8px;">💡 اقتراحات ذكية:</div>
+        <div id="sp-sugg-content" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- Payment amount -->
+      <div class="fg" style="gap:14px;">
+        <div class="fgrp">
+          <label class="flbl">المبلغ المدفوع (ج) *</label>
+          <input class="fctl" type="number" id="sp-amount" placeholder="0" oninput="onSpAmountChange()" style="font-size:18px;font-weight:700;">
+        </div>
+        <div class="fgrp">
+          <label class="flbl">طريقة الدفع</label>
+          <select class="fctl" id="sp-method">
+            <option value="كاش">💵 كاش</option>
+            <option value="فيزا">💳 فيزا</option>
+            <option value="إنستاباي">📱 إنستاباي</option>
+            <option value="فودافون">📱 فودافون كاش</option>
+            <option value="تحويل">🏦 تحويل بنكي</option>
+          </select>
+        </div>
+
+        <!-- Quick amount buttons -->
+        <div class="fgrp full">
+          <label class="flbl">أزرار سريعة</label>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;" id="sp-quick-btns"></div>
+        </div>
+
+        <div class="fgrp full">
+          <label class="flbl">ملاحظات</label>
+          <input class="fctl" id="sp-notes" placeholder="أي ملاحظات على الدفعة...">
+        </div>
+      </div>
+
+      <!-- Convert to installments option -->
+      <div id="sp-installment-option" style="display:none;margin-top:12px;background:rgba(196,168,130,.07);border:1px solid rgba(196,168,130,.2);border-radius:var(--radius-sm);padding:12px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <input type="checkbox" id="sp-make-installment" onchange="toggleSpInstallment()" style="width:16px;height:16px;accent-color:var(--gold);">
+          <label for="sp-make-installment" style="font-size:13px;font-weight:600;cursor:pointer;">📆 تحويل المتبقي إلى أقساط</label>
+        </div>
+        <div id="sp-inst-fields" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div><label class="flbl">عدد الأقساط</label><select class="fctl" id="sp-inst-count" onchange="calcSpInstPreview()"><option value="2">2 قسط</option><option value="3" selected>3 أقساط</option><option value="4">4 أقساط</option><option value="6">6 أقساط</option><option value="12">12 قسط</option></select></div>
+          <div><label class="flbl">قسط شهري</label><div class="fctl" id="sp-inst-preview" style="background:rgba(196,168,130,.08);color:var(--gold-light);font-weight:700;">—</div></div>
+        </div>
+      </div>
+
+      <!-- Live result preview -->
+      <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:14px;margin-top:14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:8px;">📋 ملخص العملية</div>
+        <div id="sp-preview-content" style="font-size:13px;line-height:2;color:var(--text-secondary);"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('smart-pay-modal')">إلغاء</button>
+      <button class="btn btn-teal" onclick="processSmartPayment()" id="sp-confirm-btn">💳 تأكيد الدفع</button>
+    </div>
+  </div>
+</div>
+
 <!-- PLACEHOLDERS -->
 <!-- WAITLIST -->
 <div class="screen" id="screen-waitlist">
@@ -5762,30 +5889,39 @@ function renderWaitlist(){
 }
 
 // Check-in: receptionist clicks
+// ══════════════════════════════════════════════════════
+// 🟠 PHASE 5 — RECEPTION & DOCTOR SCREEN AUTOMATION
+// ══════════════════════════════════════════════════════
+
+// Helper: sync all live screens after any status change
+function _syncAllScreens(){
+  renderTodayAppts();
+  renderWaitlist();
+  renderReception();
+  renderDoctorView();
+}
+
+// Reception: Check-In patient
 function wlCheckIn(id){
   const now=new Date();
   const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   DB.upd('appointments',id,{status:'وصل',checkInTime:t});
   showToast('success','✅ تم تسجيل الوصول',`الوقت: ${t}`);
-  renderWaitlist(); renderTodayAppts();
+  _syncAllScreens();
 }
 
-// Doctor calls patient
+// Doctor: Call patient into consultation
 function wlCallPatient(id){
   const now=new Date();
   const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   DB.upd('appointments',id,{status:'في الاستشارة',consultStart:t});
   showToast('info','💬 بدأت الاستشارة',`الوقت: ${t}`);
-  renderWaitlist(); renderTodayAppts();
+  _syncAllScreens();
 }
 
-// Doctor finishes consultation
+// Doctor: Finish — open billing modal (Phase 4)
 function wlFinish(id){
-  const now=new Date();
-  const t=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  DB.upd('appointments',id,{status:'مكتمل',consultEnd:t});
-  showToast('success','✔ اكتملت الاستشارة',`الوقت: ${t}`);
-  renderWaitlist(); renderTodayAppts();
+  openConsultDoneModal(id);
 }
 
 // Mark no-show
@@ -5794,7 +5930,7 @@ function wlMarkNoShow(id){
   if(!confirm(`تأكيد: ${a?.patient||'العميل'} لم يحضر؟`)) return;
   DB.upd('appointments',id,{status:'لم يحضر'});
   showToast('info','❌ سُجِّل كـ "لم يحضر"');
-  renderWaitlist(); renderTodayAppts();
+  _syncAllScreens();
 }
 
 // Legacy waitlist functions (kept for backward compat)
@@ -6215,16 +6351,442 @@ window.showScreen=function(id){
   _p3Orig(id);
   if(id==='reception'){_wlAutoUpdateStatuses();renderReception();}
   if(id==='doctor-view'){_wlAutoUpdateStatuses();renderDoctorView();}
+  if(id==='waitlist'){_wlAutoUpdateStatuses();renderWaitlist();}
 };
 
-// Restart auto-refresh timer to cover all 3 screens
+// ══════════════════════════════════════════════════════════
+// 💳 PHASE 6: SMART PAYMENT MODULE — Full Automation
+// ══════════════════════════════════════════════════════════
+
+// ── Enhanced renderInvs with smart payment buttons ──
+function renderInvs(){
+  const q=(document.getElementById('inv-search-input')?.value||'').toLowerCase();
+  const stFilter=document.getElementById('inv-status-filter')?.value||'';
+  const methodFilter=document.getElementById('inv-method-filter')?.value||'';
+  const dateFilter=document.getElementById('inv-date-filter')?.value||'';
+
+  let invs=DB.get('invoices')||[];
+  if(q) invs=invs.filter(i=>(i.patient||'').toLowerCase().includes(q)||(i.service||'').toLowerCase().includes(q));
+  if(stFilter) invs=invs.filter(i=>i.status===stFilter);
+  if(methodFilter) invs=invs.filter(i=>i.method===methodFilter);
+  if(dateFilter) invs=invs.filter(i=>i.date===dateFilter);
+  invs=[...invs].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  // KPIs
+  const all=DB.get('invoices')||[];
+  const totalRev=all.reduce((s,i)=>s+(i.total||0),0);
+  const paidFull=all.filter(i=>i.status==='مدفوع').length;
+  const partial=all.filter(i=>i.status==='جزئي'||(i.remaining>0&&i.paid>0)).length;
+  const pending=all.reduce((s,i)=>s+(i.remaining||0),0);
+  txt('inv-kpi-total',totalRev.toLocaleString()+' ج');
+  txt('inv-kpi-paid',paidFull);
+  txt('inv-kpi-partial',partial);
+  txt('inv-kpi-pending',pending.toLocaleString()+' ج');
+  txt('inv-count-lbl',invs.length+' فاتورة');
+
+  const STATUS_CLS={مدفوع:'sc',جزئي:'sp',معلق:'sx'};
+  const METHOD_ICO={'كاش':'💵','فيزا':'💳','إنستاباي':'📱','فودافون':'📱','تحويل':'🏦','أقساط':'📆'};
+  const tb=document.getElementById('inv-tbody');if(!tb)return;
+  tb.innerHTML=invs.map((inv,i)=>`<tr>
+    <td style="font-size:11px;color:var(--gold-light);font-weight:700">#INV-${String(i+1).padStart(3,'0')}</td>
+    <td style="font-weight:600">${inv.patient||'—'}</td>
+    <td style="font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${inv.service||'—'}</td>
+    <td style="font-size:12px;color:var(--text-muted)">${inv.doctor||'—'}</td>
+    <td style="font-weight:800">${(inv.total||0).toLocaleString()} ج</td>
+    <td style="color:var(--emerald);font-weight:700">${(inv.paid||0).toLocaleString()} ج</td>
+    <td style="color:${(inv.remaining||0)>0?'var(--rose)':'var(--text-muted)'};font-weight:700">${(inv.remaining||0).toLocaleString()} ج</td>
+    <td><span class="tag tg-teal">${METHOD_ICO[inv.method]||'💰'} ${inv.method||'—'}</span></td>
+    <td style="font-size:12px;color:var(--text-muted)">${inv.date||'—'}</td>
+    <td><span class="ast ${STATUS_CLS[inv.status]||'sd'}">${inv.status||'معلق'}</span></td>
+    <td style="display:flex;gap:5px;">
+      ${(inv.remaining||0)>0?`<button class="btn btn-teal btn-xs" onclick="openSmartPay('${inv.id}')">💳 دفع</button>`:'<span style="color:var(--emerald);font-size:11px;font-weight:700">✅ مكتمل</span>'}
+      <button class="btn btn-ghost btn-xs" onclick="printInvoice('${inv.id}')">🖨️</button>
+      <button class="btn btn-ghost btn-xs" onclick="sendInvoiceWA('${inv.id}')">💬</button>
+    </td>
+  </tr>`).join('')||'<tr><td colspan="11" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد فواتير بعد — ستُنشأ تلقائياً عند اكتمال الاستشارات</td></tr>';
+}
+
+function filterInvs(q){
+  const inp=document.getElementById('inv-search-input');if(inp)inp.value=q;
+  renderInvs();
+}
+
+function exportInvs(){
+  const invs=DB.get('invoices')||[];
+  const rows=[['#','العميل','الخدمة','الطبيب','الإجمالي','المدفوع','المتبقي','الطريقة','التاريخ','الحالة']];
+  invs.forEach((inv,i)=>rows.push([
+    `INV-${String(i+1).padStart(3,'0')}`,inv.patient,inv.service,inv.doctor,
+    inv.total,inv.paid,inv.remaining,inv.method,inv.date,inv.status
+  ]));
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`invoices_${new Date().toISOString().split('T')[0]}.csv`;a.click();
+  showToast('success','📊 تم تصدير الفواتير');
+}
+
+// ── Open Smart Payment Modal ──
+function openSmartPay(invId){
+  const inv=(DB.get('invoices')||[]).find(i=>String(i.id)===String(invId));
+  if(!inv){showToast('error','❌ الفاتورة غير موجودة');return;}
+  const pat=(DB.get('patients')||[]).find(p=>String(p.id)===String(inv.patId)||p.name===inv.patient);
+  const idx=(DB.get('invoices')||[]).findIndex(i=>String(i.id)===String(invId));
+
+  // Set hidden id
+  document.getElementById('sp-inv-id').value=invId;
+
+  // Basic info
+  txt('sp-inv-ref',`#INV-${String(idx+1).padStart(3,'0')}`);
+  txt('sp-pat-name',inv.patient||'—');
+  txt('sp-service-name',inv.service||'—');
+  txt('sp-total',(inv.total||0).toLocaleString()+' ج');
+  txt('sp-paid-before',(inv.paid||0).toLocaleString()+' ج');
+  txt('sp-remaining-display',(inv.remaining||0).toLocaleString()+' ج');
+
+  // Patient credit/balance
+  const credit=Math.abs(pat?.credit||0);
+  const creditEl=document.getElementById('sp-credit-display');
+  if(creditEl){
+    creditEl.textContent=credit>0?credit.toLocaleString()+' ج (رصيد دائن)':'لا يوجد';
+    creditEl.style.color=credit>0?'var(--teal)':'var(--text-muted)';
+  }
+
+  // Quick amount buttons
+  const rem=inv.remaining||0;
+  const btns=document.getElementById('sp-quick-btns');
+  if(btns){
+    const opts=[];
+    if(rem>0) opts.push({label:`كامل المبلغ — ${rem.toLocaleString()} ج`,val:rem,cls:'btn-teal'});
+    if(credit>0&&credit<=rem) opts.push({label:`استخدام الرصيد — ${credit.toLocaleString()} ج`,val:credit,cls:'btn-ghost'});
+    [Math.round(rem/2),Math.round(rem/3)].forEach(v=>{ if(v>0&&v<rem) opts.push({label:v.toLocaleString()+' ج',val:v,cls:'btn-ghost'}); });
+    btns.innerHTML=opts.map(o=>`<button class="btn ${o.cls} btn-sm" onclick="setSpAmount(${o.val})">${o.label}</button>`).join('');
+  }
+
+  // Smart suggestions
+  const suggBox=document.getElementById('sp-suggestions');
+  const suggContent=document.getElementById('sp-sugg-content');
+  const suggestions=[];
+  if(credit>0) suggestions.push({icon:'💡',text:`العميل لديه رصيد دائن ${credit.toLocaleString()} ج — يمكن خصمه تلقائياً`});
+  // Check outstanding installments
+  const instPlans=(DB.get('installments')||[]).filter(p=>p.patientId==pat?.id&&p.status==='نشط');
+  if(instPlans.length>0) suggestions.push({icon:'📆',text:`لدى العميل ${instPlans.length} خطة أقساط نشطة`});
+  if(rem>500) suggestions.push({icon:'📋',text:`المبلغ كبير — يمكن تحويله لأقساط شهرية ميسرة`});
+  if(suggBox&&suggContent){
+    if(suggestions.length>0){
+      suggContent.innerHTML=suggestions.map(s=>`<div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--amber);background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.15);border-radius:8px;padding:8px 12px;">${s.icon} ${s.text}</div>`).join('');
+      suggBox.style.display='block';
+    } else {
+      suggBox.style.display='none';
+    }
+  }
+
+  // Reset fields
+  const amtEl=document.getElementById('sp-amount');if(amtEl){amtEl.value=rem;amtEl.focus();}
+  const instOpt=document.getElementById('sp-installment-option');
+  if(instOpt) instOpt.style.display=rem>200?'block':'none';
+  const instChk=document.getElementById('sp-make-installment');if(instChk)instChk.checked=false;
+  const instFields=document.getElementById('sp-inst-fields');if(instFields)instFields.style.display='none';
+  document.getElementById('sp-notes').value='';
+
+  onSpAmountChange();
+  document.getElementById('smart-pay-modal').classList.add('open');
+}
+
+function setSpAmount(val){
+  const el=document.getElementById('sp-amount');if(el){el.value=val;el.focus();}
+  onSpAmountChange();
+}
+
+function onSpAmountChange(){
+  const invId=document.getElementById('sp-inv-id')?.value;
+  const inv=(DB.get('invoices')||[]).find(i=>String(i.id)===String(invId));
+  if(!inv)return;
+  const amount=parseFloat(document.getElementById('sp-amount')?.value)||0;
+  const rem=inv.remaining||0;
+  const newPaid=(inv.paid||0)+amount;
+  const newRem=Math.max(0,rem-amount);
+  const isOver=amount>rem;
+  const isPartial=amount>0&&amount<rem;
+  const isFull=amount>=rem&&amount>0;
+
+  const preview=document.getElementById('sp-preview-content');
+  if(preview){
+    let html='';
+    if(amount<=0){html='<span style="color:var(--text-muted)">أدخل المبلغ لعرض ملخص العملية</span>';}
+    else if(isOver){html=`<span style="color:var(--rose)">⚠️ المبلغ المدخل (${amount.toLocaleString()} ج) أكبر من المتبقي (${rem.toLocaleString()} ج)</span>`;}
+    else{
+      html+=`<div>✅ سيُضاف إلى المدفوع: <b style="color:var(--emerald)">${newPaid.toLocaleString()} ج</b></div>`;
+      if(isFull) html+=`<div>🎉 الفاتورة ستُغلق بالكامل كـ <b style="color:var(--teal)">مدفوع</b></div>`;
+      if(isPartial) html+=`<div>⏳ المتبقي بعد الدفعة: <b style="color:var(--amber)">${newRem.toLocaleString()} ج</b> — الفاتورة بحالة <b>جزئي</b></div>`;
+      html+=`<div>🏦 سيُضاف للخزينة: <b style="color:var(--gold-light)">${amount.toLocaleString()} ج</b></div>`;
+    }
+    preview.innerHTML=html;
+  }
+
+  // Enable/disable confirm button
+  const btn=document.getElementById('sp-confirm-btn');
+  if(btn) btn.disabled=(amount<=0||isOver);
+
+  calcSpInstPreview();
+}
+
+function toggleSpInstallment(){
+  const chk=document.getElementById('sp-make-installment')?.checked;
+  const fields=document.getElementById('sp-inst-fields');
+  if(fields) fields.style.display=chk?'grid':'none';
+  calcSpInstPreview();
+}
+
+function calcSpInstPreview(){
+  const invId=document.getElementById('sp-inv-id')?.value;
+  const inv=(DB.get('invoices')||[]).find(i=>String(i.id)===String(invId));
+  if(!inv)return;
+  const amount=parseFloat(document.getElementById('sp-amount')?.value)||0;
+  const rem=Math.max(0,(inv.remaining||0)-amount);
+  const count=parseInt(document.getElementById('sp-inst-count')?.value)||3;
+  const each=count?Math.ceil(rem/count):0;
+  const prev=document.getElementById('sp-inst-preview');
+  if(prev) prev.textContent=each>0?`${each.toLocaleString()} ج / شهر`:'—';
+}
+
+// ── Process Smart Payment ──
+function processSmartPayment(){
+  const invId=document.getElementById('sp-inv-id')?.value;
+  const inv=(DB.get('invoices')||[]).find(i=>String(i.id)===String(invId));
+  if(!inv){showToast('error','❌ الفاتورة غير موجودة');return;}
+
+  const amount=parseFloat(document.getElementById('sp-amount')?.value)||0;
+  const method=document.getElementById('sp-method')?.value||'كاش';
+  const notes=document.getElementById('sp-notes')?.value||'';
+  const makeInst=document.getElementById('sp-make-installment')?.checked;
+  const instCount=parseInt(document.getElementById('sp-inst-count')?.value)||3;
+  const rem=inv.remaining||0;
+
+  if(amount<=0){showToast('warning','⚠️ أدخل المبلغ');return;}
+  if(amount>rem){showToast('warning','⚠️ المبلغ أكبر من المتبقي');return;}
+
+  const today=new Date().toISOString().split('T')[0];
+  const newPaid=(inv.paid||0)+amount;
+  const newRem=Math.max(0,rem-amount);
+  const isFull=newRem===0;
+
+  // 1. Update invoice
+  DB.upd('invoices',invId,{
+    paid:newPaid,
+    remaining:newRem,
+    status:isFull?'مدفوع':'جزئي',
+    method,
+    lastPayDate:today,
+    lastPayNotes:notes
+  });
+
+  // 2. Add treasury cash-in entry automatically
+  if(!DB.get('cashlog')) DB.set('cashlog',[]);
+  DB.push('cashlog',{
+    type:'وارد',
+    amount,
+    source:`دفعة فاتورة — ${inv.patient}`,
+    service:inv.service||'',
+    method,
+    date:today,
+    invId,
+    notes
+  });
+
+  // 3. Update patient profile
+  const pat=(DB.get('patients')||[]).find(p=>String(p.id)===String(inv.patId)||p.name===inv.patient);
+  if(pat){
+    const newBalance=Math.max(0,(pat.balance||0)-amount);
+    DB.upd('patients',pat.id,{balance:newBalance,status:newBalance>0?'قسط':'نشط'});
+  }
+
+  // 4. Auto-create installment plan if selected
+  if(makeInst&&newRem>0){
+    const each=Math.ceil(newRem/instCount);
+    const payments=[];
+    for(let i=1;i<=instCount;i++){
+      const d=new Date(today);d.setMonth(d.getMonth()+i);
+      payments.push({num:i,dueDate:d.toISOString().split('T')[0],paid:false,paidDate:null});
+    }
+    if(!DB.get('installments')) DB.set('installments',[]);
+    DB.push('installments',{
+      patientId:pat?.id||inv.patId,patientName:inv.patient,service:inv.service||'',
+      total:inv.total,downPayment:newPaid,remaining:newRem,installmentAmount:each,
+      count:instCount,payments,startDate:today,status:'نشط',fromInvId:invId
+    });
+    if(pat) DB.upd('patients',pat.id,{status:'قسط'});
+    // Update invoice method to installments
+    DB.upd('invoices',invId,{method:'أقساط'});
+  }
+
+  // 5. Refresh all related screens
+  renderInvs();
+  renderPayments();
+  renderInstallments();
+  if(document.getElementById('screen-treasury')?.classList.contains('active')) renderTreasury();
+  txt('badge-inst',(DB.get('installments')||[]).filter(p=>p.remaining>0).length);
+
+  // 6. Update dashboard KPIs
+  const todayRevenue=(DB.get('invoices')||[]).filter(i=>i.date===today).reduce((s,i)=>s+(i.paid||0),0);
+  txt('kpi-rev',todayRevenue.toLocaleString());
+  const pendingBal=(DB.get('invoices')||[]).filter(i=>i.remaining>0).reduce((s,i)=>s+(i.remaining||0),0);
+  txt('kpi-pend',pendingBal.toLocaleString());
+
+  closeModal('smart-pay-modal');
+
+  if(isFull){
+    showToast('success',`✅ تم استلام كامل المبلغ من ${inv.patient}`,`${amount.toLocaleString()} ج — الفاتورة مغلقة بالكامل 🎉`);
+  } else if(makeInst){
+    const each2=Math.ceil(newRem/instCount);
+    showToast('success',`✅ تم استلام ${amount.toLocaleString()} ج`,`المتبقي ${newRem.toLocaleString()} ج على ${instCount} أقساط × ${each2.toLocaleString()} ج`);
+  } else {
+    showToast('success',`✅ تم استلام ${amount.toLocaleString()} ج`,`المتبقي: ${newRem.toLocaleString()} ج`);
+  }
+}
+
+// ── Auto-update installment overdue statuses ──
+function updateInstallmentStatuses(){
+  const today=new Date().toISOString().split('T')[0];
+  let changed=false;
+  const plans=DB.get('installments')||[];
+  plans.forEach(p=>{
+    if(p.status==='مكتمل') return;
+    const overdue=p.payments&&p.payments.filter(x=>!x.paid&&x.dueDate<today).length>0;
+    if(overdue&&p.status!=='متأخر'){
+      DB.upd('installments',p.id,{status:'متأخر'});
+      changed=true;
+    }
+  });
+  if(changed) renderInstallments();
+}
+
+// ── Enhanced renderPayments with full history ──
+// (Enhanced version replacing stub above)
+const _origRenderPayments=window.renderPayments;
+window.renderPayments=function(q){
+  q=q||(document.getElementById('pay-search')?.value||'').toLowerCase();
+  const method=document.getElementById('pay-method-filter')?.value||'';
+  const dateFilter=document.getElementById('pay-date-filter')?.value||'';
+
+  // Payments = all cashlog entries + paid invoices
+  const cashlog=DB.get('cashlog')||[];
+  let entries=cashlog.filter(c=>c.type==='وارد');
+
+  // Also include direct paid invoices not yet in cashlog
+  const invsPaid=(DB.get('invoices')||[]).filter(i=>i.paid>0&&!cashlog.find(c=>c.invId===String(i.id)));
+  invsPaid.forEach(inv=>{
+    entries.push({id:'_inv_'+inv.id,type:'وارد',amount:inv.paid,source:`دفعة فاتورة — ${inv.patient}`,service:inv.service,method:inv.method||'كاش',date:inv.date,invId:String(inv.id),notes:''});
+  });
+
+  if(q) entries=entries.filter(e=>(e.source||'').includes(q)||(e.service||'').includes(q));
+  if(method) entries=entries.filter(e=>e.method===method);
+  if(dateFilter) entries=entries.filter(e=>e.date===dateFilter);
+  entries=[...entries].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  const today=new Date().toISOString().split('T')[0];
+  const allPaid=cashlog.filter(c=>c.type==='وارد');
+  const todayTotal=allPaid.filter(c=>c.date===today).reduce((s,c)=>s+(c.amount||0),0);
+  const visa=allPaid.filter(c=>c.method==='فيزا').reduce((s,c)=>s+(c.amount||0),0);
+  const cash=allPaid.filter(c=>c.method==='كاش').reduce((s,c)=>s+(c.amount||0),0);
+  const transfer=allPaid.filter(c=>['إنستاباي','فودافون','تحويل'].includes(c.method)).reduce((s,c)=>s+(c.amount||0),0);
+  const totalAll=allPaid.reduce((s,c)=>s+(c.amount||0),0);
+
+  txt('pay-kpi-total',totalAll.toLocaleString()+' ج');
+  txt('pay-kpi-today',todayTotal.toLocaleString()+' ج');
+  txt('pay-kpi-visa',visa.toLocaleString()+' ج');
+  txt('pay-kpi-cash',cash.toLocaleString()+' ج');
+  txt('pay-kpi-transfer',transfer.toLocaleString()+' ج');
+  txt('pay-count-lbl',entries.length+' عملية');
+
+  const PAY_ICONS={'كاش':'💵','فيزا':'💳','إنستاباي':'📱','فودافون':'📱','تحويل':'🏦','أقساط':'📆'};
+  const tb=document.getElementById('pay-tbody');if(!tb)return;
+  tb.innerHTML=entries.map((e,i)=>`<tr>
+    <td style="font-size:11px;color:var(--gold-light);font-weight:700">#PAY-${String(i+1).padStart(3,'0')}</td>
+    <td style="font-weight:600">${(e.source||'').replace('دفعة فاتورة — ','')}</td>
+    <td style="font-size:12px">${e.service||'—'}</td>
+    <td style="font-weight:800;color:var(--emerald)">${(e.amount||0).toLocaleString()} ج</td>
+    <td><span class="tag tg-teal">${PAY_ICONS[e.method]||'💰'} ${e.method||'—'}</span></td>
+    <td style="font-size:12px;color:var(--text-muted)">${e.date||'—'}</td>
+    <td style="font-size:11px;color:var(--text-muted)">${e.invId?`#INV ref`:'—'}</td>
+    <td><span class="ast sc">مكتمل</span></td>
+  </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد مدفوعات</td></tr>';
+};
+
+// ── Treasury rendering using cashlog ──
+function renderTreasury(){
+  const cashlog=DB.get('cashlog')||[];
+  const expenses=DB.get('expenses')||[];
+  const today=new Date().toISOString().split('T')[0];
+
+  // Total in = all وارد entries + invoice paid that's not in cashlog
+  const invPaid=(DB.get('invoices')||[]).filter(i=>i.paid>0&&!cashlog.find(c=>c.invId===String(i.id))).reduce((s,i)=>s+(i.paid||0),0);
+  const totalIn=cashlog.filter(c=>c.type==='وارد').reduce((s,c)=>s+(c.amount||0),0)+invPaid;
+  const totalOut=expenses.reduce((s,e)=>s+(e.amount||0),0);
+  const balance=totalIn-totalOut;
+
+  const todayIn=(DB.get('invoices')||[]).filter(i=>i.date===today).reduce((s,i)=>s+(i.paid||0),0)+cashlog.filter(c=>c.type==='وارد'&&c.date===today).reduce((s,c)=>s+(c.amount||0),0);
+  const todayOut=expenses.filter(e=>e.date===today).reduce((s,e)=>s+(e.amount||0),0);
+
+  // Recent movements
+  const movements=[
+    ...cashlog.filter(c=>c.type==='وارد').map(c=>({...c,dir:'in'})),
+    ...(DB.get('invoices')||[]).filter(i=>i.paid>0&&!cashlog.find(c=>c.invId===String(i.id))).map(i=>({dir:'in',amount:i.paid,source:`دفعة — ${i.patient}`,service:i.service,date:i.date,method:i.method})),
+    ...expenses.map(e=>({dir:'out',amount:e.amount,source:`مصروف — ${e.category||e.desc||''}`,date:e.date,method:'نقدي'}))
+  ].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,30);
+
+  const el=document.getElementById('treasury-content');if(!el)return;
+  el.innerHTML=`
+    <div class="kpi-grid" style="margin-bottom:18px;">
+      <div class="kpi-card kc-emerald"><div class="kpi-icon">🏦</div><div class="kpi-value">${balance.toLocaleString()} ج</div><div class="kpi-label">رصيد الخزينة الحالي</div></div>
+      <div class="kpi-card kc-teal"><div class="kpi-icon">📥</div><div class="kpi-value">${totalIn.toLocaleString()} ج</div><div class="kpi-label">إجمالي الوارد</div></div>
+      <div class="kpi-card kc-rose"><div class="kpi-icon">📤</div><div class="kpi-value">${totalOut.toLocaleString()} ج</div><div class="kpi-label">إجمالي الصادر</div></div>
+      <div class="kpi-card kc-gold"><div class="kpi-icon">📅</div><div class="kpi-value">${todayIn.toLocaleString()} ج</div><div class="kpi-label">وارد اليوم</div></div>
+      <div class="kpi-card kc-amber"><div class="kpi-icon">💸</div><div class="kpi-value">${todayOut.toLocaleString()} ج</div><div class="kpi-label">صادر اليوم</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">📋 حركات الخزينة</div><span class="card-sub">آخر 30 حركة</span></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>النوع</th><th>المصدر</th><th>الخدمة</th><th>المبلغ</th><th>الطريقة</th><th>التاريخ</th></tr></thead>
+        <tbody>${movements.map(m=>`<tr>
+          <td><span class="ast ${m.dir==='in'?'sc':'sx'}">${m.dir==='in'?'📥 وارد':'📤 صادر'}</span></td>
+          <td style="font-size:12.5px">${m.source||'—'}</td>
+          <td style="font-size:12px;color:var(--text-muted)">${m.service||'—'}</td>
+          <td style="font-weight:800;color:${m.dir==='in'?'var(--emerald)':'var(--rose)'}">${(m.amount||0).toLocaleString()} ج</td>
+          <td style="font-size:12px">${m.method||'—'}</td>
+          <td style="font-size:12px;color:var(--text-muted)">${m.date||'—'}</td>
+        </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد حركات</td></tr>'}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+// Hook treasury screen
+const _p6ShowOrig=window.showScreen;
+window.showScreen=function(id){
+  _p6ShowOrig(id);
+  if(id==='treasury') renderTreasury();
+  if(id==='invoices') renderInvs();
+};
+
+// Run installment status check on load + every 5 minutes
+setTimeout(updateInstallmentStatuses,3000);
+setInterval(updateInstallmentStatuses,5*60*1000);
+
+// ── Phase 6: Global auto-refresh every 60s — always syncs all live screens ──
 if(window._wlTimer) clearInterval(window._wlTimer);
 window._wlTimer=setInterval(()=>{
-  _wlAutoUpdateStatuses();
+  const changed=_wlAutoUpdateStatuses();
+  // Always refresh all screens regardless of which is active
+  renderTodayAppts();
   if(document.getElementById('screen-waitlist')?.classList.contains('active')) renderWaitlist();
   if(document.getElementById('screen-reception')?.classList.contains('active')) renderReception();
   if(document.getElementById('screen-doctor-view')?.classList.contains('active')) renderDoctorView();
-  renderTodayAppts();
+  // If statuses changed, refresh non-active screens too (silent background update)
+  if(changed){
+    if(!document.getElementById('screen-waitlist')?.classList.contains('active')) renderWaitlist();
+    if(!document.getElementById('screen-reception')?.classList.contains('active')) renderReception();
+    if(!document.getElementById('screen-doctor-view')?.classList.contains('active')) renderDoctorView();
+  }
 },60000);
 
 </script>

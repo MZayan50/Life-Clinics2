@@ -381,7 +381,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     </div>
     <div class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</div>
     <div class="icon-btn" onclick="showScreen('settings')">⚙️</div>
-    <button class="btn btn-primary hm" onclick="openModal('appt-modal')">+ موعد جديد</button>
+    <button class="btn btn-primary hm" onclick="openApptModal()">+ موعد جديد</button>
   </div>
 </header>
 
@@ -394,7 +394,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div><h2 style="font-size:22px;font-weight:800;">مرحباً 👋 <span id="dash-uname">د. سارة</span></h2><p style="color:var(--text-muted);font-size:13px;margin-top:3px;" id="dash-sub"></p></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <select class="selbox"><option>كل الفروع</option><option>مدينة نصر</option><option>المهندسين</option></select>
-      <button class="btn btn-primary" onclick="openModal('appt-modal')">+ موعد جديد</button>
+      <button class="btn btn-primary" onclick="openApptModal()">+ موعد جديد</button>
     </div>
   </div>
   <div class="kpi-grid">
@@ -448,7 +448,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث بالاسم أو الهاتف..." oninput="filterPat(this.value)"></div>
     <select class="selbox"><option>كل الفروع</option><option>مدينة نصر</option><option>المهندسين</option></select>
     <select class="selbox" onchange="filterPatSt(this.value)"><option value="">كل العملاء</option><option value="نشط">نشط</option><option value="قسط">قسط</option><option value="غير نشط">غير نشط</option></select>
-    <button class="btn btn-primary" onclick="openModal('patient-modal')">+ عميل جديد</button>
+    <button class="btn btn-primary" onclick="openPatModal()">+ عميل جديد</button>
     <button class="btn btn-ghost btn-sm" onclick="exportPat()">📊 تصدير</button>
   </div>
   <div class="card">
@@ -461,7 +461,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 <div class="screen" id="screen-patient-profile">
   <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;">
     <button class="btn btn-ghost btn-sm" onclick="showScreen('patients')">← رجوع</button>
-    <button class="btn btn-primary btn-sm" onclick="openModal('appt-modal')">+ موعد</button>
+    <button class="btn btn-primary btn-sm" onclick="openApptModal()">+ موعد</button>
     <button class="btn btn-ghost btn-sm">📸 صور</button>
     <button class="btn btn-ghost btn-sm" onclick="openPatWA()">💬 واتساب</button>
     <button class="btn btn-ghost btn-sm" onclick="printProfile()">🖨️ طباعة</button>
@@ -519,7 +519,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
       <div class="cal-grid" id="cal-grid"></div>
     </div>
     <div class="card">
-      <div class="card-hdr"><div class="card-title" id="cal-sel-date">اليوم</div><button class="btn btn-primary btn-sm" onclick="openModal('appt-modal')">+</button></div>
+      <div class="card-hdr"><div class="card-title" id="cal-sel-date">اليوم</div><button class="btn btn-primary btn-sm" onclick="openApptModal()">+</button></div>
       <div id="cal-day-appts"></div>
     </div>
   </div>
@@ -531,7 +531,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث..." oninput="filterAppts(this.value)"></div>
     <select class="selbox" onchange="filterApptSt(this.value)"><option value="">كل الحالات</option><option value="مؤكد">مؤكد</option><option value="انتظار">انتظار</option><option value="في العيادة">في العيادة</option><option value="مكتمل">مكتمل</option><option value="ملغي">ملغي</option></select>
     <input type="date" class="selbox" onchange="filterApptDate(this.value)">
-    <button class="btn btn-primary" onclick="openModal('appt-modal')">+ موعد جديد</button>
+    <button class="btn btn-primary" onclick="openApptModal()">+ موعد جديد</button>
   </div>
   <div class="card"><div class="table-wrap"><table><thead><tr><th>العميل</th><th>التاريخ</th><th>الوقت</th><th>الخدمة</th><th>الطبيب</th><th>الفرع</th><th>الحالة</th><th></th></tr></thead><tbody id="appts-tbody"></tbody></table></div></div>
 </div>
@@ -541,7 +541,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="filter-bar">
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث عن خدمة..."></div>
     <select class="selbox"><option>كل الأقسام</option><option>البشرة</option><option>الشعر</option><option>الليزر</option><option>حقن</option></select>
-    <button class="btn btn-primary" onclick="openModal('service-modal')">+ خدمة جديدة</button>
+    <button class="btn btn-primary" onclick="openSvcModal()">+ خدمة جديدة</button>
   </div>
   <div class="card"><div class="table-wrap"><table><thead><tr><th>الخدمة</th><th>القسم</th><th>السعر</th><th>المدة</th><th>التكلفة</th><th>الربح</th><th>الطبيب</th><th></th></tr></thead><tbody id="svc-tbody"></tbody></table></div></div>
 </div>
@@ -567,7 +567,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="filter-bar">
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث..." oninput="filterInvs(this.value)"></div>
     <select class="selbox" onchange="filterInvsSt(this.value)"><option value="">كل الحالات</option><option value="مدفوع">مدفوع</option><option value="معلق">معلق</option><option value="جزئي">جزئي</option></select>
-    <button class="btn btn-primary" onclick="openModal('invoice-modal')">+ فاتورة جديدة</button>
+    <button class="btn btn-primary" onclick="openInvModal()">+ فاتورة جديدة</button>
     <button class="btn btn-ghost btn-sm" onclick="exportInvoices()">📊 تصدير Excel</button>
   </div>
   <div class="kpi-grid" style="margin-bottom:14px;">
@@ -826,7 +826,8 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 </div>
 <div class="modal-overlay" id="waitlist-modal">
   <div class="modal" style="max-width:480px"><div class="mhdr"><div class="mtitle">⏳ إضافة لقائمة الانتظار</div><button class="mclose" onclick="closeModal('waitlist-modal')">✕</button></div>
-  <div class="mbody"><div class="fg">
+  <div class="mbody">
+    <input type="hidden" id="wl-id"><div class="fg">
     <input type="hidden" id="wl-id">
     <div class="fgrp full"><label class="flbl">العميل *</label><select class="fctl" id="wl-pat"><option value="">-- اختر عميل --</option></select></div>
     <div class="fgrp"><label class="flbl">الخدمة المطلوبة</label><select class="fctl" id="wl-service"><option>هيدرافيشل</option><option>ليزر إزالة شعر</option><option>بوتكس</option><option>بلازما</option><option>تنظيف بشرة</option></select></div>
@@ -1067,7 +1068,11 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   </div></div>
   <div class="mfoot"><button class="btn btn-ghost" onclick="closeModal('expense-modal')">إلغاء</button><button class="btn btn-primary" onclick="saveExp()">💾 حفظ</button></div></div>
 </div>
-<div class="screen" id="screen-treasury"><div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🏦</div><h3>الخزينة</h3></div></div>
+<div class="screen" id="screen-treasury">
+  <div id="treasury-content">
+    <div class="card" style="text-align:center;padding:40px;"><div style="font-size:44px;margin-bottom:14px">🏦</div><div style="font-size:13px;color:var(--text-muted)">جارٍ تحميل الخزينة...</div></div>
+  </div>
+</div>
 <div class="screen" id="screen-accounts">
   <div style="margin-bottom:18px;">
     <h2 style="font-size:17px;font-weight:800;">📊 الحسابات الكاملة</h2>
@@ -1320,8 +1325,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 </main>
 <!-- MODALS -->
 <div class="modal-overlay" id="appt-modal">
-  <div class="modal"><div class="mhdr"><div class="mtitle">📅 موعد جديد</div><button class="mclose" onclick="closeModal('appt-modal')">✕</button></div>
+  <div class="modal"><div class="mhdr"><div class="mtitle" id="appt-modal-title">📅 موعد جديد</div><button class="mclose" onclick="closeModal('appt-modal')">✕</button></div>
   <div class="mbody"><div class="fg">
+    <input type="hidden" id="am-id">
     <div class="fgrp full"><label class="flbl">العميل *</label><select class="fctl" id="am-pat"><option value="">-- اختر عميل --</option></select></div>
     <div class="fgrp"><label class="flbl">نوع الموعد</label><select class="fctl" id="am-type"><option>كشف</option><option>جلسة</option><option>متابعة</option><option>ليزر</option><option>بوتكس</option></select></div>
     <div class="fgrp"><label class="flbl">الطبيب</label><select class="fctl" id="am-doc"><option>د. منى سامي</option><option>د. أحمد رضا</option><option>د. لمياء حسن</option></select></div>
@@ -1336,8 +1342,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 </div>
 
 <div class="modal-overlay" id="patient-modal">
-  <div class="modal" style="max-width:740px"><div class="mhdr"><div class="mtitle">👥 عميل جديد</div><button class="mclose" onclick="closeModal('patient-modal')">✕</button></div>
+  <div class="modal" style="max-width:740px"><div class="mhdr"><div class="mtitle" id="pat-modal-title">👥 عميل جديد</div><button class="mclose" onclick="closeModal('patient-modal')">✕</button></div>
   <div class="mbody"><div class="fg">
+    <input type="hidden" id="pm-id">
     <div class="fsec">البيانات الشخصية</div>
     <div class="fgrp"><label class="flbl">الاسم الكامل *</label><input class="fctl" id="pm-name" placeholder="الاسم بالكامل"></div>
     <div class="fgrp"><label class="flbl">رقم الهاتف *</label><input class="fctl" id="pm-phone" placeholder="01X-XXX-XXXX"></div>
@@ -1363,8 +1370,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 </div>
 
 <div class="modal-overlay" id="invoice-modal">
-  <div class="modal"><div class="mhdr"><div class="mtitle">🧾 فاتورة جديدة</div><button class="mclose" onclick="closeModal('invoice-modal')">✕</button></div>
+  <div class="modal"><div class="mhdr"><div class="mtitle" id="inv-modal-title">🧾 فاتورة جديدة</div><button class="mclose" onclick="closeModal('invoice-modal')">✕</button></div>
   <div class="mbody">
+    <input type="hidden" id="im-id">
     <div class="fg">
       <div class="fgrp"><label class="flbl">العميل *</label><select class="fctl" id="im-pat"><option value="">-- اختر عميل --</option></select></div>
       <div class="fgrp"><label class="flbl">التاريخ</label><input class="fctl" type="date" id="im-date"></div>
@@ -1404,8 +1412,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 </div>
 
 <div class="modal-overlay" id="service-modal">
-  <div class="modal" style="max-width:500px"><div class="mhdr"><div class="mtitle">💅 خدمة جديدة</div><button class="mclose" onclick="closeModal('service-modal')">✕</button></div>
+  <div class="modal" style="max-width:500px"><div class="mhdr"><div class="mtitle" id="svc-modal-title">💅 خدمة جديدة</div><button class="mclose" onclick="closeModal('service-modal')">✕</button></div>
   <div class="mbody"><div class="fg">
+    <input type="hidden" id="sv-id">
     <div class="fgrp full"><label class="flbl">اسم الخدمة *</label><input class="fctl" id="sv-name" placeholder="اسم الخدمة"></div>
     <div class="fgrp"><label class="flbl">القسم</label><select class="fctl" id="sv-cat"><option>البشرة</option><option>الشعر</option><option>الليزر</option><option>حقن</option></select></div>
     <div class="fgrp"><label class="flbl">الطبيب</label><select class="fctl" id="sv-doc"><option>د. منى سامي</option><option>د. أحمد رضا</option></select></div>
@@ -1591,7 +1600,7 @@ function renderPat(){
   const pats=DB.get('patients').filter(p=>(!_pf||(p.name.includes(_pf)||p.phone.includes(_pf)))&&(!_ps||p.status===_ps));
   const tb=document.getElementById('pat-tbody');if(!tb)return;
   const lbl=document.getElementById('pat-count-lbl');if(lbl)lbl.textContent=`${pats.length} عميل`;
-  tb.innerHTML=pats.map((p,i)=>`<tr onclick="viewPat('${p.id}')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:9px;"><div class="tdava" style="background:${AVA[i%AVA.length]}">👩</div><div><div style="font-weight:600">${p.name}</div><div style="font-size:11px;color:var(--text-muted)">#C${String(i+1).padStart(3,'0')}</div></div></div></td><td>${p.phone}</td><td><span class="tag tg-gold">${p.skin}</span></td><td style="color:var(--text-muted);font-size:12px">اليوم</td><td><span style="font-weight:700;color:var(--teal)">${p.sessions||0}</span></td><td style="color:${(p.balance||0)>0?'var(--rose)':'var(--emerald)'};font-weight:700">${(p.balance||0).toLocaleString()} ج</td><td><span class="ast ${p.status==='نشط'?'sc':p.status==='قسط'?'sp':'sd'}">${p.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();viewPat('${p.id}')">عرض</button> <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();delPat('${p.id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=pats.map((p,i)=>`<tr onclick="viewPat('${p.id}')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:9px;"><div class="tdava" style="background:${AVA[i%AVA.length]}">👩</div><div><div style="font-weight:600">${p.name}</div><div style="font-size:11px;color:var(--text-muted)">#C${String(i+1).padStart(3,'0')}</div></div></div></td><td>${p.phone}</td><td><span class="tag tg-gold">${p.skin}</span></td><td style="color:var(--text-muted);font-size:12px">اليوم</td><td><span style="font-weight:700;color:var(--teal)">${p.sessions||0}</span></td><td style="color:${(p.balance||0)>0?'var(--rose)':'var(--emerald)'};font-weight:700">${(p.balance||0).toLocaleString()} ج</td><td><span class="ast ${p.status==='نشط'?'sc':p.status==='قسط'?'sp':'sd'}">${p.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();viewPat('${p.id}')">عرض</button> <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openPatModal('${p.id}')">✏️</button> <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();delPat('${p.id}')">🗑</button></td></tr>`).join('');
   txt('badge-patients',DB.get('patients').length);txt('kpi-pat',DB.get('patients').length);
 }
 function openPatWA(){
@@ -1785,6 +1794,20 @@ ${sessions.length?`<h2>✨ خطط الجلسات (${sessions.length})</h2>
 
 // SAVE PATIENT
 function gv(id){return document.getElementById(id)?.value||'';}
+function openPatModal(id){
+  const p=id?DB.get('patients').find(x=>String(x.id)===String(id)):null;
+  document.getElementById('pat-modal-title').textContent=p?'✏️ تعديل عميل':'👥 عميل جديد';
+  document.getElementById('pm-id').value=p?p.id:'';
+  const fields={
+    'pm-name':p?.name||'','pm-phone':p?.phone||'','pm-email':p?.email||'',
+    'pm-skin':p?.skin||'','pm-hair':p?.hair||'','pm-skinp':p?.skinProbs||'',
+    'pm-hairp':p?.hairProbs||'','pm-allergy':p?.allergies||'','pm-preg':p?.pregnancy||'لا',
+    'pm-meds':p?.meds||'','pm-src':p?.source||'','pm-branch':p?.branch||'',
+    'pm-status':p?.status||'نشط','pm-dob':p?.dob||'','pm-job':p?.job||'','pm-wa':p?.whatsapp||''
+  };
+  Object.entries(fields).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  openPatModal();
+}
 function savePat(){
   const name=gv('pm-name').trim(),phone=gv('pm-phone').trim();
   if(!name||!phone){showToast('warning','⚠️ الاسم والهاتف مطلوبان');return;}
@@ -1802,18 +1825,42 @@ const ASC={'مؤكد':'sc','انتظار':'sp','في العيادة':'sw','مك�
 function renderAppts(){
   const appts=DB.get('appointments').filter(a=>(!_af||a.patient.includes(_af))&&(!_as||a.status===_as)&&(!_ad||a.date===_ad));
   const tb=document.getElementById('appts-tbody');if(!tb)return;
-  tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;"><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;white-space:nowrap;"><button class="btn btn-ghost btn-xs" onclick="openApptModal('${a.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
   renderTodayAppts();
 }
 function updAppt(id,st){DB.upd('appointments',id,{status:st});renderAppts();showToast('success','✅ تم تحديث حالة الموعد');}
 function delAppt(id){if(confirm('حذف الموعد؟')){DB.del('appointments',id);renderAppts();buildCal();}}
+function openApptModal(id){
+  const a=id?DB.get('appointments').find(x=>x.id===id):null;
+  document.getElementById('appt-modal-title').textContent=a?'✏️ تعديل موعد':'📅 موعد جديد';
+  document.getElementById('am-id').value=a?a.id:'';
+  fillPatDropdowns();
+  if(a){
+    document.getElementById('am-pat').value=a.patId||'';
+    document.getElementById('am-type').value=a.type||'كشف';
+    document.getElementById('am-doc').value=a.doctor||'';
+    document.getElementById('am-date').value=a.date||'';
+    document.getElementById('am-time').value=a.time||'';
+    document.getElementById('am-svc').value=a.service||'';
+    document.getElementById('am-branch').value=a.branch||'';
+    const notesEl=document.getElementById('am-notes');if(notesEl)notesEl.value=a.notes||'';
+  } else {
+    document.getElementById('am-date').value=new Date().toISOString().split('T')[0];
+    document.getElementById('am-time').value='10:00';
+    const notesEl=document.getElementById('am-notes');if(notesEl)notesEl.value='';
+    document.getElementById('am-id').value='';
+  }
+  openApptModal();
+}
 function saveAppt(){
   const pid=gv('am-pat'),date=gv('am-date'),time=gv('am-time');
   if(!pid||!date||!time){showToast('warning','⚠️ اختر العميل والتاريخ والوقت');return;}
-  const pat=DB.get('patients').find(p=>p.id==pid);
-  DB.push('appointments',{patient:pat?.name||pid,service:gv('am-svc'),type:gv('am-type'),doctor:gv('am-doc'),date,time,status:'مؤكد',branch:gv('am-branch'),notes:gv('am-notes')});
-  closeModal('appt-modal');showToast('success','📅 تم حجز الموعد بنجاح',`${pat?.name} - ${date} ${time}`);
-  renderAppts();buildCal();renderTodayAppts();
+  const pat=DB.get('patients').find(p=>String(p.id)===String(pid));
+  const id=gv('am-id');
+  const data={patId:pid,patient:pat?.name||pid,service:gv('am-svc'),type:gv('am-type'),doctor:gv('am-doc'),date,time,branch:gv('am-branch'),notes:gv('am-notes')};
+  if(id){DB.upd('appointments',id,data);showToast('success','✅ تم تحديث الموعد');}
+  else{DB.push('appointments',{...data,status:'مؤكد'});showToast('success','📅 تم حجز الموعد بنجاح',`${pat?.name} - ${date} ${time}`);}
+  closeModal('appt-modal');renderAppts();buildCal();renderTodayAppts();
   const e=document.getElementById('am-notes');if(e)e.value='';
 }
 function renderTodayAppts(){
@@ -1890,7 +1937,7 @@ function renderInvs(){
   let paid=0,pend=0;
   DB.get('invoices').forEach(i=>{if(i.status==='مدفوع')paid+=i.total;else pend+=i.remaining||0;});
   txt('inv-paid',paid.toLocaleString()+' ج');txt('inv-pend2',pend.toLocaleString()+' ج');txt('inv-cnt',DB.get('invoices').length);
-  tb.innerHTML=invs.map((i,idx)=>`<tr><td style="font-weight:700;color:var(--gold-light);font-size:12px">#INV-${String(idx+1).padStart(3,'0')}</td><td style="font-weight:600">${i.patient}</td><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="color:${i.remaining>0?'var(--rose)':'var(--emerald)'};font-weight:700">${i.remaining} ج</td><td><span class="ast ${i.status==='مدفوع'?'sc':i.status==='جزئي'?'sp':'sw'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="printInvoice('${i.id}')">🖨 طباعة</button></td></tr>`).join('');
+  tb.innerHTML=invs.map((i,idx)=>`<tr><td style="font-weight:700;color:var(--gold-light);font-size:12px">#INV-${String(idx+1).padStart(3,'0')}</td><td style="font-weight:600">${i.patient}</td><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="color:${i.remaining>0?'var(--rose)':'var(--emerald)'};font-weight:700">${i.remaining} ج</td><td><span class="ast ${i.status==='مدفوع'?'sc':i.status==='جزئي'?'sp':'sw'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="openInvModal('${i.id}')">✏️</button> <button class="btn btn-ghost btn-xs" onclick="printInvoice('${i.id}')">🖨</button></td></tr>`).join('');
   txt('kpi-pend',pend.toLocaleString());
 }
 function updInvTotal(){
@@ -1899,14 +1946,50 @@ function updInvTotal(){
 }
 document.getElementById('im-svc')?.addEventListener('change',function(){const e=document.getElementById('im-price');if(e){e.value=this.value;updInvTotal();}});
 function selPay(el){el.closest('.pay-g').querySelectorAll('.pay-m').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function openInvModal(id){
+  const inv=id?DB.get('invoices').find(x=>String(x.id)===String(id)):null;
+  document.getElementById('inv-modal-title').textContent=inv?'✏️ تعديل فاتورة':'🧾 فاتورة جديدة';
+  document.getElementById('im-id').value=inv?inv.id:'';
+  fillPatDropdowns();
+  const patSel=document.getElementById('im-pat');
+  if(inv&&patSel){
+    // find patient by name
+    const pt=DB.get('patients').find(p=>p.name===inv.patient);
+    if(pt)patSel.value=pt.id;
+  }
+  const priceEl=document.getElementById('im-price');
+  const discEl=document.getElementById('im-disc');
+  const dateEl=document.getElementById('im-date');
+  if(priceEl)priceEl.value=inv?(inv.originalPrice||inv.total):800;
+  if(discEl)discEl.value=inv?(inv.discount||0):0;
+  if(dateEl)dateEl.value=inv?inv.date:new Date().toISOString().split('T')[0];
+  // reset payment method selection
+  document.querySelectorAll('#invoice-modal .pay-m').forEach(el=>{
+    el.classList.remove('sel');
+    if(inv&&el.textContent.trim()===inv.method)el.classList.add('sel');
+  });
+  if(!inv)document.querySelector('#invoice-modal .pay-m')?.classList.add('sel');
+  updInvTotal();
+  openInvModal();
+}
 function saveInv(){
   const pid=gv('im-pat');if(!pid){showToast('warning','⚠️ اختر العميل');return;}
-  const pat=DB.get('patients').find(p=>p.id==pid);
+  const pat=DB.get('patients').find(p=>String(p.id)===String(pid));
   const price=parseFloat(document.getElementById('im-price')?.value)||0,disc=parseFloat(document.getElementById('im-disc')?.value)||0,net=price-disc;
   const method=document.querySelector('#invoice-modal .pay-m.sel')?.textContent?.trim()||'كاش';
-  DB.push('invoices',{patient:pat?.name||'—',service:gv('im-svc').split(' - ')[0],originalPrice:price,discount:disc,total:net,paid:net,remaining:0,status:'مدفوع',method,date:gv('im-date')||new Date().toISOString().split('T')[0]});
-  if(pat)DB.upd('patients',pat.id,{spent:(pat.spent||0)+net});
-  closeModal('invoice-modal');showToast('success','✅ تم إصدار الفاتورة',`${net.toLocaleString()} ج - ${method}`);renderInvs();
+  const id=gv('im-id');
+  const svcRaw=gv('im-svc')||'';
+  const svcName=svcRaw.includes(' - ')?svcRaw.split(' - ')[0]:svcRaw;
+  const data={patient:pat?.name||'—',service:svcName,originalPrice:price,discount:disc,total:net,paid:net,remaining:0,status:'مدفوع',method,date:gv('im-date')||new Date().toISOString().split('T')[0]};
+  if(id){
+    DB.upd('invoices',id,data);
+    showToast('success','✅ تم تحديث الفاتورة');
+  } else {
+    DB.push('invoices',data);
+    if(pat)DB.upd('patients',pat.id,{spent:(pat.spent||0)+net});
+    showToast('success','✅ تم إصدار الفاتورة',`${net.toLocaleString()} ج - ${method}`);
+  }
+  closeModal('invoice-modal');renderInvs();
 }
 
 // DOCTORS
@@ -2124,13 +2207,30 @@ function payStaffSalary(id){
 // SERVICES
 function renderSvcs(){
   const tb=document.getElementById('svc-tbody');if(!tb)return;
-  tb.innerHTML=DB.get('services').map(s=>{const pr=s.price-s.cost,pt=s.price?Math.round(pr/s.price*100):0;return `<tr><td style="font-weight:600">${s.name}</td><td><span class="tag tg-teal">${s.cat}</span></td><td style="color:var(--gold-light);font-weight:700">${s.price} ج</td><td>${s.duration} د</td><td>${s.cost} ج</td><td style="color:var(--emerald)">${pr} ج (${pt}%)</td><td style="font-size:12px">${s.doctor}</td><td><button class="btn btn-danger btn-xs" onclick="delSvc('${s.id}')">🗑</button></td></tr>`;}).join('');
+  tb.innerHTML=DB.get('services').map(s=>{const pr=s.price-s.cost,pt=s.price?Math.round(pr/s.price*100):0;return `<tr><td style="font-weight:600">${s.name}</td><td><span class="tag tg-teal">${s.cat}</span></td><td style="color:var(--gold-light);font-weight:700">${s.price} ج</td><td>${s.duration} د</td><td>${s.cost} ج</td><td style="color:var(--emerald)">${pr} ج (${pt}%)</td><td style="font-size:12px">${s.doctor}</td><td style="white-space:nowrap"><button class="btn btn-ghost btn-xs" onclick="openSvcModal('${s.id}')">✏️</button> <button class="btn btn-danger btn-xs" onclick="delSvc('${s.id}')">🗑</button></td></tr>`;}).join('');
 }
 function delSvc(id){if(confirm('حذف الخدمة؟')){DB.del('services',id);renderSvcs();}}
+function openSvcModal(id){
+  const s=id?DB.get('services').find(x=>x.id===id):null;
+  document.getElementById('svc-modal-title').textContent=s?'✏️ تعديل خدمة':'💅 خدمة جديدة';
+  document.getElementById('sv-id').value=s?s.id:'';
+  document.getElementById('sv-name').value=s?s.name:'';
+  document.getElementById('sv-price').value=s?s.price:'';
+  document.getElementById('sv-cost').value=s?s.cost:'';
+  document.getElementById('sv-dur').value=s?s.duration:60;
+  const catSel=document.getElementById('sv-cat');
+  if(catSel&&s)catSel.value=s.cat||catSel.options[0].value;
+  const docSel=document.getElementById('sv-doc');
+  if(docSel&&s)docSel.value=s.doctor||docSel.options[0].value;
+  openModal('service-modal');
+}
 function saveSvc(){
   const name=gv('sv-name').trim();if(!name){showToast('warning','⚠️ اسم الخدمة مطلوب');return;}
-  DB.push('services',{name,cat:gv('sv-cat'),doctor:gv('sv-doc'),price:parseFloat(gv('sv-price'))||0,cost:parseFloat(gv('sv-cost'))||0,duration:parseInt(gv('sv-dur'))||60});
-  closeModal('service-modal');showToast('success',`✅ تم إضافة ${name}`);renderSvcs();
+  const id=gv('sv-id');
+  const data={name,cat:gv('sv-cat'),doctor:gv('sv-doc'),price:parseFloat(gv('sv-price'))||0,cost:parseFloat(gv('sv-cost'))||0,duration:parseInt(gv('sv-dur'))||60};
+  if(id){DB.upd('services',id,data);showToast('success',`✅ تم تحديث "${name}"`);}
+  else{DB.push('services',data);showToast('success',`✅ تم إضافة "${name}"`);}
+  closeModal('service-modal');renderSvcs();
 }
 
 // LEADS KANBAN
@@ -3223,42 +3323,22 @@ window.showScreen = function(id){
 // 🔐 SESSION MANAGEMENT
 // ══════════════════════════════════════════
 (function checkAuth(){
+  // Session check - if no session just continue as guest (standalone app)
   const sess = localStorage.getItem('ha_session');
-  if(!sess){
-    window.location.href = 'login.html';
-    return;
-  }
+  if(!sess) return; // no redirect - standalone mode
   try {
     const s = JSON.parse(sess);
     if(s.expiry < Date.now()){
       localStorage.removeItem('ha_session');
-      window.location.href = 'login.html';
-      return;
+      return; // expired - just clear, no redirect
     }
-    // Apply user info
     window._session = s;
     const uName = document.getElementById('user-name');
     const uRole = document.getElementById('user-role');
-    const dashU = document.getElementById('dash-uname');
-    const roleNames = {admin:'مدير النظام',doctor:'طبيب',receptionist:'استقبال',accountant:'محاسب',branch_manager:'مدير فرع'};
-    if(uName) uName.textContent = s.name;
-    if(uRole) uRole.textContent = roleNames[s.role] || s.role;
-    if(dashU) dashU.textContent = s.name;
-
-    // Apply permissions
-    applyPermissions(s.role, s.permissions);
-
-    // Auto-logout after expiry
-    const remaining = s.expiry - Date.now();
-    setTimeout(()=>{ doLogout(); }, remaining);
-
-    // Warn 5 min before expiry
-    if(remaining > 300000){
-      setTimeout(()=>{ showToast('warning','⚠️ سينتهي جلسة الدخول خلال 5 دقائق','اضغط لتجديد الجلسة'); }, remaining - 300000);
-    }
+    if(uName && s.name) uName.textContent = s.name;
+    if(uRole && s.role) uRole.textContent = s.role;
   } catch(e){
     localStorage.removeItem('ha_session');
-    window.location.href = 'login.html';
   }
 })();
 
@@ -3895,15 +3975,15 @@ updateSessionTimer();
 // 🏦 TREASURY SCREEN
 // ══════════════════════════════════════════
 function renderTreasury(){
-  const screen = document.getElementById('screen-treasury');
-  if(!screen) return;
+  const container = document.getElementById('treasury-content');
+  if(!container) return;
   const invoices = DB.get('invoices');
   const totalIn = invoices.reduce((s,i)=>s+(i.paid||0), 0);
   const expenses = DB.get('expenses');
   const totalOut = expenses.reduce((s,e)=>s+(e.amount||0), 0);
   const balance = totalIn - totalOut;
 
-  screen.innerHTML = `
+  container.innerHTML = `
   <div style="margin-bottom:18px;">
     <h2 style="font-size:17px;font-weight:800;">الخزينة</h2>
     <p style="font-size:12.5px;color:var(--text-muted)">${new Date().toLocaleDateString('ar-EG',{month:'long',year:'numeric'})}</p>
@@ -4260,19 +4340,25 @@ function renderPurchases(q){
     <td><span class="ast ${stClass[p.status]||'sd'}">${p.status}</span></td>
     <td style="display:flex;gap:5px;">
       ${p.status==='معلق'||p.status==='موافق عليه'?`<button class="btn btn-teal btn-xs" onclick="recvPurchase('${p.id}')">✅ استلام</button>`:''}
+      <button class="btn btn-ghost btn-xs" onclick="openPurchaseModal('${p.id}')">✏️</button>
       <button class="btn btn-danger btn-xs" onclick="delPurchase('${p.id}')">🗑</button>
     </td>
   </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:24px">لا توجد طلبات شراء</td></tr>';
 }
-function openPurchaseModal(){
+function openPurchaseModal(id){
   fillPurchaseSuppliers();
-  document.getElementById('pur-id').value='';
-  document.getElementById('pur-product').value='';
-  document.getElementById('pur-qty').value='';
-  document.getElementById('pur-unit-price').value='';
-  document.getElementById('pur-total-preview').textContent='0 ج';
-  document.getElementById('pur-order-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('pur-delivery-date').value='';
+  const p=id?(DB.get('purchases')||[]).find(x=>String(x.id)===String(id)):null;
+  const titleEl=document.getElementById('pur-modal-title');
+  if(titleEl) titleEl.textContent=p?'✏️ تعديل طلب شراء':'🛒 طلب شراء جديد';
+  document.getElementById('pur-id').value=p?p.id:'';
+  document.getElementById('pur-product').value=p?p.product:'';
+  document.getElementById('pur-qty').value=p?p.qty:'';
+  document.getElementById('pur-unit-price').value=p?p.unitPrice:'';
+  document.getElementById('pur-total-preview').textContent=p?(p.total||0).toLocaleString()+' ج':'0 ج';
+  document.getElementById('pur-order-date').value=p?p.orderDate:new Date().toISOString().split('T')[0];
+  document.getElementById('pur-delivery-date').value=p?p.deliveryDate||'':'';
+  const statusEl=document.getElementById('pur-status');
+  if(statusEl) statusEl.value=p?p.status:'معلق';
   openModal('purchase-modal');
 }
 function fillPurchaseSuppliers(){
@@ -4288,10 +4374,12 @@ function calcPurTotal(){
 function savePurchase(){
   const product=gv('pur-product').trim();if(!product){showToast('warning','⚠️ اسم المنتج مطلوب');return;}
   const qty=parseInt(gv('pur-qty'))||0;const unitPrice=parseFloat(gv('pur-unit-price'))||0;
+  const id=gv('pur-id');
   const data={product,supplier:gv('pur-supplier'),qty,unitPrice,total:qty*unitPrice,orderDate:gv('pur-order-date'),deliveryDate:gv('pur-delivery-date'),branch:gv('pur-branch'),status:gv('pur-status')};
   if(!DB.get('purchases')) DB.set('purchases',[]);
-  DB.push('purchases',data);
-  closeModal('purchase-modal');showToast('success',`✅ تم إرسال طلب شراء: ${product}`);renderPurchases();
+  if(id){DB.upd('purchases',id,data);showToast('success',`✅ تم تحديث طلب: ${product}`);}
+  else{DB.push('purchases',data);showToast('success',`✅ تم إرسال طلب شراء: ${product}`);}
+  closeModal('purchase-modal');renderPurchases();
 }
 function recvPurchase(id){
   DB.upd('purchases',id,{status:'مستلم',deliveryDate:new Date().toISOString().split('T')[0]});
@@ -4490,6 +4578,65 @@ function openPhotoModal(){
   document.getElementById('photo-date').value=new Date().toISOString().split('T')[0];
   openModal('photo-modal');
 }
+function renderPhotos(q){
+  q=q||'';
+  const catF=document.getElementById('photo-cat-filter')?.value||'';
+  if(!DB.get('photos')) DB.set('photos',[]);
+  let photos=DB.get('photos');
+  if(q) photos=photos.filter(p=>(p.patientName||'').includes(q)||(p.service||'').includes(q));
+  if(catF) photos=photos.filter(p=>p.service===catF);
+
+  // KPIs
+  const all=DB.get('photos');
+  txt('photo-kpi-total',all.length);
+  const uniqPats=new Set(all.map(p=>p.patientName)).size;
+  txt('photo-kpi-patients',uniqPats);
+  const pairs=all.filter(p=>p.before&&p.after&&p.before!=='📷').length;
+  txt('photo-kpi-pairs',pairs);
+
+  const grid=document.getElementById('photo-grid');if(!grid)return;
+  if(!photos.length){
+    grid.innerHTML=`<div class="card" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">
+      <div style="font-size:44px;margin-bottom:12px">📷</div>
+      <div style="font-size:14px">لا توجد صور - أضف صور قبل/بعد للعملاء</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML=photos.map(p=>`
+    <div class="card" style="padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div>
+          <div style="font-weight:700;font-size:14px">${p.patientName}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${p.service||'—'} · جلسة ${p.session||1} · ${p.date||'—'}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-xs" onclick="delPhoto('${p.id}')">🗑</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;padding:20px;text-align:center;">
+          <div style="font-size:28px">${p.before&&p.before!=='📷'?'🖼':'📷'}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">قبل</div>
+          ${p.before&&p.before!=='📷'?`<div style="font-size:10px;color:var(--teal);margin-top:2px;word-break:break-all">${p.before.substring(0,20)}...</div>`:''}
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;padding:20px;text-align:center;">
+          <div style="font-size:28px">${p.after&&p.after!=='📸'?'🖼':'📸'}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">بعد</div>
+          ${p.after&&p.after!=='📸'?`<div style="font-size:10px;color:var(--teal);margin-top:2px;word-break:break-all">${p.after.substring(0,20)}...</div>`:''}
+        </div>
+      </div>
+      ${p.notes?`<div style="font-size:12px;color:var(--text-muted);border-top:1px solid var(--glass-border);padding-top:8px;">${p.notes}</div>`:''}
+    </div>
+  `).join('');
+}
+function delPhoto(id){
+  if(confirm('حذف هذه الصور؟')){
+    const photos=DB.get('photos').filter(p=>p.id!==id);
+    DB.set('photos',photos);
+    showToast('info','🗑 تم الحذف');
+    renderPhotos();
+  }
+}
 function savePhoto(){
   const pat=gv('photo-pat');if(!pat){showToast('warning','⚠️ اختر العميل');return;}
   if(!DB.get('photos')) DB.set('photos',[]);
@@ -4626,12 +4773,31 @@ function renderWaitlist(){
     <td style="font-size:12px;color:var(--text-muted)">${w.date||'—'}</td>
     <td style="font-size:12px;color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${w.notes||'—'}</td>
     <td><div style="display:flex;gap:5px;">
+      <button class="btn btn-ghost btn-xs" onclick="openWaitlistModal('${w.id}')">✏️</button>
       <button class="btn btn-teal btn-xs" onclick="convertToAppt('${w.id}')">📅 موعد</button>
       <button class="btn btn-danger btn-xs" onclick="delWaitlist('${w.id}')">🗑</button>
     </div></td>
   </tr>`).join('')||`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">قائمة الانتظار فارغة ✨</td></tr>`;
 }
-function openWaitlistModal(){
+function openWaitlistModal(id){
+  const w=id?(DB.get('waitlist')||[]).find(x=>String(x.id)===String(id)):null;
+  const titleEl=document.getElementById('wl-modal-title');
+  if(titleEl) titleEl.textContent=w?'✏️ تعديل':'⏳ إضافة لقائمة الانتظار';
+  const idEl=document.getElementById('wl-id');if(idEl)idEl.value=w?w.id:'';
+  // fill patients
+  const patSel=document.getElementById('wl-pat');
+  if(patSel){
+    const pats=DB.get('patients')||[];
+    patSel.innerHTML='<option value="">-- اختر عميل --</option>'+pats.map(p=>`<option value="${p.id}" data-name="${p.name}" data-phone="${p.phone||''}">${p.name}</option>`).join('');
+    if(w)patSel.value=w.patId||'';
+  }
+  const svcEl=document.getElementById('wl-service');if(svcEl)svcEl.value=w?w.service||'':'';
+  const brEl=document.getElementById('wl-branch');if(brEl)brEl.value=w?w.branch||'':'';
+  const prEl=document.getElementById('wl-priority');if(prEl)prEl.value=w?w.priority||'عادي':'عادي';
+  const ntEl=document.getElementById('wl-notes');if(ntEl)ntEl.value=w?w.notes||'':'';
+  openModal('waitlist-modal');
+}
+function _openWaitlistModal_old(){
   document.getElementById('wl-id').value='';
   const sel=document.getElementById('wl-pat');
   sel.innerHTML=DB.get('patients').map(p=>`<option value="${p.id}" data-name="${p.name}" data-phone="${p.phone||''}">${p.name}</option>`).join('')||'<option>لا يوجد عملاء</option>';
@@ -4642,9 +4808,15 @@ function saveWaitlist(){
   const sel=document.getElementById('wl-pat');
   const opt=sel.options[sel.selectedIndex];
   if(!opt?.value){showToast('warning','⚠️ اختر عميلاً');return;}
-  const data={patId:opt.value,patName:opt.dataset.name||opt.text,phone:opt.dataset.phone||'',service:gv('wl-service'),branch:gv('wl-branch'),priority:gv('wl-priority'),notes:gv('wl-notes'),date:new Date().toISOString().split('T')[0],converted:false};
-  DB.push('waitlist',data);
-  showToast('success',`✅ تم إضافة ${data.patName} لقائمة الانتظار`);
+  const id=gv('wl-id');
+  const data={patId:opt.value,patName:opt.dataset.name||opt.text,phone:opt.dataset.phone||'',service:gv('wl-service'),branch:gv('wl-branch'),priority:gv('wl-priority'),notes:gv('wl-notes')};
+  if(id){
+    DB.upd('waitlist',id,data);
+    showToast('success',`✅ تم تحديث ${data.patName}`);
+  } else {
+    DB.push('waitlist',{...data,date:new Date().toISOString().split('T')[0],converted:false});
+    showToast('success',`✅ تم إضافة ${data.patName} لقائمة الانتظار`);
+  }
   closeModal('waitlist-modal');renderWaitlist();
 }
 function convertToAppt(id){

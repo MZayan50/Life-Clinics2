@@ -690,7 +690,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="tabs" id="settabs">
     <div class="tab active" onclick="stab(this,'settabs','se-gen')">عام</div>
     <div class="tab" onclick="stab(this,'settabs','se-fb')">Firebase ☁️</div>
-    <div class="tab" onclick="stab(this,'settabs','se-perm')">الصلاحيات</div>
+    <div class="tab" onclick="stab(this,'settabs','se-perm')" id="tab-users">المستخدمون 👤</div>
     <div class="tab" onclick="stab(this,'settabs','se-notif')">الإشعارات</div>
     <div class="tab" onclick="stab(this,'settabs','se-data')">البيانات</div>
   </div>
@@ -735,13 +735,15 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
     </div>
   </div>
   <div id="se-perm" style="display:none;">
-    <div class="card"><div class="card-hdr"><div class="card-title">👥 الصلاحيات</div></div>
-      <div class="table-wrap"><table><thead><tr><th>الدور</th><th>العملاء</th><th>المالية</th><th>المخزون</th><th>التقارير</th><th>الإعدادات</th></tr></thead><tbody>
-        <tr><td><strong>مدير النظام</strong></td><td>✅ كامل</td><td>✅ كامل</td><td>✅ كامل</td><td>✅ كامل</td><td>✅ كامل</td></tr>
-        <tr><td><strong>مدير فرع</strong></td><td>✅ كامل</td><td>👁️ عرض</td><td>✅ كامل</td><td>✅ فرعه</td><td>❌</td></tr>
-        <tr><td><strong>طبيب</strong></td><td>✅ مرضاه</td><td>❌</td><td>❌</td><td>✅ جلساته</td><td>❌</td></tr>
-        <tr><td><strong>استقبال</strong></td><td>✅ إضافة</td><td>✅ فواتير</td><td>❌</td><td>❌</td><td>❌</td></tr>
-      </tbody></table></div>
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">👤 إدارة المستخدمين</div>
+        <button class="btn btn-primary btn-sm" onclick="openUserModal()">+ مستخدم جديد</button>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>اسم المستخدم</th><th>الاسم</th><th>الدور</th><th>الفرع</th><th>الشاشات</th><th>إجراءات</th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table></div>
     </div>
   </div>
   <div id="se-notif" style="display:none;">
@@ -760,6 +762,66 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
         <div style="display:flex;justify-content:space-between;align-items:center;padding:13px;background:var(--glass);border-radius:var(--radius-sm);"><div><div style="font-weight:600;font-size:13.5px;">تصدير كل البيانات</div><div style="font-size:12px;color:var(--text-muted)">نسخة احتياطية JSON</div></div><button class="btn btn-ghost btn-sm" onclick="exportAll()">📥 تصدير</button></div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:13px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--radius-sm);"><div><div style="font-weight:600;font-size:13.5px;color:var(--rose);">حذف كل البيانات</div><div style="font-size:12px;color:var(--text-muted)">لا يمكن التراجع!</div></div><button class="btn btn-danger btn-sm" onclick="clearAll()">🗑️ مسح</button></div>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- USER MANAGEMENT MODAL -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal" style="max-width:620px">
+    <div class="mhdr">
+      <div class="mtitle" id="user-modal-title">👤 مستخدم جديد</div>
+      <button class="mclose" onclick="closeModal('user-modal')">✕</button>
+    </div>
+    <div class="mbody" style="overflow-y:auto;max-height:72vh;">
+      <input type="hidden" id="um-id">
+      <div class="fg" style="gap:12px;margin-bottom:16px;">
+        <div class="fgrp">
+          <label class="flbl">اسم المستخدم (للدخول) *</label>
+          <input class="fctl" id="um-username" placeholder="مثال: doctor2" dir="ltr">
+        </div>
+        <div class="fgrp">
+          <label class="flbl">الاسم الكامل *</label>
+          <input class="fctl" id="um-name" placeholder="د. أحمد محمد">
+        </div>
+        <div class="fgrp">
+          <label class="flbl">كلمة المرور <span id="um-pass-hint" style="color:var(--text-muted);font-size:11px;">(اتركها فارغة للإبقاء على القديمة)</span></label>
+          <div style="position:relative;">
+            <input class="fctl" id="um-password" type="password" placeholder="كلمة المرور الجديدة" dir="ltr" style="padding-left:40px;">
+            <span onclick="toggleUmPass()" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:var(--text-muted);" id="um-eye">👁️</span>
+          </div>
+        </div>
+        <div class="fgrp">
+          <label class="flbl">الدور</label>
+          <select class="fctl" id="um-role">
+            <option value="admin">مدير النظام</option>
+            <option value="branch_manager">مدير فرع</option>
+            <option value="doctor">طبيب</option>
+            <option value="receptionist">استقبال</option>
+            <option value="accountant">محاسب</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label class="flbl">الفرع</label>
+          <select class="fctl" id="um-branch">
+            <option value="all">كل الفروع</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:13px;color:var(--text-secondary);margin-bottom:10px;border-bottom:1px solid var(--glass-border);padding-bottom:8px;">🔐 الشاشات المتاحة</div>
+      <div id="um-screens-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="umSelectAll(true)">تحديد الكل</button>
+        <button class="btn btn-ghost btn-sm" onclick="umSelectAll(false)">إلغاء الكل</button>
+        <button class="btn btn-ghost btn-sm" onclick="umApplyRole()">تطبيق صلاحيات الدور</button>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('user-modal')">إلغاء</button>
+      <button class="btn btn-danger btn-sm" id="um-del-btn" onclick="deleteUser()" style="display:none;">🗑️ حذف</button>
+      <button class="btn btn-primary" onclick="saveUser()">💾 حفظ</button>
     </div>
   </div>
 </div>
@@ -1580,6 +1642,7 @@ function stab(el,gid,tid){
   el.classList.add('active');
   ALL_TABS.forEach(i=>{const e=document.getElementById(i);if(e)e.style.display='none';});
   const t=document.getElementById(tid);if(t)t.style.display='block';
+  if(tid==='se-perm') setTimeout(renderUsers, 50);
 }
 
 // TOAST
@@ -3262,6 +3325,7 @@ function setDate(){const el=document.getElementById('topbar-date');if(el)el.text
 // INIT
 function init(){
   buildChart();renderTodayAppts();loadSettings();setDate();buildDashAlerts();
+  seedDefaultUsers();
   const sub=document.getElementById('dash-sub');if(sub)sub.textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · فرع مدينة نصر';
   const low=DB.get('inventory').filter(i=>i.status==='منخفض'||i.status==='نفذ').length;
   txt('badge-stock',low);txt('kpi-stk',low);
@@ -3448,8 +3512,16 @@ function _parseSession(raw) {
     const uName = document.getElementById('user-name');
     const uRole = document.getElementById('user-role');
     if(uName && s.name) uName.textContent = s.name;
-    if(uRole && s.role) uRole.textContent = s.role;
-    applyPermissions(s.role, s.permissions);
+    if(uRole && s.role){
+      const RLBL={admin:'مدير النظام',branch_manager:'مدير فرع',doctor:'طبيب',receptionist:'استقبال',accountant:'محاسب'};
+      uRole.textContent = RLBL[s.role] || s.role;
+    }
+    // Read live screens from users DB (may have been updated by admin)
+    const _udb = getUsersDB();
+    const _usr = _udb[s.username];
+    const _screens = _usr ? (_usr.screens || s.permissions) : s.permissions;
+    window._userScreens = _screens;
+    applyPermissions(s.role, s.permissions, _screens);
   } catch(e){
     localStorage.removeItem('ha_session');
     window.location.href = 'login.html';
@@ -3476,33 +3548,240 @@ function renewSession(){
   }
 }
 
-function applyPermissions(role, perms){
-  // Hide financial screens from doctors/reception
-  if(role === 'doctor'){
-    document.querySelectorAll('.nav-item').forEach(n=>{
-      const text = n.querySelector('.nav-text')?.textContent;
-      if(['الفواتير','المدفوعات','الأقساط','المصروفات','الخزينة','الحسابات','الموردون','المشتريات'].includes(text)){
-        n.style.display='none';
-      }
-    });
-  }
-  if(role === 'receptionist'){
-    document.querySelectorAll('.nav-item').forEach(n=>{
-      const text = n.querySelector('.nav-text')?.textContent;
-      if(['المصروفات','الخزينة','الحسابات','الموردون','المشتريات','تحويل المخزون','التقارير'].includes(text)){
-        n.style.display='none';
-      }
-    });
-  }
-  if(role === 'accountant'){
-    document.querySelectorAll('.nav-item').forEach(n=>{
-      const text = n.querySelector('.nav-text')?.textContent;
-      if(['الجلسات العلاجية','الباقات العلاجية','الأطباء','الموظفون'].includes(text)){
-        n.style.display='none';
-      }
-    });
-  }
+
+// ══════════════════════════════════════════
+// 🔐 SCREENS DEFINITION & PERMISSION SYSTEM
+// ══════════════════════════════════════════
+const ALL_SCREENS = [
+  {key:'dashboard',    label:'لوحة التحكم',       icon:'🏠', group:'عام'},
+  {key:'patients',     label:'العملاء',            icon:'👥', group:'عام'},
+  {key:'photos',       label:'الصور قبل/بعد',     icon:'📸', group:'عام'},
+  {key:'calendar',     label:'التقويم',            icon:'📅', group:'مواعيد'},
+  {key:'appointments', label:'المواعيد',           icon:'🕐', group:'مواعيد'},
+  {key:'waitlist',     label:'قائمة الانتظار',    icon:'⏳', group:'مواعيد'},
+  {key:'sessions',     label:'الجلسات العلاجية',  icon:'✨', group:'طبي'},
+  {key:'services',     label:'الخدمات والأسعار',  icon:'💅', group:'طبي'},
+  {key:'packages',     label:'الباقات العلاجية',  icon:'🎁', group:'طبي'},
+  {key:'doctors',      label:'الأطباء',            icon:'👨‍⚕️', group:'طبي'},
+  {key:'staff',        label:'الموظفون',           icon:'👩‍💼', group:'طبي'},
+  {key:'invoices',     label:'الفواتير',           icon:'🧾', group:'مالي'},
+  {key:'payments',     label:'المدفوعات',          icon:'💳', group:'مالي'},
+  {key:'installments', label:'الأقساط',            icon:'📆', group:'مالي'},
+  {key:'expenses',     label:'المصروفات',          icon:'💸', group:'مالي'},
+  {key:'treasury',     label:'الخزينة',            icon:'🏦', group:'مالي'},
+  {key:'accounts',     label:'الحسابات',           icon:'📊', group:'مالي'},
+  {key:'inventory',    label:'المنتجات',           icon:'📦', group:'مخزون'},
+  {key:'suppliers',    label:'الموردون',           icon:'🚚', group:'مخزون'},
+  {key:'purchases',    label:'المشتريات',          icon:'🛒', group:'مخزون'},
+  {key:'transfers',    label:'تحويل المخزون',      icon:'🔄', group:'مخزون'},
+  {key:'leads',        label:'العملاء المحتملون',  icon:'🎯', group:'تسويق'},
+  {key:'campaigns',    label:'الحملات',            icon:'📣', group:'تسويق'},
+  {key:'whatsapp',     label:'واتساب',             icon:'💬', group:'تسويق'},
+  {key:'branches',     label:'الفروع',             icon:'🏢', group:'إدارة'},
+  {key:'reports',      label:'التقارير',           icon:'📈', group:'إدارة'},
+  {key:'ai',           label:'المساعد الذكي',      icon:'🤖', group:'إدارة'},
+  {key:'settings',     label:'الإعدادات',          icon:'⚙️', group:'إدارة'},
+];
+
+// Default screens per role
+const ROLE_DEFAULTS = {
+  admin:          ALL_SCREENS.map(s=>s.key),
+  branch_manager: ['dashboard','patients','photos','calendar','appointments','waitlist','sessions','services','packages','doctors','staff','invoices','inventory','leads','campaigns','whatsapp','reports'],
+  doctor:         ['dashboard','patients','photos','calendar','appointments','waitlist','sessions','services'],
+  receptionist:   ['dashboard','patients','calendar','appointments','waitlist','invoices','payments','installments','leads','whatsapp'],
+  accountant:     ['dashboard','invoices','payments','installments','expenses','treasury','accounts','reports','inventory'],
+};
+
+// ── SHA-256 (same as login.html) ──
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
+
+// ── localStorage key for users DB ──
+const USERS_KEY = 'ha_users_db';
+
+function getUsersDB(){
+  try { return JSON.parse(localStorage.getItem(USERS_KEY)||'{}'); } catch(e){return{};}
+}
+function saveUsersDB(db){ localStorage.setItem(USERS_KEY, JSON.stringify(db)); }
+
+// ── Seed default users on first run ──
+async function seedDefaultUsers(){
+  const db = getUsersDB();
+  if(Object.keys(db).length > 0) return; // already seeded
+  // Passwords: admin=admin123, doctor=doc123, reception=rec123, accountant=acc123, manager2=mgr123
+  const defaults = [
+    {username:'admin',      hash:'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', name:'د. سارة محمد',   role:'admin',         branch:'all',       screens: ROLE_DEFAULTS.admin},
+    {username:'doctor',     hash:'c3362e4da49c24d379b72152ae6c99f1fa035f52829dceed715a7bf8bb464b98', name:'د. منى سامي',   role:'doctor',        branch:'مدينة نصر', screens: ROLE_DEFAULTS.doctor},
+    {username:'reception',  hash:'1270ddbd388e309b1234f4e500ea78a83c9d111040fa6cce86c31df0144a3659', name:'نور الاستقبال', role:'receptionist',  branch:'مدينة نصر', screens: ROLE_DEFAULTS.receptionist},
+    {username:'accountant', hash:'2159157cf71913278f89c4a16bd7462481e41463ea0f8444523cd1c6887d1e4e', name:'أحمد المحاسب',  role:'accountant',    branch:'all',       screens: ROLE_DEFAULTS.accountant},
+    {username:'manager2',   hash:'49a0ac18e26df0b0724f5ac5837e436b336527485fc0a388f578913d6ee70e67', name:'مدير المهندسين',role:'branch_manager',branch:'المهندسين', screens: ROLE_DEFAULTS.branch_manager},
+  ];
+  const db2 = {};
+  defaults.forEach(u => { db2[u.username] = u; });
+  saveUsersDB(db2);
+}
+
+// ── Apply permissions from session ──
+function applyPermissions(role, perms, screens){
+  const isAdmin = role === 'admin';
+  // Show/hide tab for users management
+  const tabUsers = document.getElementById('tab-users');
+  if(tabUsers) tabUsers.style.display = isAdmin ? '' : 'none';
+
+  if(isAdmin || !screens || screens.includes('all')) return; // admin sees all
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const onclick = n.getAttribute('onclick') || '';
+    const m = onclick.match(/showScreen\('([^']+)'\)/);
+    if(!m) return;
+    const scr = m[1];
+    if(scr === 'patient-profile') return; // always accessible via patients
+    n.style.display = screens.includes(scr) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// 👤 USER MANAGEMENT UI
+// ══════════════════════════════════════════
+const ROLE_LABELS = {admin:'مدير النظام',branch_manager:'مدير فرع',doctor:'طبيب',receptionist:'استقبال',accountant:'محاسب'};
+const ROLE_COLORS = {admin:'var(--gold)',branch_manager:'var(--purple)',doctor:'var(--teal)',receptionist:'var(--emerald)',accountant:'var(--amber)'};
+
+function renderUsers(){
+  const db = getUsersDB();
+  const tbody = document.getElementById('users-tbody');
+  if(!tbody) return;
+  const rows = Object.values(db).map(u => {
+    const screenCount = u.screens ? (u.screens.includes('all') ? 'الكل' : u.screens.length + ' شاشة') : '—';
+    const roleColor = ROLE_COLORS[u.role] || 'var(--text-secondary)';
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:12px;background:var(--glass);padding:3px 8px;border-radius:6px;direction:ltr;display:inline-block;">${u.username}</span></td>
+      <td style="font-weight:600;">${u.name}</td>
+      <td><span style="color:${roleColor};font-weight:600;font-size:12px;">${ROLE_LABELS[u.role]||u.role}</span></td>
+      <td>${u.branch==='all'?'كل الفروع':u.branch||'—'}</td>
+      <td><span style="background:var(--glass);padding:3px 8px;border-radius:6px;font-size:12px;">${screenCount}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="openUserModal('${u.username}')">✏️ تعديل</button>
+      </td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML = rows || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">لا يوجد مستخدمون</td></tr>';
+}
+
+function buildScreensGrid(selected=[]){
+  const grid = document.getElementById('um-screens-grid');
+  if(!grid) return;
+  const groups = {};
+  ALL_SCREENS.forEach(s => {
+    if(!groups[s.group]) groups[s.group] = [];
+    groups[s.group].push(s);
+  });
+  let html = '';
+  Object.entries(groups).forEach(([grp, screens]) => {
+    html += `<div style="grid-column:1/-1;font-size:11px;font-weight:700;color:var(--text-muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid var(--glass-border);">${grp}</div>`;
+    screens.forEach(s => {
+      const chk = selected.includes(s.key) || selected.includes('all') ? 'checked' : '';
+      html += `<label style="display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--glass);border-radius:8px;cursor:pointer;font-size:12.5px;">
+        <input type="checkbox" class="um-scr-chk" value="${s.key}" ${chk} style="accent-color:var(--gold);width:15px;height:15px;">
+        <span>${s.icon} ${s.label}</span>
+      </label>`;
+    });
+  });
+  grid.innerHTML = html;
+}
+
+function fillBranchSelect(){
+  const sel = document.getElementById('um-branch');
+  if(!sel) return;
+  sel.innerHTML = '<option value="all">كل الفروع</option>';
+  DB.arr('branches').forEach(b => {
+    sel.innerHTML += `<option value="${b.name}">${b.name}</option>`;
+  });
+}
+
+function openUserModal(username=''){
+  const db = getUsersDB();
+  const u = username ? db[username] : null;
+  document.getElementById('user-modal-title').textContent = u ? `✏️ تعديل: ${u.name}` : '👤 مستخدم جديد';
+  document.getElementById('um-id').value = username;
+  document.getElementById('um-username').value = u ? u.username : '';
+  document.getElementById('um-username').disabled = !!u; // can't change username
+  document.getElementById('um-name').value = u ? u.name : '';
+  document.getElementById('um-password').value = '';
+  document.getElementById('um-pass-hint').style.display = u ? 'inline' : 'none';
+  document.getElementById('um-role').value = u ? u.role : 'receptionist';
+  fillBranchSelect();
+  document.getElementById('um-branch').value = u ? (u.branch||'all') : 'all';
+  const delBtn = document.getElementById('um-del-btn');
+  if(delBtn) delBtn.style.display = (u && username !== 'admin') ? 'inline-flex' : 'none';
+  buildScreensGrid(u ? (u.screens||[]) : ROLE_DEFAULTS.receptionist);
+  openModal('user-modal');
+}
+
+function umSelectAll(val){
+  document.querySelectorAll('.um-scr-chk').forEach(c => c.checked = val);
+}
+
+function umApplyRole(){
+  const role = document.getElementById('um-role').value;
+  const defaults = ROLE_DEFAULTS[role] || [];
+  document.querySelectorAll('.um-scr-chk').forEach(c => {
+    c.checked = defaults.includes(c.value);
+  });
+}
+
+async function saveUser(){
+  const username = (document.getElementById('um-id').value || document.getElementById('um-username').value).trim().toLowerCase();
+  const name     = document.getElementById('um-name').value.trim();
+  const pass     = document.getElementById('um-password').value;
+  const role     = document.getElementById('um-role').value;
+  const branch   = document.getElementById('um-branch').value;
+
+  if(!username){ showToast('warning','⚠️ أدخل اسم المستخدم'); return; }
+  if(!name)    { showToast('warning','⚠️ أدخل الاسم الكامل'); return; }
+  if(!/^[a-z0-9_]+$/.test(username)){ showToast('warning','⚠️ اسم المستخدم: حروف إنجليزية وأرقام فقط'); return; }
+
+  const screens = Array.from(document.querySelectorAll('.um-scr-chk:checked')).map(c=>c.value);
+  if(!screens.length){ showToast('warning','⚠️ اختر شاشة واحدة على الأقل'); return; }
+
+  const db = getUsersDB();
+  const isNew = !db[username];
+
+  if(isNew && !pass){ showToast('warning','⚠️ أدخل كلمة مرور للمستخدم الجديد'); return; }
+
+  let hash = db[username]?.hash || '';
+  if(pass){ hash = await sha256(pass); }
+
+  db[username] = { username, name, role, branch, screens, hash };
+  saveUsersDB(db);
+  closeModal('user-modal');
+  renderUsers();
+  showToast('success', isNew ? `✅ تم إضافة ${name}` : `✅ تم تحديث ${name}`);
+}
+
+function deleteUser(){
+  const username = document.getElementById('um-id').value;
+  if(username === 'admin'){ showToast('error','❌ لا يمكن حذف حساب admin'); return; }
+  const sess = JSON.parse(localStorage.getItem('ha_session')||'{}');
+  if(sess.username === username){ showToast('error','❌ لا يمكن حذف حسابك الحالي'); return; }
+  if(!confirm(`هل تريد حذف المستخدم "${username}"؟ هذا لا يمكن التراجع عنه.`)) return;
+  const db = getUsersDB();
+  delete db[username];
+  saveUsersDB(db);
+  closeModal('user-modal');
+  renderUsers();
+  showToast('info','🗑️ تم حذف المستخدم');
+}
+
+function toggleUmPass(){
+  const inp = document.getElementById('um-password');
+  const eye = document.getElementById('um-eye');
+  if(inp.type==='password'){inp.type='text';eye.textContent='🙈';}
+  else{inp.type='password';eye.textContent='👁️';}
+}
+
+
 
 // ══════════════════════════════════════════
 // 🖨️ PRINT INVOICE (REAL PDF)

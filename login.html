@@ -294,7 +294,9 @@ async function doLogin() {
   // تأخير صغير لمنع timing attacks
   await new Promise(r => setTimeout(r, 600 + Math.random() * 600));
 
-  const user = USERS[username];
+  // Read from dynamic users DB (managed by ERP admin), fallback to static USERS
+  const _dynDB = (()=>{ try{ return JSON.parse(localStorage.getItem('ha_users_db')||'{}'); }catch(e){return{};} })();
+  const user = (Object.keys(_dynDB).length > 0 ? _dynDB : USERS)[username];
   const valid = user && user.hash === inputHash;
 
   if (!valid) {
@@ -330,7 +332,8 @@ async function doLogin() {
     name: user.name,
     role: user.role,
     branch: user.branch,
-    permissions: user.permissions,
+    permissions: user.permissions || user.screens || ['all'],
+    screens: user.screens || user.permissions || ['all'],
     loginTime: Date.now(),
     expiry: Date.now() + (8 * 60 * 60 * 1000),
     token: sessionToken

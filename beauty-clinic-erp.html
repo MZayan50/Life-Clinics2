@@ -501,7 +501,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="card" style="margin-top:14px;"><div class="card-hdr"><div class="card-title">🎁 الباقات العلاجية</div><button class="btn btn-ghost btn-sm" onclick="openPackageModal()">+ باقة</button></div>
     <div id="pp-packages-content"><div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">جارٍ التحميل...</div></div>
   </div></div>
-  <div id="t-inv" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">🧾 الفواتير</div></div><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الخدمة</th><th>المبلغ</th><th>طريقة الدفع</th><th>الحالة</th></tr></thead><tbody id="p-inv-tbody"></tbody></table></div></div></div>
+  <div id="t-inv" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">🧾 الفواتير</div></div><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الخدمة</th><th>المبلغ</th><th>طريقة الدفع</th><th>الحالة</th><th></th></tr></thead><tbody id="p-inv-tbody"></tbody></table></div></div></div>
   <div id="t-ph" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">📸 الصور</div><button class="btn btn-teal btn-sm">+ رفع</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;"><div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--glass-border);"><div style="background:linear-gradient(135deg,#1a1a2e,#16213e);height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;">📷</div><div style="padding:7px;font-size:12px;"><div style="font-weight:600">قبل - يناير 2025</div><div style="color:var(--text-muted)">ليزر جلسة 1</div></div></div><div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid rgba(45,212,191,.3);"><div style="background:linear-gradient(135deg,#0d2137,#0d3340);height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;">📸</div><div style="padding:7px;font-size:12px;"><div style="font-weight:600;color:var(--teal)">بعد - مارس 2025</div><div style="color:var(--text-muted)">ليزر جلسة 5</div></div></div></div></div></div>
   <div id="t-hist" style="display:none"><div class="card"><div class="card-hdr"><div class="card-title">📋 السجل</div></div><div style="display:flex;flex-direction:column;gap:10px;" id="hist-list"></div></div></div>
 </div>
@@ -1737,7 +1737,7 @@ function viewPat(id){
   if(hr)hr.innerHTML=`<div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">النوع:</span><span class="tag tg-teal">${p.hair}</span></div><div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">المشاكل:</span><span>${p.hairProbs||'—'}</span></div><div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">الأدوية:</span><span>${p.meds||'لا يوجد'}</span></div>`;
   const pinv=DB.get('invoices').filter(i=>i.patient===p.name);
   const pitb=document.getElementById('p-inv-tbody');
-  if(pitb)pitb.innerHTML=pinv.map(i=>`<tr><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td>${i.method}</td><td><span class="ast ${i.status==='مدفوع'?'sc':'sp'}">${i.status}</span></td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px">لا توجد فواتير</td></tr>';
+  if(pitb)pitb.innerHTML=pinv.map(i=>`<tr><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td>${i.method}</td><td><span class="ast ${i.status==='مدفوع'?'sc':'sp'}">${i.status}</span></td><td><button class="btn btn-teal btn-xs" onclick="sendInvoiceWA('${i.id}')" title="إرسال عبر واتساب">💬</button></td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px">لا توجد فواتير</td></tr>';
   showScreen('patient-profile');
 }
 function age(d){return d?Math.floor((Date.now()-new Date(d))/(365.25*24*3600*1000)):0;}
@@ -1898,11 +1898,22 @@ const ASC={'مؤكد':'sc','انتظار':'sp','في العيادة':'sw','مك�
 function renderAppts(){
   const appts=DB.get('appointments').filter(a=>(!_af||a.patient.includes(_af))&&(!_as||a.status===_as)&&(!_ad||a.date===_ad));
   const tb=document.getElementById('appts-tbody');if(!tb)return;
-  tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;white-space:nowrap;"><button class="btn btn-ghost btn-xs" onclick="openApptModal('${a.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;white-space:nowrap;"><button class="btn btn-ghost btn-xs" onclick="openApptModal('${a.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-teal btn-xs" onclick="sendApptWA('${a.id}')" title="إرسال الموعد عبر واتساب">💬</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
   renderTodayAppts();
 }
 function updAppt(id,st){DB.upd('appointments',id,{status:st});renderAppts();showToast('success','✅ تم تحديث حالة الموعد');}
 function delAppt(id){if(confirm('حذف الموعد؟')){DB.del('appointments',id);renderAppts();buildCal();}}
+function sendApptWA(id){
+  const appt=DB.get('appointments').find(x=>String(x.id)===String(id));
+  if(!appt){showToast('error','❌ الموعد غير موجود');return;}
+  const pat=DB.get('patients').find(p=>p.name===appt.patient);
+  const phone=getWAPhone(pat||{phone:appt.patPhone||''});
+  if(!phone){showToast('error','❌ لا يوجد رقم واتساب لهذا العميل');return;}
+  const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const msg=`مرحباً ${appt.patient} 😊\nنذكرك بموعدك في ${clinicName}\n📅 التاريخ: ${appt.date}\n⏰ الوقت: ${appt.time}\n💆 الخدمة: ${appt.service||'—'}${appt.doctor?`\n👨‍⚕️ الطبيب: ${appt.doctor}`:''}${appt.branch?`\n🏢 الفرع: ${appt.branch}`:''}\n\nنتطلع لرؤيتك 💎`;
+  window.open(`https://wa.me/${phone.replace('+','')}?text=${encodeURIComponent(msg)}`,'_blank');
+  showToast('success',`✅ فُتح واتساب لإرسال الموعد لـ ${appt.patient}`);
+}
 function openApptModal(id){
   const a=id?DB.get('appointments').find(x=>x.id===id):null;
   document.getElementById('appt-modal-title').textContent=a?'✏️ تعديل موعد':'📅 موعد جديد';
@@ -2024,7 +2035,7 @@ function renderInvs(){
   let paid=0,pend=0;
   DB.get('invoices').forEach(i=>{if(i.status==='مدفوع')paid+=i.total;else pend+=i.remaining||0;});
   txt('inv-paid',paid.toLocaleString()+' ج');txt('inv-pend2',pend.toLocaleString()+' ج');txt('inv-cnt',DB.get('invoices').length);
-  tb.innerHTML=invs.map((i,idx)=>`<tr><td style="font-weight:700;color:var(--gold-light);font-size:12px">#INV-${String(idx+1).padStart(3,'0')}</td><td style="font-weight:600">${i.patient}</td><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="color:${i.remaining>0?'var(--rose)':'var(--emerald)'};font-weight:700">${i.remaining} ج</td><td><span class="ast ${i.status==='مدفوع'?'sc':i.status==='جزئي'?'sp':'sw'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="openInvModal('${i.id}')">✏️</button> <button class="btn btn-ghost btn-xs" onclick="printInvoice('${i.id}')">🖨</button></td></tr>`).join('');
+  tb.innerHTML=invs.map((i,idx)=>`<tr><td style="font-weight:700;color:var(--gold-light);font-size:12px">#INV-${String(idx+1).padStart(3,'0')}</td><td style="font-weight:600">${i.patient}</td><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="color:${i.remaining>0?'var(--rose)':'var(--emerald)'};font-weight:700">${i.remaining} ج</td><td><span class="ast ${i.status==='مدفوع'?'sc':i.status==='جزئي'?'sp':'sw'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="openInvModal('${i.id}')">✏️</button> <button class="btn btn-ghost btn-xs" onclick="printInvoice('${i.id}')">🖨</button> <button class="btn btn-teal btn-xs" onclick="sendInvoiceWA('${i.id}')" title="إرسال الفاتورة عبر واتساب">💬</button></td></tr>`).join('');
   txt('kpi-pend',pend.toLocaleString());
 }
 function updInvTotal(){
@@ -2827,8 +2838,15 @@ document.addEventListener('input', e => {
 function saveSettings(){
   const s={clinicName:gv('s-cname'),phone:gv('s-cphone'),managerName:gv('s-mname'),managerRole:gv('s-mrole'),anthropicKey:gv('s-anthropic-key')};
   DB.set('settings',s);
-  // ملاحظة: اسم/دور المستخدم الظاهر في الشريط الجانبي ورسالة الترحيب يُؤخذ من بيانات المستخدم الفعلية
-  // (شاشة "المستخدمون")، وليس من هذا الحقل، حتى يعكس آخر تحديث لكل مستخدم على حسابه الشخصي.
+  // تحديث الاسم/الدور فورًا على الشاشة الرئيسية والشريط الجانبي
+  if(s.managerName){txt('user-name',s.managerName);txt('dash-uname',s.managerName);}
+  if(s.managerRole)txt('user-role',s.managerRole);
+  // حفظ الاسم الجديد في حساب المستخدم الحالي حتى يبقى ظاهرًا بعد إعادة تحميل الصفحة أو تسجيل الدخول مجددًا
+  if(window._session && window._session.username){
+    const udb=getUsersDB();
+    const cu=udb[window._session.username];
+    if(cu && s.managerName){ cu.name=s.managerName; saveUsersDB(udb); }
+  }
   // Sync to Firestore so all devices share the same settings + API key
   if(window._firestore){
     window._firestore.collection('config').doc('settings').set(s)
@@ -3902,6 +3920,20 @@ window.printInvoice = function(id){
   if(inv) printInvoiceReal(inv);
   else showToast('error','❌ لم يتم العثور على الفاتورة');
 };
+
+// إرسال فاتورة عبر واتساب
+function sendInvoiceWA(id){
+  const inv=DB.get('invoices').find(x=>String(x.id)===String(id));
+  if(!inv){showToast('error','❌ الفاتورة غير موجودة');return;}
+  const pat=DB.get('patients').find(p=>p.name===inv.patient);
+  const phone=getWAPhone(pat);
+  if(!phone){showToast('error','❌ لا يوجد رقم واتساب لهذا العميل');return;}
+  const clinicName=DB.obj('settings').clinicName||'عيادات الحياة للتجميل';
+  const idx=DB.get('invoices').findIndex(x=>String(x.id)===String(id));
+  const msg=`مرحباً ${inv.patient} 😊\nإليك تفاصيل فاتورتك من ${clinicName}\n🧾 رقم الفاتورة: #INV-${String(idx+1).padStart(3,'0')}\n💆 الخدمة: ${inv.service||'—'}\n💰 الإجمالي: ${inv.total} ج\n✅ المدفوع: ${inv.paid} ج${inv.remaining>0?`\n⏳ المتبقي: ${inv.remaining} ج`:''}\n💳 طريقة الدفع: ${inv.method||'—'}\n📅 التاريخ: ${inv.date}\n\nشكراً لثقتكم بـ ${clinicName} 💎`;
+  window.open(`https://wa.me/${phone.replace('+','')}?text=${encodeURIComponent(msg)}`,'_blank');
+  showToast('success',`✅ فُتح واتساب لإرسال الفاتورة لـ ${inv.patient}`);
+}
 
 // ══════════════════════════════════════════
 // 📊 REAL REPORTS FROM DATA

@@ -419,10 +419,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="g3">
     <div class="card">
       <div class="card-hdr"><div class="card-title">🏆 أفضل الأطباء</div><span class="card-sub">هذا الشهر</span></div>
-      <div class="drow"><div class="drank">🥇</div><div class="dava" style="background:linear-gradient(135deg,#8B5CF6,#3B82F6)">👩‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">د. منى سامي</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">48,200 ج</div></div>
-      <div class="drow"><div class="drank">🥈</div><div class="dava" style="background:linear-gradient(135deg,#10B981,#2DD4BF)">👨‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">د. أحمد رضا</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">41,500 ج</div></div>
-      <div class="drow"><div class="drank">🥉</div><div class="dava" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">👩‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">د. لمياء حسن</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">36,900 ج</div></div>
-      <div class="drow"><div class="drank">4️⃣</div><div class="dava" style="background:linear-gradient(135deg,#C4A882,#8B5CF6)">👨‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">د. كريم طارق</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">29,300 ج</div></div>
+      <div id="dash-top-doctors">
+        <div style="text-align:center;color:var(--text-muted);padding:16px;font-size:13px">جارٍ تحميل البيانات...</div>
+      </div>
     </div>
     <div class="card">
       <div class="card-hdr"><div class="card-title">🔔 تنبيهات</div><span class="card-sub" id="alerts-count"></span></div>
@@ -679,12 +678,10 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 <div class="screen" id="screen-branches">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
     <h2 style="font-size:17px;font-weight:800;">إدارة الفروع</h2>
-    <button class="btn btn-primary">+ فرع جديد</button>
+    <button class="btn btn-primary" onclick="openBranchModal()">+ فرع جديد</button>
   </div>
-  <div class="bgrid">
-    <div class="bcard"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;"><div><div style="font-size:15px;font-weight:800;">فرع مدينة نصر</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">📍 شارع عباس العقاد</div></div><span class="ast sc">نشط</span></div><div class="g2c" style="gap:8px;margin-bottom:11px;"><div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--teal)">124</div><div style="font-size:11px;color:var(--text-muted)">عملاء</div></div><div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--gold-light)">180K</div><div style="font-size:11px;color:var(--text-muted)">إيرادات</div></div></div><div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">4 أطباء · 8 موظفين</div><div style="display:flex;gap:7px;"><button class="btn btn-ghost btn-sm" style="flex:1">تقرير</button><button class="btn btn-ghost btn-sm" style="flex:1">إدارة</button></div></div>
-    <div class="bcard"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;"><div><div style="font-size:15px;font-weight:800;">فرع المهندسين</div><div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">📍 شارع البطل أحمد عبد العزيز</div></div><span class="ast sc">نشط</span></div><div class="g2c" style="gap:8px;margin-bottom:11px;"><div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--teal)">89</div><div style="font-size:11px;color:var(--text-muted)">عملاء</div></div><div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--gold-light)">132K</div><div style="font-size:11px;color:var(--text-muted)">إيرادات</div></div></div><div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">3 أطباء · 6 موظفين</div><div style="display:flex;gap:7px;"><button class="btn btn-ghost btn-sm" style="flex:1">تقرير</button><button class="btn btn-ghost btn-sm" style="flex:1">إدارة</button></div></div>
-    <div class="bcard" style="border-style:dashed;opacity:.5;cursor:pointer;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:150px;gap:9px;"><div style="font-size:36px;">🏢</div><div style="font-size:13.5px;font-weight:600;color:var(--text-muted)">إضافة فرع جديد</div></div></div>
+  <div class="bgrid" id="branches-grid">
+    <div style="text-align:center;color:var(--text-muted);padding:30px;font-size:13px">جارٍ تحميل الفروع...</div>
   </div>
 </div>
 
@@ -705,6 +702,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
           <div class="fgrp"><label class="flbl">الهاتف</label><input class="fctl" id="s-cphone" value="0100-000-0000"></div>
           <div class="fgrp"><label class="flbl">اسم المدير</label><input class="fctl" id="s-mname" value="د. سارة محمد"></div>
           <div class="fgrp"><label class="flbl">الدور</label><input class="fctl" id="s-mrole" value="مدير النظام"></div>
+          <div class="fgrp full"><label class="flbl">🤖 مفتاح Anthropic API <span style="font-size:10px;color:var(--text-muted);">(للمساعد الذكي)</span></label><input class="fctl" id="s-anthropic-key" type="password" placeholder="sk-ant-api03-..."></div>
         </div>
         <button class="btn btn-primary" style="margin-top:14px;" onclick="saveSettings()">💾 حفظ</button>
       </div>
@@ -1891,7 +1889,7 @@ function renderInvs(){
   let paid=0,pend=0;
   DB.get('invoices').forEach(i=>{if(i.status==='مدفوع')paid+=i.total;else pend+=i.remaining||0;});
   txt('inv-paid',paid.toLocaleString()+' ج');txt('inv-pend2',pend.toLocaleString()+' ج');txt('inv-cnt',DB.get('invoices').length);
-  tb.innerHTML=invs.map((i,idx)=>`<tr><td style="font-weight:700;color:var(--gold-light);font-size:12px">#INV-${String(idx+1).padStart(3,'0')}</td><td style="font-weight:600">${i.patient}</td><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="color:${i.remaining>0?'var(--rose)':'var(--emerald)'};font-weight:700">${i.remaining} ج</td><td><span class="ast ${i.status==='مدفوع'?'sc':i.status==='جزئي'?'sp':'sw'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="showToast('info','🖨️ جارٍ الطباعة...')">🖨</button></td></tr>`).join('');
+  tb.innerHTML=invs.map((i,idx)=>`<tr><td style="font-weight:700;color:var(--gold-light);font-size:12px">#INV-${String(idx+1).padStart(3,'0')}</td><td style="font-weight:600">${i.patient}</td><td style="font-size:12px">${i.date}</td><td>${i.service}</td><td style="font-weight:700">${i.total} ج</td><td style="color:var(--emerald);font-weight:700">${i.paid} ج</td><td style="color:${i.remaining>0?'var(--rose)':'var(--emerald)'};font-weight:700">${i.remaining} ج</td><td><span class="ast ${i.status==='مدفوع'?'sc':i.status==='جزئي'?'sp':'sw'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="printInvoice('${i.id}')">🖨 طباعة</button></td></tr>`).join('');
   txt('kpi-pend',pend.toLocaleString());
 }
 function updInvTotal(){
@@ -1905,7 +1903,7 @@ function saveInv(){
   const pat=DB.get('patients').find(p=>p.id==pid);
   const price=parseFloat(document.getElementById('im-price')?.value)||0,disc=parseFloat(document.getElementById('im-disc')?.value)||0,net=price-disc;
   const method=document.querySelector('#invoice-modal .pay-m.sel')?.textContent?.trim()||'كاش';
-  DB.push('invoices',{patient:pat?.name||'—',service:gv('im-svc').split(' - ')[0],total:net,paid:net,remaining:0,status:'مدفوع',method,date:gv('im-date')||new Date().toISOString().split('T')[0]});
+  DB.push('invoices',{patient:pat?.name||'—',service:gv('im-svc').split(' - ')[0],originalPrice:price,discount:disc,total:net,paid:net,remaining:0,status:'مدفوع',method,date:gv('im-date')||new Date().toISOString().split('T')[0]});
   if(pat)DB.upd('patients',pat.id,{spent:(pat.spent||0)+net});
   closeModal('invoice-modal');showToast('success','✅ تم إصدار الفاتورة',`${net.toLocaleString()} ج - ${method}`);renderInvs();
 }
@@ -2315,9 +2313,44 @@ function buildChart(){
 
   // Update dashboard service distribution from real invoices
   updateServiceDistribution();
+  buildTopDoctors();
 }
 
-function updateServiceDistribution(){
+function buildTopDoctors(){
+  const el = document.getElementById('dash-top-doctors');
+  if(!el) return;
+  const thisMonth = new Date().toISOString().substring(0,7);
+  const invoices = DB.get('invoices').filter(i=>(i.date||'').startsWith(thisMonth));
+  const appointments = DB.get('appointments');
+  const docRev = {};
+  invoices.forEach(inv=>{
+    const appt = appointments.find(a=>a.patient===inv.patient&&a.date===inv.date);
+    const doc = (appt?.doctor||inv.doctor||'').trim();
+    if(!doc) return;
+    docRev[doc] = (docRev[doc]||0) + (inv.paid||0);
+  });
+  // Fallback: count sessions from appointments
+  appointments.filter(a=>(a.date||'').startsWith(thisMonth)).forEach(a=>{
+    if(a.doctor && !docRev[a.doctor]) docRev[a.doctor] = 0;
+  });
+  const sorted = Object.entries(docRev).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  const grads = [
+    'linear-gradient(135deg,#8B5CF6,#3B82F6)',
+    'linear-gradient(135deg,#10B981,#2DD4BF)',
+    'linear-gradient(135deg,#F59E0B,#EF4444)',
+    'linear-gradient(135deg,#C4A882,#8B5CF6)',
+    'linear-gradient(135deg,#F43F5E,#F59E0B)'
+  ];
+  if(!sorted.length){
+    // Fallback to doctors DB list
+    const docs = DB.get('doctors').slice(0,4);
+    if(!docs.length){ el.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:16px;font-size:13px">لا توجد بيانات أطباء بعد</div>'; return; }
+    el.innerHTML = docs.map((d,i)=>`<div class="drow"><div class="drank">${medals[i]||'⭐'}</div><div class="dava" style="background:${grads[i%5]}">👩‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">${d.name}</div><div style="color:var(--text-muted);font-size:12px">${d.specialty||'—'}</div></div>`).join('');
+    return;
+  }
+  el.innerHTML = sorted.map(([name,rev],i)=>`<div class="drow"><div class="drank">${medals[i]||'⭐'}</div><div class="dava" style="background:${grads[i%5]}">👩‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">${name}</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">${rev.toLocaleString()} ج</div></div>`).join('');
+}
   const invoices=DB.get('invoices');
   if(!invoices.length)return;
   const svcCount={};
@@ -2338,7 +2371,7 @@ function updateServiceDistribution(){
 // 🤖 AI ASSISTANT — FULL IMPLEMENTATION
 // ══════════════════════════════════════════
 const AI_QUICK_PROMPTS = [
-  { icon:'📊', label:'تحليل الإيرادات',    sub:'أداء المبيعات',          q:'حلل إيرادات هذا الشهر (312,800 ج) وقدم توصيات لزيادتها' },
+  { icon:'📊', label:'تحليل الإيرادات',    sub:'أداء المبيعات',          q:'__REV_PROMPT__' },
   { icon:'💆', label:'خطة علاج',            sub:'بناءً على الملف الطبي',  q:'اقترح خطة علاج متكاملة لعميلة بشرة دهنية مع حب شباب وتصبغات' },
   { icon:'📦', label:'توقع المخزون',        sub:'الاحتياجات القادمة',     q:'توقع احتياجات مخزون عيادة تجميل للشهر القادم بناءً على الخدمات الأكثر طلباً' },
   { icon:'⏰', label:'تحسين المواعيد',      sub:'تحليل أوقات الذروة',     q:'ما أفضل أوقات المواعيد في عيادة تجميل وكيف نزيد الحجوزات وتقليل الغيابات؟' },
@@ -2366,8 +2399,15 @@ function aiGetSystemPrompt(){
   const pc = DB.get('patients').length;
   const ac = DB.get('appointments').filter(a=>a.date===new Date().toISOString().split('T')[0]).length;
   const ic = DB.get('inventory').filter(i=>i.status==='منخفض'||i.status==='نفذ').length;
-  const rev = DB.get('invoices').filter(i=>i.date===new Date().toISOString().split('T')[0]).reduce((s,i)=>s+(i.paid||0),0);
-  return AI_SYSTEM_PROMPT + `\n\nبيانات العيادة الحالية:\n- ${pc} عميل نشط\n- ${ac} مواعيد اليوم\n- إيرادات اليوم: ${rev.toLocaleString()} ج\n- إيرادات الشهر: 312,800 ج\n- ${ic} منتجات مخزون منخفض\n- فرعان: مدينة نصر والمهندسين\n- خدمات رئيسية: هيدرافيشل، ليزر، بوتكس، بلازما، تنظيف بشرة`;
+  const today = new Date().toISOString().split('T')[0];
+  const thisMonth = today.substring(0,7);
+  const rev = DB.get('invoices').filter(i=>i.date===today).reduce((s,i)=>s+(i.paid||0),0);
+  const monthRev = DB.get('invoices').filter(i=>(i.date||'').startsWith(thisMonth)).reduce((s,i)=>s+(i.paid||0),0);
+  const branches = [...new Set(DB.get('patients').map(p=>p.branch).filter(Boolean))];
+  const branchStr = branches.length ? branches.join('، ') : 'مدينة نصر والمهندسين';
+  // Fix dynamic revenue prompt
+  AI_QUICK_PROMPTS[0].q = `حلل إيرادات هذا الشهر (${monthRev.toLocaleString()} ج) وقدم توصيات لزيادتها`;
+  return AI_SYSTEM_PROMPT + `\n\nبيانات العيادة الحالية:\n- ${pc} عميل نشط\n- ${ac} مواعيد اليوم\n- إيرادات اليوم: ${rev.toLocaleString()} ج\n- إيرادات الشهر: ${monthRev.toLocaleString()} ج\n- ${ic} منتجات مخزون منخفض\n- الفروع: ${branchStr}\n- خدمات رئيسية: هيدرافيشل، ليزر، بوتكس، بلازما، تنظيف بشرة`;
 }
 
 function aiFormatText(text){
@@ -2463,21 +2503,33 @@ async function aiSend(q){
       role: m.role === 'user' ? 'user' : 'assistant',
       content: m.text
     }));
-    // غيّر الرابط ده بعد نشر الدالة على Firebase (الرابط هيظهر لك في التيرمينال بعد deploy)
-    const AI_FUNCTION_URL = 'https://aichat-XXXXXXXXXX-uc.a.run.app';
-    const res = await fetch(AI_FUNCTION_URL, {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': (DB.obj('settings').anthropicKey||'').trim(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
         system: aiGetSystemPrompt(),
         messages: [...history, { role:'user', content: question }]
       })
     });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || 'عذراً، لم أتمكن من الإجابة.';
-    window._aiMessages.push({ role:'assistant', text: reply });
+    if(res.status === 401){
+      window._aiMessages.push({ role:'assistant', text:'🔑 مفتاح Anthropic API غير صحيح أو غير موجود. أضفه في الإعدادات ← حقل "مفتاح Anthropic API".', isError:true });
+    } else if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      window._aiMessages.push({ role:'assistant', text:`❌ خطأ من الخادم (${res.status}): ${err?.error?.message||'حاول مرة أخرى'}`, isError:true });
+    } else {
+      const data = await res.json();
+      const reply = data.content?.[0]?.text || 'عذراً، لم أتمكن من الإجابة.';
+      window._aiMessages.push({ role:'assistant', text: reply });
+    }
   } catch(e) {
-    window._aiMessages.push({ role:'assistant', text:'❌ تعذر الاتصال. تحقق من الاتصال بالإنترنت.', isError:true });
+    window._aiMessages.push({ role:'assistant', text:'❌ تعذر الاتصال بـ Anthropic API. تحقق من الإنترنت ومفتاح الـ API.', isError:true });
   }
 
   window._aiLoading = false;
@@ -2553,7 +2605,7 @@ document.addEventListener('input', e => {
 
 // SETTINGS
 function saveSettings(){
-  const s={clinicName:gv('s-cname'),phone:gv('s-cphone'),managerName:gv('s-mname'),managerRole:gv('s-mrole')};
+  const s={clinicName:gv('s-cname'),phone:gv('s-cphone'),managerName:gv('s-mname'),managerRole:gv('s-mrole'),anthropicKey:gv('s-anthropic-key')};
   DB.set('settings',s);txt('user-name',s.managerName);txt('user-role',s.managerRole);txt('dash-uname',s.managerName);
   showToast('success','✅ تم حفظ الإعدادات');
 }
@@ -2561,6 +2613,7 @@ function loadSettings(){
   const s=DB.obj('settings');
   if(s.managerName){txt('user-name',s.managerName);txt('user-role',s.managerRole||'مدير النظام');txt('dash-uname',s.managerName);}
   ['s-cname','s-cphone','s-mname','s-mrole'].forEach((id,i)=>{const e=document.getElementById(id);if(e)e.value=[s.clinicName,s.phone,s.managerName,s.managerRole][i]||e.value;});
+  const akEl=document.getElementById('s-anthropic-key');if(akEl&&s.anthropicKey)akEl.value=s.anthropicKey;
 }
 // ══════════════════════════════════════════
 // 🔥 FIREBASE REAL INTEGRATION
@@ -3035,6 +3088,147 @@ init();
 </script>
 </body>
 </html>
+<!-- BRANCHES REAL DATA -->
+<script>
+// ══════════════════════════════════════════
+// 🏢 BRANCHES — REAL DATA FROM DB
+// ══════════════════════════════════════════
+function renderBranches(){
+  // Seed default branches if none exist
+  if(!DB.get('branches')||!DB.get('branches').length){
+    DB.set('branches',[
+      {id:'br1',name:'مدينة نصر',address:'شارع عباس العقاد، مدينة نصر',phone:'01011112222',manager:'د. سارة محمد',status:'نشط'},
+      {id:'br2',name:'المهندسين',address:'شارع البطل أحمد عبد العزيز، المهندسين',phone:'01033334444',manager:'د. منى سامي',status:'نشط'}
+    ]);
+  }
+  const branches = DB.get('branches')||[];
+  const patients = DB.get('patients');
+  const invoices = DB.get('invoices');
+  const doctors = DB.get('doctors');
+  const staff = DB.get('staff');
+  const appointments = DB.get('appointments');
+
+  const grid = document.getElementById('branches-grid');
+  if(!grid) return;
+
+  const cards = branches.map((b,i)=>{
+    const branchPats = patients.filter(p=>(p.branch||'').includes(b.name)).length;
+    const branchRevenue = invoices.filter(inv=>(inv.branch||'').includes(b.name)).reduce((s,inv)=>s+(inv.paid||0),0);
+    const branchDocs = doctors.filter(d=>(d.branch||'').includes(b.name)).length;
+    const branchStaff = staff.filter(s=>(s.branch||'').includes(b.name)).length;
+    const todayAppts = appointments.filter(a=>(a.branch||'').includes(b.name)&&a.date===new Date().toISOString().split('T')[0]).length;
+    const grads=['linear-gradient(135deg,var(--teal),var(--gold))','linear-gradient(135deg,var(--purple),var(--blue))','linear-gradient(135deg,var(--rose),var(--amber))'];
+    return `<div class="bcard">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+        <div>
+          <div style="font-size:15px;font-weight:800;">🏢 ${b.name}</div>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">📍 ${b.address||'—'}</div>
+          ${b.phone?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">📞 ${b.phone}</div>`:''}
+        </div>
+        <span class="ast ${b.status==='نشط'?'sc':'sd'}">${b.status}</span>
+      </div>
+      <div class="g2c" style="gap:8px;margin-bottom:11px;">
+        <div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:var(--teal)">${branchPats||'—'}</div>
+          <div style="font-size:11px;color:var(--text-muted)">عملاء</div>
+        </div>
+        <div style="background:var(--glass);border-radius:8px;padding:9px;text-align:center;">
+          <div style="font-size:18px;font-weight:800;color:var(--gold-light)">${branchRevenue?Math.round(branchRevenue/1000)+'K':'—'}</div>
+          <div style="font-size:11px;color:var(--text-muted)">إيرادات (ج)</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">
+        ${branchDocs?`👩‍⚕️ ${branchDocs} طبيب`:''}${branchStaff?` · 👥 ${branchStaff} موظف`:''}
+      </div>
+      ${b.manager?`<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">👤 مدير: ${b.manager}</div>`:''}
+      ${todayAppts?`<div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px;">📅 ${todayAppts} موعد اليوم</div>`:''}
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="showBranchReport('${b.name}')">📊 تقرير</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openBranchModal('${b.id}')">✏️ تعديل</button>
+        <button class="btn btn-danger btn-sm" onclick="delBranch('${b.id}')">🗑</button>
+      </div>
+    </div>`;
+  });
+
+  cards.push(`<div class="bcard" style="border-style:dashed;opacity:.5;cursor:pointer;" onclick="openBranchModal()">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:9px;">
+      <div style="font-size:36px;">🏢</div>
+      <div style="font-size:13.5px;font-weight:600;color:var(--text-muted)">إضافة فرع جديد</div>
+    </div>
+  </div>`);
+
+  grid.innerHTML = cards.join('');
+}
+
+function showBranchReport(branchName){
+  const br = generateBranchesReport ? generateBranchesReport() : null;
+  if(!br) return;
+  const bd = br.branchesTable?.find(b=>b.name===branchName);
+  if(!bd){ showToast('info','ℹ️ لا توجد بيانات لهذا الفرع'); return; }
+  showToast('info',`🏢 ${branchName}: ${bd.revenue.toLocaleString()} ج · ${bd.patients} عميل · ${bd.appointments} موعد`);
+}
+
+function openBranchModal(id){
+  const b = id ? (DB.get('branches')||[]).find(x=>x.id===id) : null;
+  let modal = document.getElementById('branch-modal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.className='modal-overlay';
+    modal.id='branch-modal';
+    modal.innerHTML=`<div class="modal" style="max-width:480px;">
+      <div class="mhdr"><div class="mtitle" id="branch-modal-title">🏢 فرع جديد</div><button class="mclose" onclick="closeModal('branch-modal')">✕</button></div>
+      <div class="mbody">
+        <input type="hidden" id="branch-id">
+        <div class="fg" style="gap:12px;">
+          <div class="fgrp full"><label class="flbl">اسم الفرع</label><input class="fctl" id="branch-name" placeholder="مثال: المعادي"></div>
+          <div class="fgrp full"><label class="flbl">العنوان</label><input class="fctl" id="branch-address" placeholder="الشارع والحي"></div>
+          <div class="fgrp"><label class="flbl">الهاتف</label><input class="fctl" id="branch-phone" placeholder="010xxxxxxxx"></div>
+          <div class="fgrp"><label class="flbl">المدير</label><input class="fctl" id="branch-manager" placeholder="د. اسم المدير"></div>
+          <div class="fgrp"><label class="flbl">الحالة</label><select class="selbox" id="branch-status"><option>نشط</option><option>متوقف</option></select></div>
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn btn-ghost" onclick="closeModal('branch-modal')">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveBranch()">💾 حفظ</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click',e=>{if(e.target===modal)closeModal('branch-modal');});
+  }
+  document.getElementById('branch-modal-title').textContent = b ? '✏️ تعديل الفرع' : '🏢 فرع جديد';
+  document.getElementById('branch-id').value = b?.id||'';
+  document.getElementById('branch-name').value = b?.name||'';
+  document.getElementById('branch-address').value = b?.address||'';
+  document.getElementById('branch-phone').value = b?.phone||'';
+  document.getElementById('branch-manager').value = b?.manager||'';
+  document.getElementById('branch-status').value = b?.status||'نشط';
+  openModal('branch-modal');
+}
+
+function saveBranch(){
+  const name = document.getElementById('branch-name')?.value.trim();
+  if(!name){ showToast('warning','⚠️ اسم الفرع مطلوب'); return; }
+  const id = document.getElementById('branch-id')?.value;
+  const data = {name, address:gv('branch-address'), phone:gv('branch-phone'), manager:gv('branch-manager'), status:gv('branch-status')};
+  if(!DB.get('branches')) DB.set('branches',[]);
+  if(id){ DB.upd('branches',id,data); showToast('success',`✅ تم تحديث فرع ${name}`); }
+  else { DB.push('branches',data); showToast('success',`✅ تم إضافة فرع ${name}`); }
+  closeModal('branch-modal');
+  renderBranches();
+}
+
+function delBranch(id){
+  const b = (DB.get('branches')||[]).find(x=>x.id===id);
+  if(confirm(`حذف فرع "${b?.name}"؟`)){ DB.del('branches',id); renderBranches(); showToast('info','🗑 تم حذف الفرع'); }
+}
+
+// Hook showScreen for branches
+const _origShowBranch = window.showScreen;
+window.showScreen = function(id){
+  _origShowBranch(id);
+  if(id==='branches') renderBranches();
+};
+</script>
 <!-- SESSION GUARD + AUTH ADDITIONS -->
 <script>
 // ══════════════════════════════════════════
@@ -3192,15 +3386,15 @@ function printInvoiceReal(inv){
 </div>
 
 <table>
-  <thead><tr><th>الخدمة / المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+  <thead><tr><th>الخدمة / المنتج</th><th>الكمية</th><th>السعر الأصلي</th><th>الإجمالي</th></tr></thead>
   <tbody>
-    <tr><td>${inv.service}</td><td>1</td><td>${inv.total} ج</td><td>${inv.total} ج</td></tr>
+    <tr><td>${inv.service}</td><td>1</td><td>${(inv.originalPrice||inv.total)} ج</td><td>${inv.total} ج</td></tr>
   </tbody>
 </table>
 
 <div class="total-box">
-  <div class="total-row"><span>المجموع:</span><span>${inv.total} ج</span></div>
-  <div class="total-row"><span>الخصم:</span><span>0 ج</span></div>
+  <div class="total-row"><span>المجموع:</span><span>${(inv.originalPrice||inv.total)} ج</span></div>
+  <div class="total-row"><span>الخصم:</span><span style="color:#dc2626">${(inv.discount||0)>0?'- ':''} ${(inv.discount||0)} ج</span></div>
   <div class="total-row final"><span>الإجمالي المستحق:</span><strong style="color:#C4A882">${inv.total} ج</strong></div>
   <div class="total-row"><span>المدفوع:</span><span style="color:#166534">${inv.paid} ج</span></div>
   ${inv.remaining>0?`<div class="total-row"><span>المتبقي:</span><span style="color:#dc2626">${inv.remaining} ج</span></div>`:''}
@@ -3242,6 +3436,10 @@ function generateReport(type){
     case 'patients': return generatePatientsReport(patients, appointments);
     case 'inventory': return generateInventoryReport(inventory);
     case 'appointments': return generateAppointmentsReport(appointments, today);
+    case 'doctors': return generateDoctorsReport();
+    case 'branches': return generateBranchesReport();
+    case 'campaigns': return generateCampaignsReport();
+    case 'accounts': showScreen('accounts'); return null;
   }
 }
 
@@ -3343,9 +3541,17 @@ function showReport(type){
   if(report.byService){
     const svcs = Object.entries(report.byService).sort((a,b)=>b[1]-a[1]);
     extra += `<div style="margin-top:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:10px;">توزيع الإيرادات حسب الخدمة</div>`;
+    const totalRev = svcs.reduce((s,[,v])=>s+v,0)||1;
     svcs.forEach(([k,v])=>{
-      const pct = Math.round(v/report.summary[0].value.replace(/[^0-9]/g,'')*100)||0;
+      const pct = Math.round(v/totalRev*100);
       extra += `<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${k}</span><span style="font-weight:700;color:var(--teal)">${v.toLocaleString()} ج</span></div><div style="height:6px;background:var(--glass);border-radius:3px;overflow:hidden;"><div style="height:100%;background:var(--teal);width:${Math.min(pct,100)}%;border-radius:3px;"></div></div></div>`;
+    });
+    extra += '</div>';
+  }
+  if(report.byMethod){
+    extra += `<div style="margin-top:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:10px;">توزيع طرق الدفع</div>`;
+    Object.entries(report.byMethod).forEach(([k,v])=>{
+      extra += `<div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--glass);border-radius:8px;margin-bottom:6px;font-size:13px;"><span>${k}</span><span style="font-weight:700;color:var(--gold-light)">${v.toLocaleString()} ج</span></div>`;
     });
     extra += '</div>';
   }
@@ -3363,38 +3569,194 @@ function showReport(type){
     });
     extra += '</div>';
   }
+  if(report.doctorsTable){
+    extra += `<div style="margin-top:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:10px;">أداء الأطباء</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:var(--glass);"><th style="padding:8px;text-align:right;color:var(--text-muted);">الطبيب</th><th style="padding:8px;text-align:right;color:var(--text-muted);">التخصص</th><th style="padding:8px;text-align:center;color:var(--text-muted);">العملاء</th><th style="padding:8px;text-align:center;color:var(--text-muted);">الجلسات</th><th style="padding:8px;text-align:left;color:var(--text-muted);">الإيرادات</th></tr></thead><tbody>`;
+    const total = report.totalRev||1;
+    report.doctorsTable.forEach((d,i)=>{
+      const colors=['var(--teal)','var(--gold-light)','var(--purple)','var(--emerald)','var(--rose)'];
+      const pct = Math.round(d.revenue/total*100);
+      extra += `<tr style="border-bottom:1px solid var(--glass-border);"><td style="padding:9px 8px;font-weight:700;">${i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':''}${d.name}</td><td style="padding:9px 8px;color:var(--text-muted);font-size:12px;">${d.specialty}</td><td style="padding:9px 8px;text-align:center;color:var(--purple);font-weight:700;">${d.patients}</td><td style="padding:9px 8px;text-align:center;color:var(--teal);font-weight:700;">${d.sessions}</td><td style="padding:9px 8px;text-align:left;"><div style="color:${colors[i%5]};font-weight:800;">${d.revenue.toLocaleString()} ج</div><div style="height:4px;background:var(--glass);border-radius:2px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:${colors[i%5]};width:${pct}%;"></div></div></td></tr>`;
+    });
+    extra += '</tbody></table></div></div>';
+  }
+  if(report.branchesTable){
+    extra += `<div style="margin-top:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:10px;">أداء الفروع</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:var(--glass);"><th style="padding:8px;text-align:right;color:var(--text-muted);">الفرع</th><th style="padding:8px;text-align:center;color:var(--text-muted);">العملاء</th><th style="padding:8px;text-align:center;color:var(--text-muted);">المواعيد</th><th style="padding:8px;text-align:left;color:var(--text-muted);">الإيرادات</th></tr></thead><tbody>`;
+    const total = report.totalRev||1;
+    const colors=['var(--teal)','var(--gold-light)','var(--purple)','var(--emerald)'];
+    report.branchesTable.forEach((b,i)=>{
+      const pct = Math.round(b.revenue/total*100);
+      extra += `<tr style="border-bottom:1px solid var(--glass-border);"><td style="padding:9px 8px;font-weight:700;">${i===0?'🏆 ':'🏢 '}${b.name}</td><td style="padding:9px 8px;text-align:center;color:var(--purple);font-weight:700;">${b.patients}</td><td style="padding:9px 8px;text-align:center;color:var(--teal);font-weight:700;">${b.appointments}</td><td style="padding:9px 8px;text-align:left;"><div style="color:${colors[i%4]};font-weight:800;">${b.revenue.toLocaleString()} ج</div><div style="height:4px;background:var(--glass);border-radius:2px;margin-top:4px;overflow:hidden;"><div style="height:100%;background:${colors[i%4]};width:${pct}%;"></div></div></td></tr>`;
+    });
+    extra += '</tbody></table></div></div>';
+  }
+  if(report.byChannel){
+    extra += `<div style="margin-top:16px;"><div style="font-weight:700;font-size:14px;margin-bottom:10px;">أداء القنوات التسويقية</div>`;
+    const colors=['var(--teal)','var(--purple)','var(--gold-light)','var(--rose)','var(--emerald)'];
+    Object.entries(report.byChannel).forEach(([ch,data],i)=>{
+      const conv = data.leads?Math.round(data.converted/data.leads*100):0;
+      extra += `<div style="background:var(--glass);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-weight:700;">${ch}</span><span style="color:${colors[i%5]};font-weight:700;">${data.budget.toLocaleString()} ج</span></div><div style="display:flex;gap:12px;font-size:12px;color:var(--text-muted)"><span>ليدز: <b style="color:var(--text-primary)">${data.leads}</b></span><span>محوّل: <b style="color:var(--emerald)">${data.converted}</b></span><span>تحويل: <b style="color:${conv>=30?'var(--teal)':'var(--amber)'}">${conv}%</b></span></div></div>`;
+    });
+    extra += '</div>';
+  }
 
-  modal.innerHTML = `<div class="modal" style="max-width:600px;">
+  modal.innerHTML = `<div class="modal" style="max-width:650px;">
     <div class="mhdr"><div class="mtitle">📊 ${report.title}</div><button class="mclose" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
-    <div class="mbody">
+    <div class="mbody" style="max-height:70vh;overflow-y:auto;">
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:4px;">${summary}</div>
       ${extra}
     </div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">إغلاق</button>
-      <button class="btn btn-primary" onclick="exportReportPDF('${type}')">📄 تصدير PDF</button>
+      <button class="btn btn-primary" onclick="exportReportPDF('${type}',this.closest('.modal-overlay'))">📄 تصدير PDF</button>
     </div>
   </div>`;
   document.body.appendChild(modal);
   modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
 }
 
-function exportReportPDF(type){
-  showToast('info','📄 جارٍ إنشاء تقرير PDF...');
-  setTimeout(()=>window.print(), 500);
+function exportReportPDF(type, modalEl){
+  const report = generateReport(type);
+  if(!report) return;
+  const clinicName = DB.obj('settings').clinicName || 'عيادات الحياة للتجميل';
+  const clinicPhone = DB.obj('settings').phone || '';
+  const now = new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
+
+  const summaryHtml = report.summary.map(s=>`<div style="background:#f8f4ef;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:19px;font-weight:800;color:#7A5C38">${s.value}</div><div style="font-size:11px;color:#666;margin-top:3px">${s.label}</div></div>`).join('');
+
+  let bodyHtml = `<div style="display:grid;grid-template-columns:repeat(${Math.min(report.summary.length,4)},1fr);gap:12px;margin-bottom:20px;">${summaryHtml}</div>`;
+
+  if(report.byService){
+    const svcs = Object.entries(report.byService).sort((a,b)=>b[1]-a[1]);
+    const total = svcs.reduce((s,[,v])=>s+v,0)||1;
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;">توزيع الإيرادات حسب الخدمة</h3>`;
+    svcs.forEach(([k,v])=>{ const pct=Math.round(v/total*100); bodyHtml+=`<div style="margin-bottom:7px;"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px;"><span>${k}</span><span style="font-weight:700;color:#0D9488">${v.toLocaleString()} ج (${pct}%)</span></div><div style="height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden;"><div style="height:100%;background:#0D9488;width:${pct}%;"></div></div></div>`; });
+  }
+  if(report.byMethod){
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;">طرق الدفع</h3><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8f4ef;"><th style="padding:7px;text-align:right;border-bottom:2px solid #C4A882;">الطريقة</th><th style="padding:7px;text-align:left;border-bottom:2px solid #C4A882;">المبلغ</th></tr></thead><tbody>${Object.entries(report.byMethod).map(([k,v])=>`<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:7px;">${k}</td><td style="padding:7px;font-weight:700;color:#047857;">${v.toLocaleString()} ج</td></tr>`).join('')}</tbody></table>`;
+  }
+  if(report.bySource){
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;">مصادر العملاء</h3><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8f4ef;"><th style="padding:7px;text-align:right;border-bottom:2px solid #C4A882;">المصدر</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">العدد</th></tr></thead><tbody>${Object.entries(report.bySource).map(([k,v])=>`<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:7px;">${k}</td><td style="padding:7px;text-align:center;font-weight:700;">${v}</td></tr>`).join('')}</tbody></table>`;
+  }
+  if(report.doctorsTable){
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;">أداء الأطباء</h3><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8f4ef;"><th style="padding:7px;text-align:right;border-bottom:2px solid #C4A882;">#</th><th style="padding:7px;text-align:right;border-bottom:2px solid #C4A882;">الطبيب</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">التخصص</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">العملاء</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">الجلسات</th><th style="padding:7px;text-align:left;border-bottom:2px solid #C4A882;">الإيرادات</th></tr></thead><tbody>${report.doctorsTable.map((d,i)=>`<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:7px;font-size:11px;color:#999;">${i+1}</td><td style="padding:7px;font-weight:700;">${d.name}</td><td style="padding:7px;text-align:center;font-size:11px;color:#666;">${d.specialty}</td><td style="padding:7px;text-align:center;">${d.patients}</td><td style="padding:7px;text-align:center;">${d.sessions}</td><td style="padding:7px;font-weight:700;color:#047857;">${d.revenue.toLocaleString()} ج</td></tr>`).join('')}</tbody></table>`;
+  }
+  if(report.branchesTable){
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;">أداء الفروع</h3><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8f4ef;"><th style="padding:7px;text-align:right;border-bottom:2px solid #C4A882;">الفرع</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">العملاء</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">المواعيد</th><th style="padding:7px;text-align:left;border-bottom:2px solid #C4A882;">الإيرادات</th></tr></thead><tbody>${report.branchesTable.map(b=>`<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:7px;font-weight:700;">${b.name}</td><td style="padding:7px;text-align:center;">${b.patients}</td><td style="padding:7px;text-align:center;">${b.appointments}</td><td style="padding:7px;font-weight:700;color:#047857;">${b.revenue.toLocaleString()} ج</td></tr>`).join('')}</tbody></table>`;
+  }
+  if(report.byChannel){
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;">القنوات التسويقية</h3><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8f4ef;"><th style="padding:7px;text-align:right;border-bottom:2px solid #C4A882;">القناة</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">الميزانية</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">الليدز</th><th style="padding:7px;text-align:center;border-bottom:2px solid #C4A882;">المحوّل</th><th style="padding:7px;text-align:left;border-bottom:2px solid #C4A882;">نسبة التحويل</th></tr></thead><tbody>${Object.entries(report.byChannel).map(([k,d])=>`<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:7px;font-weight:700;">${k}</td><td style="padding:7px;text-align:center;">${d.budget.toLocaleString()} ج</td><td style="padding:7px;text-align:center;">${d.leads}</td><td style="padding:7px;text-align:center;color:#047857;font-weight:700;">${d.converted}</td><td style="padding:7px;font-weight:700;">${d.leads?Math.round(d.converted/d.leads*100):0}%</td></tr>`).join('')}</tbody></table>`;
+  }
+  if(report.lowStock && report.lowStock.length){
+    bodyHtml += `<h3 style="font-size:13px;font-weight:700;color:#B45309;margin:16px 0 8px;">⚠️ منتجات تحتاج إعادة طلب</h3><table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#fef9c3;"><th style="padding:7px;text-align:right;border-bottom:2px solid #B45309;">المنتج</th><th style="padding:7px;text-align:center;border-bottom:2px solid #B45309;">الكمية المتبقية</th><th style="padding:7px;text-align:center;border-bottom:2px solid #B45309;">حد إعادة الطلب</th></tr></thead><tbody>${report.lowStock.map(i=>`<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:7px;font-weight:700;">${i.name}</td><td style="padding:7px;text-align:center;color:#dc2626;font-weight:700;">${i.qty}</td><td style="padding:7px;text-align:center;">${i.reorder}</td></tr>`).join('')}</tbody></table>`;
+  }
+
+  const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${report.title}</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Tajawal',sans-serif;background:#fff;color:#1a1a1a;padding:28px;font-size:13.5px;}
+.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #C4A882;padding-bottom:18px;margin-bottom:20px;}
+.logo{font-size:20px;font-weight:900;color:#C4A882;}.logo-sub{font-size:11px;color:#666;margin-top:3px;}
+.rpt-meta{text-align:left;font-size:12px;color:#666;}.rpt-meta strong{font-size:16px;color:#1a1a1a;display:block;}
+.footer{text-align:center;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:14px;margin-top:20px;}
+@media print{body{padding:14px;}}</style></head><body>
+<div class="header"><div><div class="logo">💎 ${clinicName}</div><div class="logo-sub">📞 ${clinicPhone}</div></div>
+<div class="rpt-meta"><span>تقرير رسمي</span><strong>${report.title}</strong><div style="margin-top:3px">📅 ${now}</div></div></div>
+${bodyHtml}
+<div class="footer">أُنشئ بواسطة نظام عيادات الحياة للتجميل 💎 · ${now}</div>
+<script>setTimeout(()=>window.print(),400);<\/script></body></html>`;
+
+  const w = window.open('','_blank','width=860,height=700,scrollbars=yes');
+  if(!w){ showToast('error','❌ السماح بفتح النوافذ المنبثقة مطلوب'); return; }
+  w.document.write(html);
+  w.document.close();
+  showToast('success','📄 تم فتح نافذة الطباعة');
 }
 
 // Bind report cards
 document.querySelectorAll('.rcard').forEach((card,i)=>{
   const types = ['patients','revenue','doctors','appointments','inventory','branches','campaigns','accounts'];
   card.addEventListener('click',()=>{
-    if(types[i]==='doctors'||types[i]==='branches'||types[i]==='campaigns'||types[i]==='accounts'){
-      showToast('info','📊 هذا التقرير قيد التطوير');
-    } else {
-      showReport(types[i]);
-    }
+    showReport(types[i]);
   });
 });
+
+function generateDoctorsReport(){
+  const invoices = DB.get('invoices');
+  const appointments = DB.get('appointments');
+  const doctors = DB.get('doctors');
+  const docStats = {};
+  doctors.forEach(d=>{ docStats[d.name]={name:d.name,specialty:d.specialty||'—',revenue:0,sessions:0,patients:new Set()}; });
+  invoices.forEach(inv=>{
+    const appt = appointments.find(a=>a.patient===inv.patient&&a.date===inv.date);
+    const docName = (appt?.doctor||inv.doctor||'').trim();
+    if(!docName)return;
+    if(!docStats[docName]) docStats[docName]={name:docName,specialty:'—',revenue:0,sessions:0,patients:new Set()};
+    docStats[docName].revenue += inv.paid||0;
+    docStats[docName].patients.add(inv.patient);
+  });
+  appointments.forEach(a=>{
+    const d=a.doctor;if(!d)return;
+    if(!docStats[d]) docStats[d]={name:d,specialty:'—',revenue:0,sessions:0,patients:new Set()};
+    docStats[d].sessions++;
+  });
+  const sorted = Object.values(docStats).sort((a,b)=>b.revenue-a.revenue);
+  const totalRev = sorted.reduce((s,d)=>s+d.revenue,0);
+  return {
+    title:'تقرير الأطباء',
+    summary:[
+      {label:'عدد الأطباء',value:sorted.length,color:'var(--teal)'},
+      {label:'إجمالي الإيرادات',value:totalRev.toLocaleString()+' ج',color:'var(--emerald)'},
+      {label:'إجمالي الجلسات',value:sorted.reduce((s,d)=>s+d.sessions,0),color:'var(--purple)'},
+      {label:'إجمالي العملاء',value:new Set(appointments.map(a=>a.patient)).size,color:'var(--gold-light)'}
+    ],
+    doctorsTable: sorted.map(d=>({...d,patients:d.patients.size})),
+    totalRev
+  };
+}
+
+function generateBranchesReport(){
+  const invoices = DB.get('invoices');
+  const appointments = DB.get('appointments');
+  const patients = DB.get('patients');
+  const branches = [...new Set([...invoices.map(i=>i.branch||'غير محدد'),...appointments.map(a=>a.branch||'غير محدد'),...patients.map(p=>p.branch||'غير محدد')])].filter(Boolean);
+  const branchStats = {};
+  branches.forEach(b=>branchStats[b]={name:b,revenue:0,appointments:0,patients:new Set()});
+  invoices.forEach(i=>{ const b=i.branch||'غير محدد'; if(!branchStats[b])branchStats[b]={name:b,revenue:0,appointments:0,patients:new Set()}; branchStats[b].revenue+=i.paid||0; branchStats[b].patients.add(i.patient); });
+  appointments.forEach(a=>{ const b=a.branch||'غير محدد'; if(!branchStats[b])branchStats[b]={name:b,revenue:0,appointments:0,patients:new Set()}; branchStats[b].appointments++; });
+  patients.forEach(p=>{ const b=p.branch||'غير محدد'; if(!branchStats[b])branchStats[b]={name:b,revenue:0,appointments:0,patients:new Set()}; branchStats[b].patients.add(p.name); });
+  const sorted = Object.values(branchStats).sort((a,b)=>b.revenue-a.revenue);
+  const totalRev = sorted.reduce((s,b)=>s+b.revenue,0);
+  return {
+    title:'تقرير الفروع',
+    summary:[
+      {label:'عدد الفروع',value:sorted.length,color:'var(--teal)'},
+      {label:'إجمالي الإيرادات',value:totalRev.toLocaleString()+' ج',color:'var(--emerald)'},
+      {label:'إجمالي المواعيد',value:sorted.reduce((s,b)=>s+b.appointments,0),color:'var(--purple)'},
+      {label:'إجمالي العملاء',value:patients.length,color:'var(--gold-light)'}
+    ],
+    branchesTable: sorted.map(b=>({...b,patients:b.patients.size})),
+    totalRev
+  };
+}
+
+function generateCampaignsReport(){
+  const camps = DB.get('campaigns')||[];
+  const leads = DB.get('leads')||[];
+  const totalBudget = camps.reduce((s,c)=>s+(c.budget||0),0);
+  const totalLeads = camps.reduce((s,c)=>s+(c.leadsCount||0),0);
+  const totalConv = camps.reduce((s,c)=>s+(c.converted||0),0);
+  const byChannel = {};
+  camps.forEach(c=>{ const ch=c.channel||'غير محدد'; if(!byChannel[ch])byChannel[ch]={budget:0,leads:0,converted:0}; byChannel[ch].budget+=c.budget||0; byChannel[ch].leads+=c.leadsCount||0; byChannel[ch].converted+=c.converted||0; });
+  return {
+    title:'تقرير الحملات التسويقية',
+    summary:[
+      {label:'عدد الحملات',value:camps.length,color:'var(--teal)'},
+      {label:'إجمالي الميزانية',value:totalBudget.toLocaleString()+' ج',color:'var(--rose)'},
+      {label:'إجمالي الليدز',value:totalLeads,color:'var(--purple)'},
+      {label:'معدل التحويل',value:totalLeads?Math.round(totalConv/totalLeads*100)+'%':'0%',color:'var(--emerald)'}
+    ],
+    byChannel
+  };
+}
 
 // ══════════════════════════════════════════
 // 📆 INSTALLMENTS SCREEN
@@ -4041,6 +4403,7 @@ function renderCampaigns(q){
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px;"><span style="color:var(--text-muted)">الميزانية:</span><span style="font-weight:700;color:var(--gold-light)">${(c.budget||0).toLocaleString()} ج</span></div>
       <div style="display:flex;gap:7px;">
+        <button class="btn btn-teal btn-sm" style="flex:1;font-size:11px" onclick="convertCampLead('${c.id}')">+1 تحويل</button>
         <button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px" onclick="openCampaignModal('${c.id}')">✏️ تعديل</button>
         <button class="btn btn-danger btn-sm" style="font-size:11px" onclick="delCampaign('${c.id}')">🗑</button>
       </div>
@@ -4048,25 +4411,47 @@ function renderCampaigns(q){
   }).join('')||'<div class="card" style="text-align:center;padding:40px;color:var(--text-muted);">لا توجد حملات</div>';
 }
 function openCampaignModal(id){
-  const c=id?DB.get('campaigns').find(x=>x.id===id):null;
-  document.getElementById('camp-modal-title').textContent=c?'✏️ تعديل الحملة':'📣 حملة جديدة';
-  ['id','name','channel','goal','budget','status','desc'].forEach(f=>{const el=document.getElementById('camp-'+f);if(el)el.value=c?c[f]||'':'';});
-  document.getElementById('camp-start').value=c?c.startDate:'';
-  document.getElementById('camp-end').value=c?c.endDate:'';
-  document.getElementById('camp-leads-count').value=c?c.leadsCount||0:0;
+  const c=id?(DB.get('campaigns')||[]).find(x=>x.id===id):null;
+  const titleEl=document.getElementById('camp-modal-title');
+  if(titleEl) titleEl.textContent=c?'✏️ تعديل الحملة':'📣 حملة جديدة';
+  const fields=['id','name','channel','goal','budget','status','desc'];
+  fields.forEach(f=>{
+    const el=document.getElementById('camp-'+f);
+    if(!el) return;
+    if(f==='channel' && !c) el.value='إنستجرام';
+    else if(f==='goal' && !c) el.value='زيادة الحجوزات';
+    else if(f==='status' && !c) el.value='مجدولة';
+    else if(f==='budget' && !c) el.value='';
+    else if(f==='desc' && !c) el.value='';
+    else if(f==='id') el.value=c?c.id:'';
+    else el.value=c?(c[f]||''):'';
+  });
+  const startEl=document.getElementById('camp-start');
+  const endEl=document.getElementById('camp-end');
+  const leadsEl=document.getElementById('camp-leads-count');
+  if(startEl) startEl.value=c?c.startDate||'':new Date().toISOString().split('T')[0];
+  if(endEl) endEl.value=c?c.endDate||'':'';
+  if(leadsEl) leadsEl.value=c?c.leadsCount||0:0;
   openModal('campaign-modal');
 }
 function saveCampaign(){
   const name=gv('camp-name').trim();if(!name){showToast('warning','⚠️ اسم الحملة مطلوب');return;}
   const id=gv('camp-id');
-  const data={name,channel:gv('camp-channel'),goal:gv('camp-goal'),budget:parseFloat(gv('camp-budget'))||0,leadsCount:parseInt(gv('camp-leads-count'))||0,converted:0,startDate:gv('camp-start'),endDate:gv('camp-end'),status:gv('camp-status'),desc:gv('camp-desc')};
+  const existing=id?(DB.get('campaigns')||[]).find(x=>x.id===id):null;
+  const data={name,channel:gv('camp-channel'),goal:gv('camp-goal'),budget:parseFloat(gv('camp-budget'))||0,leadsCount:parseInt(gv('camp-leads-count'))||0,converted:existing?.converted||0,startDate:gv('camp-start'),endDate:gv('camp-end'),status:gv('camp-status'),desc:gv('camp-desc')};
   if(id){DB.upd('campaigns',id,data);showToast('success',`✅ تم تحديث ${name}`);}
-  else{DB.push('campaigns',data);showToast('success',`✅ تم إضافة ${name}`);}
+  else{DB.push('campaigns',data);showToast('success',`✅ تم إضافة حملة "${name}"`);}
   closeModal('campaign-modal');renderCampaigns();
 }
 function delCampaign(id){
-  const c=DB.get('campaigns').find(x=>x.id===id);
+  const c=(DB.get('campaigns')||[]).find(x=>x.id===id);
   if(confirm(`حذف حملة "${c?.name}"؟`)){DB.del('campaigns',id);showToast('info','🗑 تم الحذف');renderCampaigns();}
+}
+function convertCampLead(id){
+  const c=(DB.get('campaigns')||[]).find(x=>x.id===id);if(!c)return;
+  DB.upd('campaigns',id,{converted:(c.converted||0)+1});
+  showToast('success',`✅ تم تسجيل تحويل في "${c.name}"`,`إجمالي التحويلات: ${(c.converted||0)+1}`);
+  renderCampaigns();
 }
 
 // ══════════════════════════════════════════

@@ -1574,7 +1574,7 @@ function fillPatDropdowns(){
 }
 
 // TABS
-const ALL_TABS=['t-med','t-ses','t-inv','t-ph','t-hist','se-gen','se-fb','se-perm','se-notif','se-data'];
+const ALL_TABS=['t-med','t-ses','t-inv','t-ph','t-hist','se-gen','se-fb','se-perm','se-notif','se-data','acc-pl','acc-bs','acc-cf'];
 function stab(el,gid,tid){
   document.getElementById(gid)?.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
@@ -3415,20 +3415,22 @@ function _parseSession(raw) {
 
 (function checkAuth(){
   const sess = localStorage.getItem('ha_session');
-  if(!sess) return;
+  if(!sess){ window.location.href = 'login.html'; return; }
   try {
     const s = _parseSession(sess);
     if(!s || s.expiry < Date.now()){
       localStorage.removeItem('ha_session');
-      return;
+      window.location.href = 'login.html'; return;
     }
     window._session = s;
     const uName = document.getElementById('user-name');
     const uRole = document.getElementById('user-role');
     if(uName && s.name) uName.textContent = s.name;
     if(uRole && s.role) uRole.textContent = s.role;
+    applyPermissions(s.role, s.permissions);
   } catch(e){
     localStorage.removeItem('ha_session');
+    window.location.href = 'login.html';
   }
 })();
 

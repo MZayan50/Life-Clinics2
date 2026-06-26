@@ -3395,15 +3395,16 @@ function printInvoiceReal(inv){
 </body>
 </html>`;
 
-  const w = window.open('','_blank','width=800,height:600');
+  const w = window.open('','_blank','width=800,height=700,scrollbars=yes');
+  if(!w){ showToast('error','❌ السماح بفتح النوافذ المنبثقة مطلوب'); return; }
   w.document.write(html);
   w.document.close();
-  setTimeout(()=>w.print(), 500);
+  setTimeout(()=>w.print(), 600);
 }
 
 // Override the print function
 window.printInvoice = function(id){
-  const inv = DB.get('invoices').find(i=>i.id==id);
+  const inv = DB.get('invoices').find(i=>String(i.id)===String(id));
   if(inv) printInvoiceReal(inv);
   else showToast('error','❌ لم يتم العثور على الفاتورة');
 };

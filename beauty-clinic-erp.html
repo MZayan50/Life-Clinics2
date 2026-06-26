@@ -551,7 +551,7 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
   <div class="filter-bar">
     <div class="sbox"><span>🔍</span><input type="text" placeholder="بحث عن منتج..." oninput="filterInv(this.value)"></div>
     <select class="selbox" onchange="filterInvSt(this.value)"><option value="">الكل</option><option value="متوفر">متوفر</option><option value="منخفض">منخفض</option><option value="نفذ">نفذ</option></select>
-    <button class="btn btn-primary" onclick="openModal('product-modal')">+ منتج جديد</button>
+    <button class="btn btn-primary" onclick="openProductModal()">+ منتج جديد</button>
   </div>
   <div class="kpi-grid" style="margin-bottom:14px;">
     <div class="kpi-card kc-teal"><div class="kpi-icon">📦</div><div class="kpi-value" id="inv-total">0</div><div class="kpi-label">إجمالي المنتجات</div></div>
@@ -1399,8 +1399,9 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 </div>
 
 <div class="modal-overlay" id="product-modal">
-  <div class="modal" style="max-width:500px"><div class="mhdr"><div class="mtitle">📦 منتج جديد</div><button class="mclose" onclick="closeModal('product-modal')">✕</button></div>
+  <div class="modal" style="max-width:500px"><div class="mhdr"><div class="mtitle" id="prod-modal-title">📦 منتج جديد</div><button class="mclose" onclick="closeModal('product-modal')">✕</button></div>
   <div class="mbody"><div class="fg">
+    <input type="hidden" id="prod-id">
     <div class="fgrp full"><label class="flbl">اسم المنتج *</label><input class="fctl" id="prod-name" placeholder="اسم المنتج"></div>
     <div class="fgrp"><label class="flbl">الفئة</label><select class="fctl" id="prod-cat"><option>بشرة</option><option>شعر</option><option>أدوية</option><option>مستلزمات</option></select></div>
     <div class="fgrp"><label class="flbl">الكمية</label><input class="fctl" type="number" id="prod-qty" placeholder="0"></div>
@@ -1441,12 +1442,13 @@ tbody td{padding:10px 13px;font-size:13px;vertical-align:middle;}
 
 <script>
 const DB={
+  _fb:['patients','appointments','inventory','invoices','services','leads','doctors','staff','expenses','branches','campaigns','packages','sessions','waitlist'],
   get(k){try{return JSON.parse(localStorage.getItem('ha_'+k))||[];}catch{return [];}},
   obj(k){try{return JSON.parse(localStorage.getItem('ha_'+k))||{};}catch{return {};}},
   set(k,v){localStorage.setItem('ha_'+k,JSON.stringify(v));},
-  push(k,o){const a=DB.get(k);o.id=o.id||Date.now()+'';a.push(o);DB.set(k,a);return o;},
-  upd(k,id,d){const a=DB.get(k),i=a.findIndex(x=>x.id==id);if(i>=0){a[i]={...a[i],...d};DB.set(k,a);}},
-  del(k,id){DB.set(k,DB.get(k).filter(x=>x.id!=id));}
+  push(k,o){const a=DB.get(k);o.id=o.id||Date.now()+'';a.push(o);DB.set(k,a);if(DB._fb.includes(k))fbSet(k,o.id,o);return o;},
+  upd(k,id,d){const a=DB.get(k),i=a.findIndex(x=>x.id==id);if(i>=0){a[i]={...a[i],...d};DB.set(k,a);if(DB._fb.includes(k))fbSet(k,id,a[i]);}},
+  del(k,id){DB.set(k,DB.get(k).filter(x=>x.id!=id));if(DB._fb.includes(k))fbDel(k,id);}
 };
 if(!localStorage.getItem('ha_seeded')){
   const today=new Date().toISOString().split('T')[0];
@@ -1911,7 +1913,7 @@ function filterInvSt(s){_is=s;renderInv();}
 function renderInv(){
   const items=DB.get('inventory').filter(i=>(!_if||i.name.includes(_if))&&(!_is||i.status===_is));
   const tb=document.getElementById('inv-tbody');if(!tb)return;
-  tb.innerHTML=items.map(i=>`<tr><td style="font-weight:600">${i.name}</td><td style="font-weight:700;color:${i.qty===0?'var(--rose)':i.qty<=i.reorder?'var(--amber)':'var(--emerald)'}">${i.qty}</td><td>${i.reorder}</td><td style="font-size:12px;color:${i.expiry&&new Date(i.expiry)<new Date()?'var(--rose)':'var(--text-muted)'}">${i.expiry||'—'}</td><td>${i.price} ج</td><td><span class="stk ${i.status==='متوفر'?'stk-ok':i.status==='منخفض'?'stk-low':'stk-out'}">${i.status}</span></td><td><button class="btn btn-danger btn-xs" onclick="delInv('${i.id}')">🗑</button></td></tr>`).join('');
+  tb.innerHTML=items.map(i=>`<tr><td style="font-weight:600">${i.name}</td><td style="font-weight:700;color:${i.qty===0?'var(--rose)':i.qty<=i.reorder?'var(--amber)':'var(--emerald)'}">${i.qty}</td><td>${i.reorder}</td><td style="font-size:12px;color:${i.expiry&&new Date(i.expiry)<new Date()?'var(--rose)':'var(--text-muted)'}">${i.expiry||'—'}</td><td>${i.price} ج</td><td><span class="stk ${i.status==='متوفر'?'stk-ok':i.status==='منخفض'?'stk-low':'stk-out'}">${i.status}</span></td><td><button class="btn btn-ghost btn-xs" onclick="openProductModal('${i.id}')">✏️</button> <button class="btn btn-danger btn-xs" onclick="delInv('${i.id}')">🗑</button></td></tr>`).join('');
   const all=DB.get('inventory');
   const low=all.filter(i=>i.status==='منخفض').length,out=all.filter(i=>i.status==='نفذ').length;
   txt('inv-total',all.length);txt('inv-low',low);txt('inv-out',out);
@@ -1919,12 +1921,26 @@ function renderInv(){
   txt('badge-stock',low+out);txt('kpi-stk',low+out);
 }
 function delInv(id){if(confirm('حذف المنتج؟')){DB.del('inventory',id);renderInv();showToast('info','🗑️ تم حذف المنتج');}}
+function openProductModal(id){
+  const p=id?DB.get('inventory').find(x=>String(x.id)===String(id)):null;
+  document.getElementById('prod-modal-title').textContent=p?'✏️ تعديل منتج':'📦 منتج جديد';
+  document.getElementById('prod-id').value=p?p.id:'';
+  document.getElementById('prod-name').value=p?p.name:'';
+  document.getElementById('prod-qty').value=p?p.qty:'';
+  document.getElementById('prod-reord').value=p?p.reorder:5;
+  document.getElementById('prod-price').value=p?p.price:'';
+  document.getElementById('prod-exp').value=p?p.expiry||'':'';
+  const catEl=document.getElementById('prod-cat');if(catEl&&p)catEl.value=p.cat||catEl.options[0].value;
+  openProductModal();
+}
 function saveProd(){
   const name=gv('prod-name').trim();if(!name){showToast('warning','⚠️ اسم المنتج مطلوب');return;}
   const qty=parseInt(gv('prod-qty'))||0,reorder=parseInt(gv('prod-reord'))||5;
-  DB.push('inventory',{name,cat:gv('prod-cat'),qty,reorder,price:parseFloat(gv('prod-price'))||0,expiry:gv('prod-exp'),status:qty===0?'نفذ':qty<=reorder?'منخفض':'متوفر'});
-  closeModal('product-modal');showToast('success',`✅ تم إضافة ${name}`);renderInv();
-  ['prod-name','prod-qty','prod-reord','prod-price','prod-exp'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  const id=gv('prod-id');
+  const data={name,cat:gv('prod-cat'),qty,reorder,price:parseFloat(gv('prod-price'))||0,expiry:gv('prod-exp'),status:qty===0?'نفذ':qty<=reorder?'منخفض':'متوفر'};
+  if(id){DB.upd('inventory',id,data);showToast('success',`✅ تم تحديث ${name}`);}
+  else{DB.push('inventory',data);showToast('success',`✅ تم إضافة ${name}`);}
+  closeModal('product-modal');renderInv();
 }
 
 // INVOICES
@@ -2593,6 +2609,19 @@ async function aiSend(q){
   window._aiLoading = true;
   aiRenderMessages();
 
+  // Check API key before sending
+  const _apiKey = (DB.obj('settings').anthropicKey||'').trim();
+  if(!_apiKey){
+    window._aiMessages.push({ role:'assistant', text:'🔑 لم يتم إعداد مفتاح Anthropic API بعد.
+
+ادخل الإعدادات ⚙️ ← تبويب عام ← حقل «مفتاح Anthropic API» والصق مفتاحك ثم اضغط حفظ.
+
+بعد الحفظ سيعمل المساعد على جميع الأجهزة تلقائياً ☁️', isError:true });
+    window._aiLoading = false;
+    aiRenderMessages();
+    return;
+  }
+
   try {
     const history = window._aiMessages.slice(0,-1).map(m => ({
       role: m.role === 'user' ? 'user' : 'assistant',
@@ -2602,7 +2631,7 @@ async function aiSend(q){
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': (DB.obj('settings').anthropicKey||'').trim(),
+        'x-api-key': _apiKey,
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
@@ -2614,7 +2643,10 @@ async function aiSend(q){
       })
     });
     if(res.status === 401){
-      window._aiMessages.push({ role:'assistant', text:'🔑 مفتاح Anthropic API غير صحيح أو غير موجود. أضفه في الإعدادات ← حقل "مفتاح Anthropic API".', isError:true });
+      const hasKey = !!(DB.obj('settings').anthropicKey||'').trim();
+      window._aiMessages.push({ role:'assistant', text: hasKey
+        ? '🔑 مفتاح Anthropic API غير صحيح. تحقق منه في الإعدادات ⚙️ ← تبويب عام.'
+        : '🔑 لم يتم إعداد مفتاح Anthropic API بعد.\n\nادخل الإعدادات ⚙️ ← تبويب عام ← حقل «مفتاح Anthropic API» والصق مفتاحك ثم اضغط حفظ.\n\nبعد الحفظ سيعمل المساعد على جميع الأجهزة تلقائياً.', isError:true });
     } else if(!res.ok){
       const err = await res.json().catch(()=>({}));
       window._aiMessages.push({ role:'assistant', text:`❌ خطأ من الخادم (${res.status}): ${err?.error?.message||'حاول مرة أخرى'}`, isError:true });
@@ -2701,8 +2733,48 @@ document.addEventListener('input', e => {
 // SETTINGS
 function saveSettings(){
   const s={clinicName:gv('s-cname'),phone:gv('s-cphone'),managerName:gv('s-mname'),managerRole:gv('s-mrole'),anthropicKey:gv('s-anthropic-key')};
-  DB.set('settings',s);txt('user-name',s.managerName);txt('user-role',s.managerRole);txt('dash-uname',s.managerName);
-  showToast('success','✅ تم حفظ الإعدادات');
+  DB.set('settings',s);
+  txt('user-name',s.managerName);txt('user-role',s.managerRole);txt('dash-uname',s.managerName);
+  // Sync to Firestore so all devices share the same settings + API key
+  if(window._firestore){
+    window._firestore.collection('config').doc('settings').set(s)
+      .then(()=>showToast('success','✅ تم حفظ الإعدادات وتزامنها على جميع الأجهزة ☁️'))
+      .catch(()=>showToast('success','✅ تم حفظ الإعدادات محلياً'));
+  } else {
+    showToast('success','✅ تم حفظ الإعدادات');
+  }
+}
+
+// Load settings from Firestore and merge into localStorage (called after Firebase init)
+async function loadSettingsFromFirestore(){
+  if(!window._firestore) return;
+  try {
+    const doc = await window._firestore.collection('config').doc('settings').get();
+    if(doc.exists){
+      const remote = doc.data();
+      // Merge remote over local - remote wins (so API key syncs across devices)
+      const local = DB.obj('settings');
+      const merged = {...local, ...remote};
+      DB.set('settings', merged);
+      // Update UI if fields are visible
+      const fill = (id, val) => { const el=document.getElementById(id); if(el&&val)el.value=val; };
+      fill('s-cname', merged.clinicName);
+      fill('s-cphone', merged.phone);
+      fill('s-mname', merged.managerName);
+      fill('s-mrole', merged.managerRole);
+      fill('s-anthropic-key', merged.anthropicKey);
+      if(merged.managerName){txt('user-name',merged.managerName);txt('dash-uname',merged.managerName);}
+      if(merged.managerRole) txt('user-role',merged.managerRole);
+    }
+    // Also listen for live changes (another device saves settings)
+    window._firestore.collection('config').doc('settings').onSnapshot(doc=>{
+      if(doc.exists){
+        const remote=doc.data();
+        const local=DB.obj('settings');
+        DB.set('settings',{...local,...remote});
+      }
+    });
+  } catch(e){ console.warn('loadSettingsFromFirestore:', e.message); }
 }
 function loadSettings(){
   const s=DB.obj('settings');
@@ -2765,6 +2837,9 @@ async function initFirebase(cfg){
     // Start syncing all collections
     const COLLECTIONS = ['patients','appointments','inventory','invoices','services','leads'];
     COLLECTIONS.forEach(col => attachFirestoreSync(col));
+
+    // Load shared settings (API key, clinic name, etc.) from Firestore
+    await loadSettingsFromFirestore();
 
   } catch(err) {
     console.error('Firebase init error:', err);
@@ -3320,17 +3395,32 @@ window.showScreen = function(id){
   if(id==='branches') renderBranches();
 };
 // ══════════════════════════════════════════
-// 🔐 SESSION MANAGEMENT
+// 🔐 SESSION MANAGEMENT (Secure — base64 encoded session)
 // ══════════════════════════════════════════
-(function checkAuth(){
-  // Session check - if no session just continue as guest (standalone app)
-  const sess = localStorage.getItem('ha_session');
-  if(!sess) return; // no redirect - standalone mode
+function _parseSession(raw) {
+  if (!raw) return null;
   try {
-    const s = JSON.parse(sess);
-    if(s.expiry < Date.now()){
+    // محاولة قراءة base64 أولاً (النظام الجديد المشفر)
+    const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    return decoded;
+  } catch (e1) {
+    try {
+      // fallback: plain JSON (النظام القديم)
+      return JSON.parse(raw);
+    } catch (e2) {
+      return null;
+    }
+  }
+}
+
+(function checkAuth(){
+  const sess = localStorage.getItem('ha_session');
+  if(!sess) return;
+  try {
+    const s = _parseSession(sess);
+    if(!s || s.expiry < Date.now()){
       localStorage.removeItem('ha_session');
-      return; // expired - just clear, no redirect
+      return;
     }
     window._session = s;
     const uName = document.getElementById('user-name');
@@ -3353,9 +3443,11 @@ function renewSession(){
   const sess = localStorage.getItem('ha_session');
   if(sess){
     try{
-      const s = JSON.parse(sess);
+      const s = _parseSession(sess);
+      if(!s) return;
       s.expiry = Date.now() + (8 * 60 * 60 * 1000);
-      localStorage.setItem('ha_session', JSON.stringify(s));
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(s))));
+      localStorage.setItem('ha_session', encoded);
       showToast('success','✅ تم تجديد الجلسة لـ 8 ساعات');
     }catch(e){}
   }
@@ -3959,7 +4051,8 @@ function updateSessionTimer(){
   const sess = localStorage.getItem('ha_session');
   if(!sess) return;
   try{
-    const s = JSON.parse(sess);
+    const s = _parseSession(sess);
+    if(!s) return;
     const remaining = s.expiry - Date.now();
     if(remaining <= 0){ doLogout(); return; }
     const hours = Math.floor(remaining/3600000);

@@ -1603,6 +1603,7 @@ function openPatWA(){
   selectWAPat(p.id);
 }
 
+function viewPat(id){
   const p=DB.get('patients').find(x=>x.id==id);if(!p)return;
   window._curPat=id;
   txt('pp-name',p.name);txt('pp-contact',`📞 ${p.phone}${p.email?' · 📧 '+p.email:''}`);
@@ -2351,14 +2352,8 @@ function buildTopDoctors(){
   }
   el.innerHTML = sorted.map(([name,rev],i)=>`<div class="drow"><div class="drank">${medals[i]||'⭐'}</div><div class="dava" style="background:${grads[i%5]}">👩‍⚕️</div><div style="flex:1;font-size:13px;font-weight:600">${name}</div><div style="color:var(--teal);font-weight:700;font-size:12.5px">${rev.toLocaleString()} ج</div></div>`).join('');
 }
+function buildServiceChart(){
   const invoices=DB.get('invoices');
-  if(!invoices.length)return;
-  const svcCount={};
-  invoices.forEach(inv=>{if(inv.service)svcCount[inv.service]=(svcCount[inv.service]||0)+(inv.paid||0);});
-  const total=Object.values(svcCount).reduce((s,v)=>s+v,0);if(!total)return;
-  const sorted=Object.entries(svcCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const colors=['var(--teal)','var(--purple)','var(--gold)','var(--rose)','var(--amber)'];
-  const container=document.querySelector('#screen-dashboard .g3 .card:last-child > div');
   if(!container)return;
   container.innerHTML=sorted.map(([svc,val],i)=>{
     const pct=Math.round(val/total*100);
@@ -3049,6 +3044,7 @@ function importData(){
   };
   input.click();
 }
+function syncData(){
   const ic=document.getElementById('sync-icon');if(ic)ic.classList.add('spin');
   setTimeout(()=>{if(ic)ic.classList.remove('spin');showToast('info','💾 البيانات محفوظة محلياً','أعد الإعداد عبر Firebase للمزامنة السحابية');},1200);
 }
@@ -3085,11 +3081,6 @@ function init(){
   if(!localStorage.getItem('ha_setup_shown')){setTimeout(()=>{document.getElementById('setup-screen')?.classList.add('show');localStorage.setItem('ha_setup_shown','1');},800);}
 }
 init();
-</script>
-</body>
-</html>
-<!-- BRANCHES REAL DATA -->
-<script>
 // ══════════════════════════════════════════
 // 🏢 BRANCHES — REAL DATA FROM DB
 // ══════════════════════════════════════════
@@ -3228,9 +3219,6 @@ window.showScreen = function(id){
   _origShowBranch(id);
   if(id==='branches') renderBranches();
 };
-</script>
-<!-- SESSION GUARD + AUTH ADDITIONS -->
-<script>
 // ══════════════════════════════════════════
 // 🔐 SESSION MANAGEMENT
 // ══════════════════════════════════════════
@@ -4855,3 +4843,5 @@ function delPackage(id){
   if(confirm(`حذف باقة "${p?.name||''}"؟`)){DB.del('packages',id);showToast('info','🗑 تم الحذف');renderPackages();}
 }
 </script>
+</body>
+</html>

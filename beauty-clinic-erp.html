@@ -2119,8 +2119,8 @@ function renderAppts(){
   tb.innerHTML=appts.map(a=>`<tr><td style="font-weight:600">${a.patient}</td><td style="font-size:12px">${a.date}</td><td style="font-weight:700;color:var(--teal)">${a.time}${a.endTime?` <span style="color:var(--text-muted);font-weight:400;font-size:11px">- ${a.endTime}</span>`:''}</td><td>${a.service}</td><td>${a.doctor||'—'}</td><td style="font-size:12px">${a.branch||'—'}</td><td><span class="ast ${ASC[a.status]||'sd'}">${a.status}</span></td><td style="display:flex;gap:5px;white-space:nowrap;"><button class="btn btn-ghost btn-xs" onclick="openApptModal('${a.id}')">✏️</button><button class="btn btn-ghost btn-xs" onclick="updAppt('${a.id}','مكتمل')">✅</button><button class="btn btn-teal btn-xs" onclick="sendApptWA('${a.id}')" title="إرسال الموعد عبر واتساب">💬</button><button class="btn btn-danger btn-xs" onclick="delAppt('${a.id}')">🗑</button></td></tr>`).join('');
   renderTodayAppts();
 }
-function updAppt(id,st){DB.upd('appointments',id,{status:st});renderAppts();showToast('success','✅ تم تحديث حالة الموعد');}
-function delAppt(id){if(confirm('حذف الموعد؟')){DB.del('appointments',id);renderAppts();buildCal();}}
+function updAppt(id,st){DB.upd('appointments',id,{status:st});renderAppts();renderReception();renderDoctorView();showToast('success','✅ تم تحديث حالة الموعد');}
+function delAppt(id){if(confirm('حذف الموعد؟')){DB.del('appointments',id);renderAppts();buildCal();renderReception();renderDoctorView();}}
 function sendApptWA(id){
   const appt=DB.get('appointments').find(x=>String(x.id)===String(id));
   if(!appt){showToast('error','❌ الموعد غير موجود');return;}
@@ -2182,7 +2182,7 @@ function saveAppt(){
   const data={patId:pid,patient:pat?.name||pid,service:svcName,type:gv('am-type'),doctor,date,time,endTime,duration,room,equipment,branch:gv('am-branch'),notes:gv('am-notes')};
   if(id){DB.upd('appointments',id,data);showToast('success','✅ تم تحديث الموعد');}
   else{DB.push('appointments',{...data,status:'مؤكد'});showToast('success','📅 تم حجز الموعد بنجاح',`${pat?.name} - ${date} ${time}`);}
-  closeModal('appt-modal');renderAppts();buildCal();renderTodayAppts();
+  closeModal('appt-modal');renderAppts();buildCal();renderTodayAppts();renderReception();renderDoctorView();
   const e=document.getElementById('am-notes');if(e)e.value='';
 }
 function addMinutesToTime(time,mins){
